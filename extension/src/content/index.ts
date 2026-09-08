@@ -173,6 +173,14 @@ async function verifyOne(
   if (actual.toLowerCase() === wanted.toLowerCase()) {
     return { fulfilled: true, reason: 'match' };
   }
+  const el = node as unknown as { value?: unknown; tagName?: string };
+  if (
+    el.tagName?.toLowerCase() === 'select' &&
+    typeof el.value === 'string' &&
+    el.value.trim().toLowerCase() === wanted.toLowerCase()
+  ) {
+    return { fulfilled: true, reason: 'match' };
+  }
   return { fulfilled: false, reason: 'differs' };
 }
 
@@ -251,7 +259,27 @@ export function installHandlers(): void {
     const results: ExecutionOutcome[] = [];
     for (const action of actions) {
       try {
-        results.push(await execute(action, env, planSnapshotId));
+        const seqBefore = mutationSeq();
+        const urlBefore = window.location.href;
+        const activeBefore = document.activeElement;
+
+        const result = await execute(action, env, planSnapshotId);
+
+        const seqAfter = mutationSeq();
+        const urlAfter = window.location.href;
+        const activeAfter = document.activeElement;
+
+        if (action.type === 'click' && result.outcome === 'ok') {
+          if (urlBefore !== urlAfter) {
+            result.note = `${result.note} (navigation)`;
+          } else if (seqAfter > seqBefore || activeBefore !== activeAfter) {
+            result.note = `${result.note} (dom-change)`;
+          } else {
+            result.note = `${result.note} (no-change)`;
+          }
+        }
+
+        results.push(result);
       } catch (err) {
         // A step-ending rejection stops the batch: the remaining actions were built on
         // the same state that has just gone missing, so running them is worse than not.

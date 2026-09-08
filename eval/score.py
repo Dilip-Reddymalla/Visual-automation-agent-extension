@@ -14,10 +14,9 @@ buried:
   `belowFold`, and not as a miss. Scoring it as a miss would report a recall failure for
   a design decision, and hide the real ones underneath it.
 
-  Pixels scored apart. A value that exists only inside a PNG cannot be found by a layer
-  that reads the DOM. Those spans are counted in their own bucket, so the recall number
-  for the deterministic layers says what L0 and L1 did rather than being dragged down by
-  what L3 would do if it existed.
+  Pixels scored in-viewport. Spans embedded in images/canvases (medium="pixels") are
+  scored alongside DOM spans now that L3 vision/OCR is active, while continuing to be
+  tracked in the pixels-only coverage bucket to avoid double-counting and preserve context.
 
   Two operating points, always. M5 names two NER thresholds -- 0.35 for recall, 0.7 for
   precision -- and reporting one of them is how a team quietly picks whichever flatters
@@ -94,10 +93,15 @@ def visible_truths(labels: dict) -> tuple[list[dict], list[dict], list[dict]]:
     for span in labels["spans"]:
         if not span["inViewport"]:
             below.append(span)
-        elif span["medium"] == "pixels":
-            pixels.append(span)
         else:
-            scored.append(span)
+            if span["medium"] == "pixels":
+                pixels.append(span)
+            duplicate = any(
+                s["cls"] == span["cls"] and metrics.iou(s["box"], span["box"]) >= metrics.MATCH_IOU
+                for s in scored
+            )
+            if not duplicate:
+                scored.append(span)
     return scored, below, pixels
 
 

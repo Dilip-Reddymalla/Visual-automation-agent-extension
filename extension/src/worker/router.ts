@@ -862,29 +862,37 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
     // acted on` -- because only `type` actions produced a verdict, so a click produced none,
     // and an intent with no verdict is treated as never attempted. Which is the right rule;
     // it was being fed an incomplete list.
-    const typed = actions.flatMap((action, at) =>
-      action.type === 'type' ? [{ at, index: action.index, text: action.text }] : [],
-    );
+    const valueBearing = actions.flatMap((action, at) => {
+      if (action.type === 'type') {
+        return [{ at, index: action.index, text: action.text }];
+      }
+      if (action.type === 'select') {
+        return [{ at, index: action.index, text: action.option }];
+      }
+      return [];
+    });
 
     const verdicts = new Map<number, import('../shared/messages').VerifyReason>();
-    if (typed.length > 0) {
+    if (valueBearing.length > 0) {
       const { results } = await send(
         'VERIFY_FILLED',
         {
           sessionId: requireSession(state),
           snapshotId: ctx.snapshotId,
-          checks: typed.map(({ index, text }) => ({ index, text })),
+          checks: valueBearing.map(({ index, text }) => ({ index, text })),
         },
         { to: 'content', tabId: requireTab(state) },
       );
-      typed.forEach((check, i) => verdicts.set(check.at, results[i]?.reason ?? 'missing'));
+      valueBearing.forEach((check, i) => verdicts.set(check.at, results[i]?.reason ?? 'missing'));
     }
 
     // Name each verdict by the field the *user* asked for, not by index. "last name is still
     // empty" is a sentence an operator can act on; "[7] differs" is one they have to decode
     // against a walk that no longer exists.
     ctx.fulfilments = actions.flatMap((action, at): Fulfilment[] => {
-      const outcome = ctx.results?.[at]?.outcome;
+      const execResult = ctx.results?.[at];
+      const outcome = execResult?.outcome;
+      const note = execResult?.note ?? '';
 
       if (action.type === 'type') {
         return [
@@ -896,14 +904,25 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
         ];
       }
 
-      if (action.type === 'click' || action.type === 'select') {
+      if (action.type === 'select') {
         return [
           {
             target: targetForIndex(state, ctx, action.index),
-            verb: action.type === 'click' ? ('click' as const) : ('select' as const),
-            // There is no value to read back, so the executor's outcome is not a weaker
-            // form of evidence -- it is the only form there is, and it is a real one.
-            reason: outcome === 'failed' ? ('not-done' as const) : ('not-applicable' as const),
+            verb: 'select' as const,
+            reason:
+              verdicts.get(at) ??
+              (outcome === 'failed' ? ('not-done' as const) : ('not-applicable' as const)),
+          },
+        ];
+      }
+
+      if (action.type === 'click') {
+        const noStateChange = outcome === 'failed' || note.includes('(no-change)');
+        return [
+          {
+            target: targetForIndex(state, ctx, action.index),
+            verb: 'click' as const,
+            reason: noStateChange ? ('not-done' as const) : ('not-applicable' as const),
           },
         ];
       }
