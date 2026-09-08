@@ -1,0 +1,25 @@
+# Python dependencies for the evaluation harness (`python eval/harness.py`).
+#
+#   pip install -r eval/requirements.txt
+#
+# This is the complete set of third-party packages imported anywhere under
+# eval/ (verified by an AST scan of every eval/**/*.py against the stdlib and
+# the local modules). Each line notes what imports it and why.
+#
+# Real Chrome, not a bundled one: the harness connects Playwright to a real
+# Google Chrome over CDP (runner/browser.py finds the installed binary and
+# rejects Playwright's bundled Chromium on purpose). So DO NOT run
+# `playwright install` -- no Playwright-managed browser is ever launched.
+#
+# Server-only dependencies (fastapi, uvicorn, httpx, jsonschema,
+# python-multipart) are intentionally absent: the harness's planner is a
+# stdlib-only fixed-plan recorder and imports none of them. See the root
+# README.md for the server's own install line.
+#
+# Versions are left unpinned to match the repo's existing convention (the
+# server install line in README.md is unpinned too).
+
+psutil            # runner/resources.py -- CPU / memory / idle-CPU sampling
+playwright        # harness.py, corpus/generate.py -- CDP connect to real Chrome
+websocket-client  # runner/cdp.py -- CDP websocket (Chrome process type -> pid)
+pillow            # metrics.py, corpus/pixels.py -- pixels-only PII span scoring

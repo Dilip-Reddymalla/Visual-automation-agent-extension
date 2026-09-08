@@ -3,12 +3,19 @@
 Fifty pages, their ground truth, a headless runner, and a report.
 
 ```bash
+pip install -r eval/requirements.txt  # harness deps: psutil, playwright, websocket-client, pillow
 npm run build                    # the harness scores the bundle, not the sources
 python eval/corpus/generate.py   # regenerate pages + labels (deterministic, seeded)
 python eval/harness.py           # run all fifty and write the report
 python eval/harness.py --score-only   # re-score the last run without a browser
 python eval/sabotage.py          # the control experiment: break a detector, watch it move
 ```
+
+`eval/requirements.txt` is the complete third-party set the harness imports — nothing
+more. It does **not** include the server's dependencies (the planner here is a local
+fixed-plan recorder), and it does **not** need `playwright install`: the harness connects
+Playwright to a real Google Chrome over CDP and refuses the bundled Chromium
+(`runner/browser.py`), so no Playwright-managed browser is ever downloaded or launched.
 
 Output is `report/report.json` and `report/report.html`. The HTML is self-contained —
 images inlined, CSS inline — so it travels to a machine with no network.

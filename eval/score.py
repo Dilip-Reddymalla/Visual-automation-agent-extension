@@ -402,26 +402,40 @@ def _tally_traps(hits: list[dict]) -> list[dict]:
     ]
 
 
+def stats(values: list[float]) -> dict:
+    """The five numbers the baseline asks for over one sample: count, mean, p50, p95, max.
+
+    `n` is kept as an alias of `count` because report.py's latency table and every reader
+    written before the baseline existed read `n`; dropping it would be a silent break for
+    the sake of one word.
+    """
+    if not values:
+        return {"count": 0, "n": 0, "mean": 0.0, "p50": 0.0, "p95": 0.0, "max": 0.0}
+    return {
+        "count": len(values),
+        "n": len(values),
+        "mean": round(sum(values) / len(values), 1),
+        "p50": round(percentile(values, 50), 1),
+        "p95": round(percentile(values, 95), 1),
+        "max": round(max(values), 1),
+    }
+
+
 def latency(pages: list[dict]) -> dict:
-    """Per stage, p50 and p95, plus the step total. From the worker's own trace."""
+    """Per stage: count, mean, p50, p95, max, plus the step total. From the worker's trace.
+
+    Count and mean were added for the baseline (eval/baseline.py); p50/p95/max/n are
+    unchanged, so `target_table` and the report's latency table keep reading what they
+    always did. The numbers are the StepTrace phases -- the real pipeline -- not timings
+    taken around isolated functions.
+    """
     out: dict = {"byPhase": {}}
     for phase in PHASES:
         values = [p["timings"][phase] for p in pages if phase in p["timings"]]
         if not values:
             continue
-        out["byPhase"][phase] = {
-            "n": len(values),
-            "p50": round(percentile(values, 50), 1),
-            "p95": round(percentile(values, 95), 1),
-            "max": round(max(values), 1),
-        }
-    totals = [p["totalMs"] for p in pages if p["totalMs"]]
-    out["step"] = {
-        "n": len(totals),
-        "p50": round(percentile(totals, 50), 1),
-        "p95": round(percentile(totals, 95), 1),
-        "max": round(max(totals), 1) if totals else 0.0,
-    }
+        out["byPhase"][phase] = stats(values)
+    out["step"] = stats([p["totalMs"] for p in pages if p["totalMs"]])
     return out
 
 

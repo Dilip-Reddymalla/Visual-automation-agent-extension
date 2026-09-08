@@ -35,7 +35,9 @@ npm install
 pip install fastapi 'uvicorn[standard]' httpx jsonschema python-multipart
 ```
 
-The eval harness additionally wants `playwright` and `pillow`, and the ONNX weights under
+The eval harness has its own dependency set — install it with `pip install -r
+eval/requirements.txt` (psutil, playwright, websocket-client, pillow; no `playwright
+install` needed, it drives real Chrome over CDP). The ONNX weights under
 `extension/models/` are gitignored — they are too large for a plain clone, so a fresh
 machine regenerates or re-fetches them (see `extension/models/README.md`).
 

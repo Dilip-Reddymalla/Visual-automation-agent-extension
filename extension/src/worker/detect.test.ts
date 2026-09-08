@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { dedupeDrafts, resolveContainers } from './detect';
-import type { FindingDraft } from '../redaction/findings';
+import { dedupeDrafts, resolveContainers, ocrFindings } from './detect';
+import { makeFinding, type FindingDraft } from '../redaction/findings';
 import type { ObservedElement } from '../shared/observed';
+import type { OcrLine } from '../shared/messages';
+import type { NerRunner } from '../offscreen/tasks/ner';
 
 describe('containers are never painted', () => {
   const el = (over: Partial<ObservedElement> = {}): ObservedElement => ({
@@ -260,5 +262,156 @@ describe('face drafts, which have no value', () => {
       value: 'a@b.in',
     };
     expect(dedupeDrafts([face(), overlapping])[0]?.value).toBe('a@b.in');
+  });
+});
+
+/**
+ * L3 OCR, the part that had never contributed a finding.
+ *
+ * The offscreen OCR task was complete and coordinate-correct, but the worker fed its lines
+ * into a synthetic element missing `textRuns`, so L1's text scan threw, the throw was
+ * swallowed, and every scanned Aadhaar reached the wire in the clear -- a hole in invariant
+ * 9, not a latency problem. These exercise the reconnected path: recovered text goes
+ * through L1 and L2 exactly as page text does, the box is carried through with no second
+ * coordinate conversion, and the raw string never crosses the wire boundary.
+ *
+ * `ocrFindings` is node-pure by construction (the model call is injected), so this needs no
+ * browser, no GPU and no weights -- the same reason ner.ts tests its arithmetic against a
+ * fake classifier.
+ */
+describe('OCR text through L1 and L2', () => {
+  const viewport = { w: 1280, h: 800 };
+
+  /** A NER model that finds nothing -- isolates the deterministic (L1) path. */
+  const noNer: NerRunner = async () => [];
+
+  it('finds nothing in benign image text, so paints nothing', async () => {
+    // Over-redaction is a first-class failure: readable, non-sensitive text baked into an
+    // image must not become a box. The string is long enough to clear needsModel, so L2
+    // runs too and still finds nothing.
+    const lines: OcrLine[] = [
+      { text: 'Welcome to the enrolment portal', box: { x: 5, y: 5, w: 300, h: 20 }, score: 0.9 },
+    ];
+    const { drafts, nerError } = await ocrFindings(lines, viewport, 'highPrecision', noNer);
+    expect(drafts).toHaveLength(0);
+    expect(nerError).toBeNull();
+  });
+
+  it('redacts a Verhoeff-valid Aadhaar baked into an image (L1 over OCR)', async () => {
+    // '7237 2429 6561' is a real Verhoeff-valid Aadhaar from eval/corpus/identifiers.json.
+    // No NER: the checksum path alone must catch it, so a missing model cannot leak it.
+    const box = { x: 12, y: 40, w: 220, h: 26 };
+    const lines: OcrLine[] = [{ text: 'Aadhaar 7237 2429 6561', box, score: 0.92 }];
+
+    const { drafts } = await ocrFindings(lines, viewport, 'highPrecision', noNer);
+
+    expect(drafts).toHaveLength(1);
+    const hit = drafts[0];
+    expect(hit?.cls).toBe('AADHAAR');
+    expect(hit?.layer).toBe('L3'); // pixel-derived, however deterministic the pattern
+    expect(hit?.boxKind).toBe('text');
+    expect(hit?.reason).toBe('ocr:verhoeff-ok');
+    expect(hit?.value).toBe('7237 2429 6561'); // device-side, for the allocator
+    expect(hit?.confidence).toBeCloseTo((0.98 + 0.92) / 2); // checksum blended with the read
+    expect(hit?.elementIndex).toBeUndefined(); // the synthetic join key is stripped
+  });
+
+  it('routes OCR text through L2, so a name in a scanned ID is caught', async () => {
+    // The connection the old code could not make at all: detectOcr took no `operating`, so
+    // it structurally could not reach the model. A name has no checksum; only L2 finds it.
+    const box = { x: 12, y: 80, w: 260, h: 22 };
+    const lines: OcrLine[] = [{ text: 'Asha Menon Kumar Bengaluru resident', box, score: 0.88 }];
+
+    const person: NerRunner = async (text) => {
+      const needle = 'Asha Menon Kumar';
+      const at = text.indexOf(needle);
+      return at < 0 ? [] : [{ start: at, end: at + needle.length, label: 'GIVENNAME', score: 0.95 }];
+    };
+
+    const { drafts, nerError } = await ocrFindings(lines, viewport, 'highPrecision', person);
+
+    expect(nerError).toBeNull();
+    const names = drafts.filter((d) => d.cls === 'PERSON');
+    expect(names).toHaveLength(1);
+    expect(names[0]?.layer).toBe('L3');
+    expect(names[0]?.boxKind).toBe('text');
+    expect(names[0]?.reason).toBe('ocr:ner-givenname');
+    expect(names[0]?.value).toBe('Asha Menon Kumar');
+  });
+
+  it('a NER failure costs the names, not the checksummed L1 findings', async () => {
+    // The two run in one line each in ocrFindings, and L2 has its own try/catch for exactly
+    // this: no GPU must not mean a scanned Aadhaar ships in the clear.
+    const box = { x: 12, y: 40, w: 220, h: 26 };
+    const lines: OcrLine[] = [{ text: 'ID 7237 2429 6561 Asha Menon Kumar', box, score: 0.9 }];
+    const brokenNer: NerRunner = async () => {
+      throw new Error('no webgpu adapter');
+    };
+
+    const { drafts, nerError } = await ocrFindings(lines, viewport, 'highPrecision', brokenNer);
+
+    expect(nerError).toBe('no webgpu adapter');
+    expect(drafts.map((d) => d.cls)).toEqual(['AADHAAR']); // L1 survived the L2 throw
+  });
+
+  it('carries the OCR box straight through, introducing no second coordinate conversion', async () => {
+    // line.box is already CSS px of the visual viewport (invariant 2). The finding's box
+    // must equal it exactly -- a scale or offset here is how a redaction box lands next to
+    // the number instead of on it.
+    const box = { x: 137, y: 293, w: 211, h: 29 };
+    const lines: OcrLine[] = [{ text: '6933 7752 9506', box, score: 1 }];
+
+    const { drafts } = await ocrFindings(lines, viewport, 'highPrecision', noNer);
+
+    expect(drafts).toHaveLength(1);
+    expect(drafts[0]?.box).toEqual(box);
+  });
+
+  it('merges an OCR finding with a DOM finding over the same region', () => {
+    // A scanned value and its DOM twin at the same box are one thing. OCR findings carry no
+    // element index, so they merge by region -- the same path a prose text block takes --
+    // and the DOM layer, being authoritative, wins the class.
+    const box = { x: 50, y: 50, w: 160, h: 24 };
+    const domFinding: FindingDraft = {
+      cls: 'AADHAAR',
+      box,
+      layer: 'L1',
+      confidence: 0.98,
+      reason: 'verhoeff-ok',
+      value: '7237 2429 6561',
+      elementIndex: 7,
+      boxKind: 'text',
+    };
+    const ocrFinding: FindingDraft = {
+      cls: 'AADHAAR',
+      box: { x: 51, y: 50, w: 160, h: 24 },
+      layer: 'L3',
+      confidence: 0.95,
+      reason: 'ocr:verhoeff-ok',
+      value: '7237 2429 6561',
+      elementIndex: undefined,
+      boxKind: 'text',
+    };
+
+    const kept = dedupeDrafts([domFinding, ocrFinding]);
+
+    expect(kept).toHaveLength(1);
+    expect(kept[0]?.layer).toBe('L1'); // DOM is authoritative (invariant 9)
+  });
+
+  it('drops the raw OCR value at the wire boundary', async () => {
+    // The privacy line. The value lives in the draft (the allocator needs it) but the wire
+    // Finding has no value field at all, so raw OCR text cannot cross with the manifest.
+    const box = { x: 12, y: 40, w: 220, h: 26 };
+    const lines: OcrLine[] = [{ text: 'Aadhaar 7237 2429 6561', box, score: 0.9 }];
+
+    const { drafts } = await ocrFindings(lines, viewport, 'highPrecision', noNer);
+    const draft = drafts[0];
+    expect(draft?.cls).toBe('AADHAAR');
+    expect(draft?.value).toBe('7237 2429 6561');
+
+    const finding = makeFinding(draft as FindingDraft);
+    expect('value' in finding).toBe(false);
+    expect(JSON.stringify(finding)).not.toContain('7237');
   });
 });

@@ -66,6 +66,7 @@ sys.path.insert(0, str(HERE))
 from runner import browser, build, planner, resources, run as runner_run, serve  # noqa: E402
 import score  # noqa: E402
 import report as report_mod  # noqa: E402
+import baseline  # noqa: E402
 
 CORPUS = HERE / "corpus"
 REPORT_DIR = HERE / "report"
@@ -230,12 +231,22 @@ def main() -> None:
     html = report_mod.render(result, args.run_dir)
     (REPORT_DIR / "report.html").write_text(html, encoding="utf-8")
 
+    # Baseline view of the same run: the four measurement groups the baseline brief
+    # names (latency / models / agent / privacy), projected from the numbers just
+    # scored. It reuses score.py untouched and adds only the model-latency and
+    # agent-quality aggregations the rubric report does not carry; baseline.py owns the
+    # standalone rebuild (`python eval/baseline.py`) and the privacy guarantees.
+    baseline_report = baseline.build(result, args.run_dir, pages, resource_summary)
+    baseline.BASELINE.write_text(json.dumps(baseline_report, indent=2), encoding="utf-8")
+
     problems = score.check_agreement(result)
     report_mod.print_summary(result)
+    baseline.print_summary(baseline_report)
     for problem in problems:
         print(f"\n  DISAGREEMENT  {problem}")
     print(f"\n  {REPORT}")
     print(f"  {REPORT_DIR / 'report.html'}")
+    print(f"  {baseline.BASELINE}")
 
     if problems:
         raise SystemExit(1)

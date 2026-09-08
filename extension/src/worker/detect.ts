@@ -10,20 +10,23 @@
  *
  * L2 is implemented and is awaited: the NER model runs in the offscreen document over the
  * text the deterministic layers did not already claim, and its spans join the same
- * FindingDraft[]. L3 -- OCR and face detection over regions the DOM cannot see into -- is
- * the layer still to land, and it will append to the same list.
+ * FindingDraft[]. L3 runs last and appends to the same list: faces over the whole frame,
+ * and OCR over the DOM-opaque regions invariant 9 names (images, canvases, cross-origin
+ * iframes). OCR's recognised text is not simply painted -- it goes back through L1 and L2
+ * exactly as page text would, so an Aadhaar or a name baked into a scanned ID is detected
+ * and redacted before the frame is sealed, not shipped in the clear.
  */
 
 import { detectStructural } from '../redaction/l0-structural';
 import { detectLexical } from '../redaction/l1-lexical';
 import { makeFinding, strongerDraft, type FindingDraft } from '../redaction/findings';
-import { send } from '../shared/messages';
+import { send, type OcrLine } from '../shared/messages';
 import type { Finding, Origin, Viewport } from '../shared/contract';
 import type { ObservedElement } from '../shared/observed';
 import { iou } from '../shared/coords';
 import type { FrameRef } from '../shared/frames';
 import { MIN_OCR_SIDE, opaqueRegions } from '../offscreen/tasks/ocr';
-import { detectEntities, type Operating } from '../offscreen/tasks/ner';
+import { detectEntities, type NerRunner, type Operating } from '../offscreen/tasks/ner';
 import {
   isEmailValid,
   isIndianMobileValid,
@@ -319,6 +322,31 @@ function semanticIsPlausible(draft: FindingDraft): boolean {
 }
 
 /**
+ * The model call, bound to a session, as an injectable NerRunner.
+ *
+ * Extracted so both callers share it: L2 over DOM text (detectSemantic) and L2 over the
+ * text OCR recovered from pixels (ocrFindings). The offscreen host keys its per-session
+ * state on the real sessionId -- handing it '' made every step look like the same nameless
+ * session to the one component whose whole job is per-session bookkeeping.
+ *
+ * The bus lives here; the arithmetic that consumes the spans is node-pure in
+ * offscreen/tasks/ner.ts, which is why that half is tested against a fake runner and this
+ * half is a two-line adapter.
+ */
+function makeNerRunner(sessionId: string): NerRunner {
+  return async (text) => {
+    const reply = await send('INFER', { task: 'ner', sessionId, texts: [text] }, { to: 'offscreen' });
+    if (reply.task !== 'ner') return [];
+    return (reply.spans[0] ?? []).map((span) => ({
+      start: span.start,
+      end: span.end,
+      label: span.cls,
+      score: span.score,
+    }));
+  };
+}
+
+/**
  * L2, through the inference host.
  *
  * Failure here is not failure of the step. The deterministic layers have already run and
@@ -341,23 +369,7 @@ async function detectSemantic(
           draft.value ? [[draft.box.x, draft.box.y] as [number, number]] : [],
         ),
       },
-      async (text) => {
-        const reply = await send(
-          'INFER',
-          // The real session, not an empty string. The host keys its per-session state
-          // on this, and handing it '' made every step look like the same nameless
-          // session to the one component whose whole job is per-session bookkeeping.
-          { task: 'ner', sessionId, texts: [text] },
-          { to: 'offscreen' },
-        );
-        if (reply.task !== 'ner') return [];
-        return (reply.spans[0] ?? []).map((span) => ({
-          start: span.start,
-          end: span.end,
-          label: span.cls,
-          score: span.score,
-        }));
-      },
+      makeNerRunner(sessionId),
     );
   } catch (err) {
     // Recorded, not swallowed. A layer that fails silently costs its full latency and
@@ -441,15 +453,136 @@ export function ocrError(): string | null {
 }
 
 /**
- * L3: OCR over DOM-opaque regions (images, canvases, videos, iframes).
+ * Turn OCR lines into throwaway ObservedElements the deterministic and semantic layers
+ * can scan.
  *
- * Discovered text is passed through L1 pattern matchers and L2 semantic NER
- * to find sensitive visual PII (e.g. Aadhaar, PAN, Card numbers, names in scanned IDs).
+ * These never leave detect(): they are not DOM nodes, carry no handle the planner could
+ * use, and are gone the moment the drafts are built. They exist only so L1 and L2 -- which
+ * read `textRuns` and `rawValue`, not pixels -- can run over recovered text with no special
+ * casing. The whole line is one run at the line's own box, because that is the only
+ * geometry OCR gives us: a baked-in glyph has no per-character rect the way a DOM range
+ * does.
+ *
+ * `fromPixels` marks the provenance. `index` is a *local* join key (the line's position),
+ * used only to read the OCR confidence back in decorateOcr and stripped there before these
+ * drafts meet a real element index -- see the note in decorateOcr.
+ *
+ * Coordinate space: `line.box` is already CSS px of the visual viewport. The offscreen OCR
+ * task mapped detector output through the frame's own scale once (invariant 2); this code
+ * copies that box through untouched and introduces no second conversion.
+ */
+export function buildOcrElements(lines: OcrLine[]): ObservedElement[] {
+  const elements: ObservedElement[] = [];
+
+  lines.forEach((line, index) => {
+    const text = line.text;
+    if (!text.trim()) return;
+
+    elements.push({
+      index,
+      role: 'text',
+      box: line.box,
+      state: { visible: true, enabled: true, focused: false, filled: false },
+      occluded: 0,
+      isNew: false,
+      tag: 'text',
+      textRuns: [{ text, box: line.box, nodeIndex: 0 }],
+      key: `ocr:${index}`,
+      name: text,
+      fromPixels: true,
+    });
+  });
+
+  return elements;
+}
+
+/**
+ * Re-stamp OCR drafts as L3, and blend in the recognition confidence.
+ *
+ * `layer: 'L3'` because a Verhoeff-valid Aadhaar read from pixels is still only as certain
+ * as the read: L1's checksum says the digits form a valid Aadhaar, `line.score` says the
+ * OCR probably got the digits right, and the finding is worth the lower of those two
+ * certainties, not L1's alone.
+ *
+ * `elementIndex` is stripped to undefined. It was a join key into `lines` (set by
+ * buildOcrElements, carried through by detectLexical/detectEntities) and is read here, once,
+ * to recover the score -- but it is not a DOM handle. Leaving it on would make an OCR draft
+ * collide with a real element of the same index in dedupeDrafts' sameElement test and in
+ * detect()'s elementOf map. Stripped, these findings dedupe by region like any other
+ * text block, which is exactly what a run of baked-in text is.
+ */
+function decorateOcr(drafts: FindingDraft[], lines: OcrLine[]): FindingDraft[] {
+  return drafts.map((draft) => {
+    const line = draft.elementIndex !== undefined ? lines[draft.elementIndex] : undefined;
+    const score = line?.score ?? 0;
+    return {
+      ...draft,
+      layer: 'L3' as const,
+      boxKind: 'text' as const,
+      reason: `ocr:${draft.reason}`,
+      confidence: score > 0 ? (draft.confidence + score) / 2 : draft.confidence,
+      elementIndex: undefined,
+    };
+  });
+}
+
+/**
+ * The detection half of L3 OCR: recovered text through L1 and L2, node-pure.
+ *
+ * Split from the bus adapter (detectOcr) so the wiring that matters for privacy -- that
+ * OCR text is scanned for PII rather than shipped, and that a name in an image reaches the
+ * model -- is testable with a fake NerRunner and no browser, the same way ner.ts tests its
+ * arithmetic.
+ *
+ * L1 and L2 run over the same lines. L2 gets its own try/catch: a model that will not load
+ * (no GPU, a missing file) must cost the names and addresses only a model can find in an
+ * image, never the checksummed Aadhaar or card L1 already recovered. No `claimed` is passed
+ * -- where L1 and L2 fire on the same line their boxes are the line's box, so dedupeDrafts
+ * merges them downstream and the class is arbitrated once, which is cheaper than mapping L1
+ * spans into the model's document coordinates to suppress a duplicate the merge removes
+ * anyway.
+ */
+export async function ocrFindings(
+  lines: OcrLine[],
+  viewport: Viewport,
+  operating: Operating,
+  ner: NerRunner,
+): Promise<{ drafts: FindingDraft[]; nerError: string | null }> {
+  const elements = buildOcrElements(lines);
+  if (elements.length === 0) return { drafts: [], nerError: null };
+
+  const lexical = detectLexical(elements, viewport);
+
+  let semantic: FindingDraft[] = [];
+  let nerError: string | null = null;
+  try {
+    semantic = (await detectEntities({ elements, operating }, ner)).filter(semanticIsPlausible);
+  } catch (err) {
+    nerError = err instanceof Error ? err.message : String(err);
+  }
+
+  return { drafts: decorateOcr([...lexical, ...semantic], lines), nerError };
+}
+
+/**
+ * L3: OCR over the DOM-opaque regions invariant 9 names (images, canvases, videos,
+ * iframes).
+ *
+ * The bus half lives here -- guard on there being an opaque region at all, ask the
+ * offscreen host to read the frame -- and the detection half is `ocrFindings`, kept
+ * node-pure so the L1/L2 wiring can be tested without a model or a browser.
+ *
+ * Recognised text is scanned by L1 (a Verhoeff-valid Aadhaar or a Luhn-valid card baked
+ * into a scanned ID is exactly as sensitive as one typed into a field) and by L2 (a name
+ * or address no pattern will catch), so it is detected and redacted before the frame is
+ * sealed rather than shipped in the clear. A NER failure inside ocrFindings surfaces as
+ * lastOcrError but does not lose the L1 findings.
  */
 async function detectOcr(
   elements: ObservedElement[],
   viewport: Viewport,
   sessionId: string,
+  operating: Operating,
   frame: FrameRef | undefined,
 ): Promise<FindingDraft[]> {
   lastOcrError = null;
@@ -470,31 +603,13 @@ async function detectOcr(
     );
     if (reply.task !== 'ocr') return [];
 
-    const drafts: FindingDraft[] = [];
-
-    for (const line of reply.lines) {
-      if (!line.text.trim()) continue;
-
-      const syntheticElement = {
-        tag: 'text',
-        name: line.text,
-        box: line.box,
-        state: { focused: false, filled: false },
-        attributes: {},
-      } as unknown as ObservedElement;
-
-      const lexicalDrafts = detectLexical([syntheticElement], viewport);
-      for (const draft of lexicalDrafts) {
-        drafts.push({
-          ...draft,
-          layer: 'L3',
-          boxKind: 'text',
-          reason: `ocr:${draft.reason}`,
-          confidence: line.score > 0 ? (draft.confidence + line.score) / 2 : draft.confidence,
-        });
-      }
-    }
-
+    const { drafts, nerError } = await ocrFindings(
+      reply.lines,
+      viewport,
+      operating,
+      makeNerRunner(sessionId),
+    );
+    lastOcrError = nerError;
     return drafts;
   } catch (err) {
     lastOcrError = err instanceof Error ? err.message : String(err);
@@ -523,10 +638,10 @@ export async function detect(
   // avoid and no ordering to respect -- only the gate, which keeps it off pages with
   // nowhere for a photograph to be.
   const faces = await detectFaces(elements, viewport, sessionId, frame);
-  const ocrFindings = await detectOcr(elements, viewport, sessionId, frame);
+  const ocr = await detectOcr(elements, viewport, sessionId, operating, frame);
 
   const { drafts, resolution } = resolveContainers(
-    dedupeDrafts([...deterministic, ...semantic, ...faces, ...ocrFindings]),
+    dedupeDrafts([...deterministic, ...semantic, ...faces, ...ocr]),
     elements,
   );
 
