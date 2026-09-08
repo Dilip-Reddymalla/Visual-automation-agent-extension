@@ -1,0 +1,258 @@
+{
+  "id": "syn-scan-signature",
+  "title": "Nominee Declaration",
+  "half": "synthetic",
+  "archetype": "scanned-id",
+  "theme": "scan",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 34,
+        "y": 163,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 34,
+        "y": 252,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 596,
+        "y": 252,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 34,
+        "y": 390,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 596,
+        "y": 390,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 34,
+        "y": 479,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 34,
+        "y": 577.5,
+        "w": 240,
+        "h": 90
+      },
+      "boxKind": "element",
+      "medium": "pixels",
+      "tag": "img",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "",
+      "box": {
+        "x": 596,
+        "y": 163,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 163,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Policy number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 596,
+        "y": 163,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Date of birth",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 252,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "PAN",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 596,
+        "y": 252,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Nominee name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 390,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Nominee date of birth",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 596,
+        "y": 390,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Nominee Aadhaar",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 479,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Relationship",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 596,
+        "y": 479,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 700,
+        "w": 60.69,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Submit declaration",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 88.69,
+        "y": 700,
+        "w": 156.61,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ]
+}

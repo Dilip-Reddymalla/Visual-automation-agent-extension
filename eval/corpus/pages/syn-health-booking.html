@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Appointment Booking</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #0f172a;
+        font:
+          16px/1.7 system-ui,
+          sans-serif;
+      }
+      a {
+        color: #0e7490;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 20px;
+        background: #f0f9ff;
+        border-bottom: 2px solid #0e7490;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 13px;
+        color: #64748b;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 24px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 13px 10px;
+        text-decoration: none;
+        color: #0f172a;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #0e7490;
+        background: #f0f9ff;
+      }
+      section {
+        margin-bottom: 24px;
+      }
+      fieldset {
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 17px;
+        margin: 0 0 24px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+      }
+      h1 {
+        font-size: 23px;
+        margin: 0 0 20px;
+      }
+      h2 {
+        font-size: 19px;
+        margin: 0 0 20px;
+      }
+      h3 {
+        font-size: 17px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 13px 9px;
+        border: 1px solid #e2e8f0;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #0f172a;
+      }
+      input[readonly] {
+        background: #f0f9ff;
+      }
+      .hint {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 13px 8px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: top;
+      }
+      th {
+        background: #f0f9ff;
+        font-weight: 600;
+        color: #64748b;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 20px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #64748b;
+        font-size: 14px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 17px;
+        margin-bottom: 20px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f0f9ff;
+        color: #0e7490;
+        font-size: 13px;
+        border: 1px solid #e2e8f0;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 13px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 3px;
+        background: #f0f9ff;
+        font: inherit;
+        cursor: pointer;
+        color: #0f172a;
+      }
+      button.primary {
+        background: #0e7490;
+        border-color: #0e7490;
+        color: #fff;
+      }
+      .muted {
+        color: #64748b;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #f0f9ff;
+        padding: 24px;
+        border: 1px solid #e2e8f0;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 24px 20px;
+        color: #64748b;
+        font-size: 13px;
+        border-top: 1px solid #e2e8f0;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-health-booking">
+    <header class="bar">
+      <div class="brand">Practo-style Booking</div>
+      <div></div>
+    </header>
+    <main>
+      <h1>Book an appointment</h1>
+      <p class="muted">Dr <span>Nikhil Khan</span> · General medicine · <span>Jordan</span></p>
+      <div class="card">
+        <!-- No <label> anywhere below. The accessible name comes from placeholder alone,
+         which is exactly how a great many real booking forms are built. -->
+        <div class="f">
+          <input type="text" placeholder="Patient name" value="Ananya Sundaram" style="" />
+        </div>
+        <div class="f">
+          <input type="tel" placeholder="Mobile number" value="09174 610657" style="" />
+        </div>
+        <div class="f">
+          <input
+            type="email"
+            placeholder="Email (optional)"
+            value="ananya.sundaram@example.com"
+            style=""
+          />
+        </div>
+        <div class="f">
+          <input type="text" placeholder="Date of birth" value="07/05/1966" style="" />
+        </div>
+        <div class="f">
+          <input
+            type="text"
+            placeholder="Insurance member ID"
+            value="10391115155993"
+            style=""
+          />
+        </div>
+        <div class="actions"><button class="primary">Confirm booking</button></div>
+      </div>
+      <p class="hint">Cancellations up to <span>Florence</span>.</p>
+    </main>
+  </body>
+</html>

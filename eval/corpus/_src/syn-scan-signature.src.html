@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nominee Declaration</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f5f5f4;
+        color: #1c1917;
+        font:
+          15px/1.5 Georgia,
+          'Times New Roman',
+          serif;
+      }
+      a {
+        color: #7c2d12;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #faf9f7;
+        border-bottom: 2px solid #7c2d12;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 12px;
+        color: #78716c;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #1c1917;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #7c2d12;
+        background: #faf9f7;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #d6d3d1;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #78716c;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 18px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: #78716c;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #d6d3d1;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #1c1917;
+      }
+      input[readonly] {
+        background: #faf9f7;
+      }
+      .hint {
+        font-size: 12px;
+        color: #78716c;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #d6d3d1;
+        vertical-align: top;
+      }
+      th {
+        background: #faf9f7;
+        font-weight: 600;
+        color: #78716c;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #78716c;
+        font-size: 13px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #d6d3d1;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #faf9f7;
+        color: #7c2d12;
+        font-size: 12px;
+        border: 1px solid #d6d3d1;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #d6d3d1;
+        border-radius: 3px;
+        background: #faf9f7;
+        font: inherit;
+        cursor: pointer;
+        color: #1c1917;
+      }
+      button.primary {
+        background: #7c2d12;
+        border-color: #7c2d12;
+        color: #fff;
+      }
+      .muted {
+        color: #78716c;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #faf9f7;
+        padding: 16px;
+        border: 1px solid #d6d3d1;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #78716c;
+        font-size: 12px;
+        border-top: 1px solid #d6d3d1;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-scan-signature">
+    <header class="bar">
+      <div class="brand">Insurance Nominee Update</div>
+      <div></div>
+    </header>
+    <main>
+      <h1>Nominee declaration</h1>
+      <fieldset>
+        <legend>Policyholder</legend>
+        <div class="grid">
+          <div class="f">
+            <label>Name</label
+            ><input type="text" value="Anita Banerjee" data-el="1" data-pii="PERSON" />
+          </div>
+          <div class="f">
+            <label>Policy number</label
+            ><input
+              type="text"
+              value="Salem"
+              data-el="1"
+              data-neg="PERSON"
+              data-neg-why="a place name that is also a common given or family name"
+            />
+          </div>
+          <div class="f">
+            <label>Date of birth</label
+            ><input type="text" value="26/10/1969" data-el="1" data-pii="DOB" />
+          </div>
+          <div class="f">
+            <label>PAN</label
+            ><input type="text" value="SBSPP3593H" data-el="1" data-pii="PAN" />
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Nominee</legend>
+        <div class="grid">
+          <div class="f">
+            <label>Nominee name</label
+            ><input type="text" value="Asha Sharma" data-el="1" data-pii="PERSON" />
+          </div>
+          <div class="f">
+            <label>Nominee date of birth</label
+            ><input type="text" value="12/02/1965" data-el="1" data-pii="DOB" />
+          </div>
+          <div class="f">
+            <label>Nominee Aadhaar</label
+            ><input type="text" value="9279 4829 1953" data-el="1" data-pii="AADHAAR" />
+          </div>
+          <div class="f">
+            <label>Relationship</label><input type="text" value="Spouse" data-el="1" />
+          </div>
+        </div>
+      </fieldset>
+      <div class="card">
+        <img
+          src="data:image/png;base64,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"
+          width="240"
+          height="90"
+          alt="Signature"
+          data-pii-pixels="PERSON"
+        />
+      </div>
+      <div class="actions">
+        <button class="" data-el="1">Save</button
+        ><button class="primary" data-el="1">Submit declaration</button>
+      </div>
+    </main>
+  </body>
+</html>

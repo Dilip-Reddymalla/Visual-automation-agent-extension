@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scholarship — Status</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #111827;
+        font:
+          18px/1.7 system-ui,
+          sans-serif;
+      }
+      a {
+        color: #4338ca;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 20px;
+        background: #f9fafb;
+        border-bottom: 2px solid #4338ca;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 15px;
+        color: #6b7280;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 24px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 13px 10px;
+        text-decoration: none;
+        color: #111827;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #4338ca;
+        background: #f9fafb;
+      }
+      section {
+        margin-bottom: 24px;
+      }
+      fieldset {
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        padding: 17px;
+        margin: 0 0 24px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b7280;
+      }
+      h1 {
+        font-size: 25px;
+        margin: 0 0 20px;
+      }
+      h2 {
+        font-size: 21px;
+        margin: 0 0 20px;
+      }
+      h3 {
+        font-size: 19px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 13px 9px;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #111827;
+      }
+      input[readonly] {
+        background: #f9fafb;
+      }
+      .hint {
+        font-size: 15px;
+        color: #6b7280;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 17px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 13px 8px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: top;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #6b7280;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 20px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #6b7280;
+        font-size: 16px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 17px;
+        margin-bottom: 20px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f9fafb;
+        color: #4338ca;
+        font-size: 15px;
+        border: 1px solid #e5e7eb;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 13px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        background: #f9fafb;
+        font: inherit;
+        cursor: pointer;
+        color: #111827;
+      }
+      button.primary {
+        background: #4338ca;
+        border-color: #4338ca;
+        color: #fff;
+      }
+      .muted {
+        color: #6b7280;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #f9fafb;
+        padding: 24px;
+        border: 1px solid #e5e7eb;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 24px 20px;
+        color: #6b7280;
+        font-size: 15px;
+        border-top: 1px solid #e5e7eb;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-sch-status">
+    <header class="bar">
+      <div class="brand">State Merit Scholarship</div>
+      <div></div>
+    </header>
+    <main>
+      <h1>Application status</h1>
+      <div class="card">
+        <span class="pill">Under verification</span>
+        <dl class="kv">
+          <dt>Applicant</dt>
+          <dd><span>Anita Gowda</span></dd>
+          <dt>Application no.</dt>
+          <dd><span>File no. 242238750695</span></dd>
+          <dt>Aadhaar</dt>
+          <dd><span>3365 2060 1045</span></dd>
+          <dt>Registered mobile</dt>
+          <dd><span>06197 349741</span></dd>
+          <dt>Email</dt>
+          <dd><span>anita.gowda@example.com</span></dd>
+          <dt>Submitted</dt>
+          <dd><span>Batch 519343418701</span></dd>
+        </dl>
+      </div>
+      <div class="card">
+        <h3>What happens next</h3>
+        <p>
+          Your institution will verify the documents you uploaded. You will be told at
+          <span>anita.gowda@example.in</span> when that is done. For queries call
+          <span>Ref 9420 3765 2818 6051</span>.
+        </p>
+      </div>
+      <div class="actions">
+        <button class="">Download receipt</button><button class="primary">Track again</button>
+      </div>
+    </main>
+  </body>
+</html>

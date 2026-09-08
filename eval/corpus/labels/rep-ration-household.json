@@ -1,0 +1,321 @@
+{
+  "id": "rep-ration-household",
+  "title": "Ration Card \u2014 Household",
+  "half": "replica",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 28,
+        "y": 149.38,
+        "w": 78.47,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 366.55,
+        "y": 149.38,
+        "w": 61.11,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 644.81,
+        "y": 149.38,
+        "w": 84.2,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 28,
+        "y": 177.97,
+        "w": 88.25,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 366.55,
+        "y": 177.97,
+        "w": 61.11,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 644.81,
+        "y": 177.97,
+        "w": 84.2,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 28,
+        "y": 206.56,
+        "w": 79.7,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 366.55,
+        "y": 206.56,
+        "w": 61.11,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 644.81,
+        "y": 206.56,
+        "w": 84.2,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 28,
+        "y": 235.16,
+        "w": 67.08,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 366.55,
+        "y": 235.16,
+        "w": 61.11,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 644.81,
+        "y": 235.16,
+        "w": 84.2,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 28,
+        "y": 263.75,
+        "w": 69.88,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 366.55,
+        "y": 263.75,
+        "w": 61.11,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 644.81,
+        "y": 263.75,
+        "w": 84.2,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 31,
+        "y": 315.64,
+        "w": 1118,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Austin",
+      "box": {
+        "x": 50.41,
+        "y": 84.89,
+        "w": 36.17,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Madison",
+      "box": {
+        "x": 96.53,
+        "y": 84.89,
+        "w": 49.59,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "",
+      "box": {
+        "x": 31,
+        "y": 369.83,
+        "w": 1118,
+        "h": 30.89
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Head of household mobile",
+      "tag": "input",
+      "type": "tel",
+      "box": {
+        "x": 31,
+        "y": 315.64,
+        "w": 1118,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Fair price shop",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 369.83,
+        "w": 1118,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Print",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 423.72,
+        "w": 56.72,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Request update",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 84.72,
+        "y": 423.72,
+        "w": 119.97,
+        "h": 30.89
+      },
+      "inViewport": true
+    }
+  ]
+}

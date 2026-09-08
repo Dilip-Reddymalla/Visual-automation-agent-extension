@@ -1,0 +1,322 @@
+{
+  "id": "syn-gov-pan-49a",
+  "title": "Form 49A \u2014 PAN Application",
+  "half": "synthetic",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "compact",
+  "fontPx": 12,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 31,
+        "y": 141.58,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 405.66,
+        "y": 141.58,
+        "w": 368.67,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 780.33,
+        "y": 141.58,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 31,
+        "y": 199.17,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 405.66,
+        "y": 199.17,
+        "w": 368.67,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 780.33,
+        "y": 199.17,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 31,
+        "y": 256.77,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 405.66,
+        "y": 256.77,
+        "w": 368.67,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 31,
+        "y": 310.77,
+        "w": 1118,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled reference",
+      "text": "Reference 257685032730",
+      "box": {
+        "x": 119.34,
+        "y": 389.36,
+        "w": 133.11,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled txn",
+      "text": "Txn 400629831243",
+      "box": {
+        "x": 119.34,
+        "y": 428.55,
+        "w": 98.45,
+        "h": 16
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Surname",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 141.58,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "First name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 405.66,
+        "y": 141.58,
+        "w": 368.67,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Date of birth",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 780.33,
+        "y": 141.58,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Aadhaar",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 199.17,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Existing PAN, if any",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 405.66,
+        "y": 199.17,
+        "w": 368.67,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Mobile",
+      "tag": "input",
+      "type": "tel",
+      "box": {
+        "x": 780.33,
+        "y": 199.17,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Email",
+      "tag": "input",
+      "type": "email",
+      "box": {
+        "x": 31,
+        "y": 256.77,
+        "w": 368.66,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Father\u2019s name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 405.66,
+        "y": 256.77,
+        "w": 368.67,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "combobox",
+      "name": "Status",
+      "tag": "select",
+      "type": null,
+      "box": {
+        "x": 780.33,
+        "y": 256.77,
+        "w": 368.66,
+        "h": 32
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Residential address",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 310.77,
+        "w": 1118,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Reset",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 466.14,
+        "w": 58.55,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Continue",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 86.55,
+        "y": 466.14,
+        "w": 78.09,
+        "h": 29.59
+      },
+      "inViewport": true
+    }
+  ]
+}

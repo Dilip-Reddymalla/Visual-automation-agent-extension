@@ -1,0 +1,329 @@
+{
+  "id": "rep-hospital-billing",
+  "title": "Hospital \u2014 Billing",
+  "half": "replica",
+  "archetype": "healthcare",
+  "theme": "health",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 82.89,
+        "w": 99.98,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 248,
+        "y": 109.48,
+        "w": 61.11,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 248,
+        "y": 136.08,
+        "w": 103.5,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 248,
+        "y": 189.27,
+        "w": 64.69,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 479.2,
+        "y": 245.45,
+        "w": 62.34,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 743.16,
+        "y": 245.45,
+        "w": 90.56,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 479.2,
+        "y": 274.05,
+        "w": 58.75,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 743.16,
+        "y": 274.05,
+        "w": 103.5,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 479.2,
+        "y": 302.64,
+        "w": 56.44,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 743.16,
+        "y": 302.64,
+        "w": 103.5,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 479.2,
+        "y": 331.23,
+        "w": 79.66,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 743.16,
+        "y": 331.23,
+        "w": 90.56,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 479.2,
+        "y": 359.83,
+        "w": 91.2,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 743.16,
+        "y": 359.83,
+        "w": 90.56,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 5,100 2233 8890",
+      "box": {
+        "x": 1149.11,
+        "y": 8,
+        "w": 110.89,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 3,415 9000 1122",
+      "box": {
+        "x": 248,
+        "y": 162.67,
+        "w": 102.36,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Shipment 6538 3352 7923 4468",
+      "box": {
+        "x": 28,
+        "y": 245.45,
+        "w": 167.25,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Policy ref 4889 8172 1116 3619",
+      "box": {
+        "x": 28,
+        "y": 274.05,
+        "w": 164.61,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, Luhn-valid, 9-prefix no issuer uses",
+      "text": "UTR 9129 1837 1067 1810",
+      "box": {
+        "x": 28,
+        "y": 302.64,
+        "w": 138.36,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, Luhn-valid, 9-prefix no issuer uses",
+      "text": "Shipment 9269 0993 0142 8867",
+      "box": {
+        "x": 28,
+        "y": 331.23,
+        "w": 167.25,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 4,532 1290 4471",
+      "box": {
+        "x": 28,
+        "y": 359.83,
+        "w": 102.36,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Issued on 12/03/2021",
+      "box": {
+        "x": 346.77,
+        "y": 395.42,
+        "w": 124.59,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Export",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 426.31,
+        "w": 66.73,
+        "h": 32.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Filter",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 90.3,
+        "y": 426.31,
+        "w": 58.38,
+        "h": 32.89
+      },
+      "inViewport": true
+    }
+  ]
+}

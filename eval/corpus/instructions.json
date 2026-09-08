@@ -1,0 +1,295 @@
+{
+  "note": [
+    "The instruction regression corpus. Every sentence a user might type at the task box,",
+    "and what the tier ladder must do with it.",
+    "",
+    "`expect` is one of tier0 | escalate | refuse. `reason` is the *recorded* reason, and",
+    "asserting it is the point: a sentence that escalates for the wrong reason is a passing",
+    "test hiding a broken rule. Two of the entries below are transcripts of real runs on",
+    "w3schools.com/howto/howto_css_contact_form.asp in which the agent did the opposite of",
+    "what it was told and then reported success.",
+    "",
+    "`refuse` means Tier 0 will not attempt a partial parse at all -- currently only",
+    "negation. It still escalates; the difference from `escalate` is that no amount of",
+    "looking at the page could change the answer.",
+    "",
+    "No values in here that are not obviously synthetic. This file is read in the open.",
+    "",
+    "Read by extension/src/worker/instructions.test.ts, which is a fast unit suite:",
+    "parseGoal and chooseTier are both node-pure, so none of this needs a browser."
+  ],
+  "cases": [
+    {
+      "goal": "Dont fill last name with Leo",
+      "expect": "refuse",
+      "reason": "negation",
+      "why": "Run on the w3schools contact form. It filled Last Name with Leo. The verb pattern is anchored at the end and not at the start, so `fill` matched inside the sentence and the four characters that reverse it were never looked at.",
+      "residue": ["Dont"]
+    },
+    {
+      "goal": "Fill last name with leo and subject as Write Something",
+      "expect": "tier0",
+      "reason": null,
+      "why": "The original M16 failure, and it now parses whole. The second clause has no verb, but it opens with a field name the table knows -- see labelledPair -- so 'subject as Write Something' reads as putting that text in Subject, which is what it means. M16's acceptance was 'fills both fields or escalates the whole goal, never one field and done'; filling both is the better half of that.",
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "last name",
+          "value": "leo"
+        },
+        {
+          "verb": "fill",
+          "target": "subject",
+          "value": "Write Something"
+        }
+      ]
+    },
+    {
+      "goal": "do not fill the email",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "don't submit the form",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "fill first name with leo but not the last name",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "never click submit",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "fill the form without the email",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "fill everything except the email",
+      "expect": "refuse",
+      "reason": "negation",
+      "why": "Scoping this correctly is the reasoning a planner is for. The grammar refuses rather than implementing scope."
+    },
+    {
+      "goal": "fill first name with leo unless it is already set",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "avoid the subject field",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "skip the phone number",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "fill last name with leo instead of the first name",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "click save rather than submit",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "this isn't the right form",
+      "expect": "refuse",
+      "reason": "negation"
+    },
+    {
+      "goal": "fill last nmae with leo",
+      "expect": "escalate",
+      "reason": "below-floor",
+      "why": "The grammar reads it -- coverage is 1 -- and the resolver then cannot find a field called `last nmae`. Escalating on resolution rather than on comprehension is the honest reason for a misspelling, and it is the one Tier 1 can actually answer."
+    },
+    {
+      "goal": "tpye my emial",
+      "expect": "escalate",
+      "reason": "open-ended",
+      "why": "No verb the grammar knows, so nothing parsed at all. That is the same shape as a real open-ended task and is filed as one."
+    },
+    {
+      "goal": "enter Asha Menon as full name",
+      "expect": "tier0",
+      "reason": null,
+      "why": "`as` puts the value first here. Only one of the two readings names a field the alias table knows, so there is nothing ambiguous about it.",
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "full name",
+          "value": "Asha Menon"
+        }
+      ]
+    },
+    {
+      "goal": "subject as Write Something",
+      "expect": "tier0",
+      "reason": null,
+      "why": "A field name and a value with no verb between them, which is the commonest shorthand anybody types. Read after every pattern has declined, so an explicit verb always wins.",
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "subject",
+          "value": "Write Something"
+        }
+      ]
+    },
+    {
+      "goal": "enter subject as message",
+      "expect": "escalate",
+      "reason": "ambiguous",
+      "why": "Both readings name a field the table knows. No regex can tell which was meant, and choosing one silently is what a sixth pattern would do."
+    },
+    {
+      "goal": "fill first name with leo",
+      "expect": "tier0",
+      "reason": null,
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "first name",
+          "value": "leo"
+        }
+      ]
+    },
+    {
+      "goal": "fill first name with leo and fill last name with menon",
+      "expect": "tier0",
+      "reason": null,
+      "why": "Every clause parses, so every clause is acted on and the completion check has two intents to verify.",
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "first name",
+          "value": "leo"
+        },
+        {
+          "verb": "fill",
+          "target": "last name",
+          "value": "menon"
+        }
+      ]
+    },
+    {
+      "goal": "fill first name with leo, fill last name with menon, then click submit",
+      "expect": "tier0",
+      "reason": null,
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "first name",
+          "value": "leo"
+        },
+        {
+          "verb": "fill",
+          "target": "last name",
+          "value": "menon"
+        },
+        {
+          "verb": "click",
+          "target": "submit"
+        }
+      ]
+    },
+    {
+      "goal": "fill first name with leo and book an appointment",
+      "expect": "escalate",
+      "reason": "unparsed",
+      "why": "One clause parsed and one did not. The whole goal escalates -- executing the half that parsed would split one instruction across two tiers and leave the page in a state neither planned for.",
+      "residue": ["book an appointment"]
+    },
+    {
+      "goal": "book the next available appointment",
+      "expect": "escalate",
+      "reason": "open-ended"
+    },
+    {
+      "goal": "finish this form",
+      "expect": "escalate",
+      "reason": "open-ended"
+    },
+    {
+      "goal": "can you please fill first name with leo now",
+      "expect": "tier0",
+      "reason": null,
+      "why": "Politeness is consumed by an explicit ignore list, so coverage reaches 1 without the residue rule being lowered to a threshold.",
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "first name",
+          "value": "leo"
+        }
+      ]
+    },
+    {
+      "goal": "please fill last name with menon",
+      "expect": "tier0",
+      "reason": null,
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "last name",
+          "value": "menon"
+        }
+      ]
+    },
+    {
+      "goal": "fill subject with please click submit",
+      "expect": "tier0",
+      "reason": null,
+      "why": "The value is data. `please` inside it is not filler to be stripped and `click submit` is not a second instruction -- there is no separator, so there is no second clause.",
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "subject",
+          "value": "please click submit"
+        }
+      ]
+    },
+    {
+      "goal": "fill message with call me now",
+      "expect": "tier0",
+      "reason": null,
+      "why": "A message box has no class, so trailing politeness is left alone. Stripping `now` here would be a value silently truncated, which the agent would then go and type.",
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "message",
+          "value": "call me now"
+        }
+      ]
+    },
+    {
+      "goal": "click submit",
+      "expect": "tier0",
+      "reason": null,
+      "intents": [
+        {
+          "verb": "click",
+          "target": "submit"
+        }
+      ]
+    },
+    {
+      "goal": "type leo in the first name box please",
+      "expect": "tier0",
+      "reason": null,
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "first name",
+          "value": "leo"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "id": "rep-utility-bill",
+  "title": "Electricity Bill",
+  "half": "replica",
+  "archetype": "utility",
+  "theme": "portal",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 82.89,
+        "w": 93.22,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 248,
+        "y": 136.08,
+        "w": 239.64,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 248,
+        "y": 162.67,
+        "w": 64.69,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Last updated 28/02/2025",
+      "box": {
+        "x": 248,
+        "y": 109.48,
+        "w": 133.02,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Meeting 09/11/2026",
+      "box": {
+        "x": 248,
+        "y": 189.27,
+        "w": 108.55,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Renewal 01/04/2028",
+      "box": {
+        "x": 248,
+        "y": 215.86,
+        "w": 108.25,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Statement period 01/06/2024",
+      "box": {
+        "x": 248,
+        "y": 242.45,
+        "w": 156.16,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Nagpur",
+      "box": {
+        "x": 555.88,
+        "y": 362.83,
+        "w": 43.52,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Pay bill",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 393.72,
+        "w": 70.39,
+        "h": 32.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Past bills",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 93.95,
+        "y": 393.72,
+        "w": 79.55,
+        "h": 32.89
+      },
+      "inViewport": true
+    }
+  ]
+}

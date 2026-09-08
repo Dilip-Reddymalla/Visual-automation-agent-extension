@@ -1,0 +1,392 @@
+{
+  "id": "rep-upi-ledger",
+  "title": "UPI Ledger",
+  "half": "replica",
+  "archetype": "ecommerce",
+  "theme": "bank",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 82.89,
+        "w": 105.52,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 248,
+        "y": 109.48,
+        "w": 71.16,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 248,
+        "y": 136.08,
+        "w": 75.52,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 386.06,
+        "y": 218.86,
+        "w": 74.09,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 645.09,
+        "y": 218.86,
+        "w": 104.28,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 386.06,
+        "y": 247.45,
+        "w": 87.08,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 645.09,
+        "y": 247.45,
+        "w": 97.33,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 386.06,
+        "y": 276.05,
+        "w": 50.89,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 645.09,
+        "y": 276.05,
+        "w": 100.33,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 386.06,
+        "y": 304.64,
+        "w": 81.05,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 645.09,
+        "y": 304.64,
+        "w": 138.66,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 386.06,
+        "y": 333.23,
+        "w": 79.58,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 645.09,
+        "y": 333.23,
+        "w": 88.83,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 386.06,
+        "y": 361.83,
+        "w": 69.11,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 645.09,
+        "y": 361.83,
+        "w": 85.53,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 386.06,
+        "y": 390.42,
+        "w": 95.5,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 645.09,
+        "y": 390.42,
+        "w": 148.88,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled consignment",
+      "text": "Consignment 914230602568",
+      "box": {
+        "x": 1095.88,
+        "y": 8,
+        "w": 164.13,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled docket",
+      "text": "Docket 258696798958",
+      "box": {
+        "x": 248,
+        "y": 162.67,
+        "w": 118.22,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "LICENCE",
+      "why": "the licence format example on the RTO's own page",
+      "text": "KA00 00000000000",
+      "box": {
+        "x": 28,
+        "y": 218.86,
+        "w": 102.09,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled invoice no.",
+      "text": "Invoice no. 625831667177",
+      "box": {
+        "x": 28,
+        "y": 247.45,
+        "w": 138.13,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled order id",
+      "text": "Order ID 415337052639",
+      "box": {
+        "x": 28,
+        "y": 276.05,
+        "w": 126.55,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled reference",
+      "text": "Reference 257685032730",
+      "box": {
+        "x": 28,
+        "y": 304.64,
+        "w": 133.11,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled txn",
+      "text": "Txn 400629831243",
+      "box": {
+        "x": 28,
+        "y": 333.23,
+        "w": 98.45,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled challan",
+      "text": "Challan 560768253990",
+      "box": {
+        "x": 28,
+        "y": 361.83,
+        "w": 119.95,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled waybill",
+      "text": "Waybill 736561952930",
+      "box": {
+        "x": 28,
+        "y": 390.42,
+        "w": 119.34,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled ticket",
+      "text": "Ticket 414268427341",
+      "box": {
+        "x": 346.77,
+        "y": 426.02,
+        "w": 121.3,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Export",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 456.91,
+        "w": 66.73,
+        "h": 32.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Filter",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 90.3,
+        "y": 456.91,
+        "w": 58.38,
+        "h": 32.89
+      },
+      "inViewport": true
+    }
+  ]
+}

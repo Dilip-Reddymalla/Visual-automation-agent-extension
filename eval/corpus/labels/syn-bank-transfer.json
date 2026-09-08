@@ -1,0 +1,374 @@
+{
+  "id": "syn-bank-transfer",
+  "title": "NetBanking \u2014 Transfer",
+  "half": "synthetic",
+  "archetype": "bank-statement",
+  "theme": "bank",
+  "density": "compact",
+  "fontPx": 12,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 1187.64,
+        "y": 8,
+        "w": 72.36,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 228,
+        "y": 131.47,
+        "w": 83.8,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 570.81,
+        "y": 131.47,
+        "w": 65.23,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 853.94,
+        "y": 131.47,
+        "w": 64.06,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 228,
+        "y": 158.77,
+        "w": 46.66,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 570.81,
+        "y": 158.77,
+        "w": 65.23,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 853.94,
+        "y": 158.77,
+        "w": 60.98,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ORG",
+      "box": {
+        "x": 228,
+        "y": 186.06,
+        "w": 103.89,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 570.81,
+        "y": 186.06,
+        "w": 83.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 231,
+        "y": 247.36,
+        "w": 456,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 693,
+        "y": 247.36,
+        "w": 456,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 231,
+        "y": 304.95,
+        "w": 456,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "SECRET",
+      "box": {
+        "x": 231,
+        "y": 371.55,
+        "w": 918,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 4,532 1290 4471",
+      "box": {
+        "x": 853.94,
+        "y": 186.06,
+        "w": 93.83,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 5,100 2233 8890",
+      "box": {
+        "x": 270.63,
+        "y": 335.55,
+        "w": 85.31,
+        "h": 14
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "link",
+      "name": "Accounts",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 45.59,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Transfer",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 73.19,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Bills",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 100.78,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Cards",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 128.38,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Profile",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 155.97,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Payee name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 231,
+        "y": 247.36,
+        "w": 456,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Account number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 693,
+        "y": 247.36,
+        "w": 456,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "IFSC",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 231,
+        "y": 304.95,
+        "w": 456,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Amount",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 693,
+        "y": 304.95,
+        "w": 456,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Transaction password",
+      "tag": "input",
+      "type": "password",
+      "box": {
+        "x": 231,
+        "y": 371.55,
+        "w": 918,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Cancel",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 220,
+        "y": 428.14,
+        "w": 65.06,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Transfer",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 293.06,
+        "y": 428.14,
+        "w": 71.61,
+        "h": 29.59
+      },
+      "inViewport": true
+    }
+  ]
+}

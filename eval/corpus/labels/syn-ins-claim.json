@@ -1,0 +1,296 @@
+{
+  "id": "syn-ins-claim",
+  "title": "Intimate a Claim",
+  "half": "synthetic",
+  "archetype": "insurance",
+  "theme": "portal",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 593,
+        "y": 119.19,
+        "w": 556,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 31,
+        "y": 179.38,
+        "w": 556,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 593,
+        "y": 179.38,
+        "w": 556,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 31,
+        "y": 467.61,
+        "w": 556,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 593,
+        "y": 467.61,
+        "w": 556,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 31,
+        "y": 527.8,
+        "w": 556,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "LICENCE",
+      "box": {
+        "x": 593,
+        "y": 527.8,
+        "w": 556,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "EMAIL",
+      "why": "a support desk, not a person",
+      "text": "",
+      "box": {
+        "x": 31,
+        "y": 119.19,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "EMAIL",
+      "why": "an unattended mailbox",
+      "text": "",
+      "box": {
+        "x": 31,
+        "y": 277.56,
+        "w": 1118,
+        "h": 30.89
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Policy number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 119.19,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Policyholder",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 593,
+        "y": 119.19,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Date of birth",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 179.38,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Registered mobile",
+      "tag": "input",
+      "type": "tel",
+      "box": {
+        "x": 593,
+        "y": 179.38,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Date of incident",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 277.56,
+        "w": 1118,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "What happened",
+      "tag": "textarea",
+      "type": null,
+      "box": {
+        "x": 31,
+        "y": 331.75,
+        "w": 1118,
+        "h": 64.67
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Account number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 467.61,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "IFSC",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 593,
+        "y": 467.61,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "PAN",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 31,
+        "y": 527.8,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Driving licence",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 593,
+        "y": 527.8,
+        "w": 556,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save draft",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 585.69,
+        "w": 87.38,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Intimate claim",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 115.38,
+        "y": 585.69,
+        "w": 111.06,
+        "h": 30.89
+      },
+      "inViewport": true
+    }
+  ]
+}

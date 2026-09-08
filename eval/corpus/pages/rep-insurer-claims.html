@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Insurer — Claims Queue</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #111827;
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+      }
+      a {
+        color: #4338ca;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #f9fafb;
+        border-bottom: 2px solid #4338ca;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 11px;
+        color: #6b7280;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #111827;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #4338ca;
+        background: #f9fafb;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b7280;
+      }
+      h1 {
+        font-size: 21px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #111827;
+      }
+      input[readonly] {
+        background: #f9fafb;
+      }
+      .hint {
+        font-size: 11px;
+        color: #6b7280;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: top;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #6b7280;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #6b7280;
+        font-size: 12px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f9fafb;
+        color: #4338ca;
+        font-size: 11px;
+        border: 1px solid #e5e7eb;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        background: #f9fafb;
+        font: inherit;
+        cursor: pointer;
+        color: #111827;
+      }
+      button.primary {
+        background: #4338ca;
+        border-color: #4338ca;
+        color: #fff;
+      }
+      .muted {
+        color: #6b7280;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #f9fafb;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #6b7280;
+        font-size: 11px;
+        border-top: 1px solid #e5e7eb;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="rep-insurer-claims">
+    <style>
+      .lvl0,
+      .lvl1,
+      .lvl2,
+      .lvl3,
+      .lvl4,
+      .lvl5,
+      .lvl6 {
+        display: block;
+      }
+      .rowf {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .fake-label {
+        flex: 0 0 190px;
+        color: #5b6472;
+        font-size: 0.85em;
+        text-align: right;
+      }
+      .rowf input {
+        flex: 1 1 auto;
+      }
+      .fake-hint {
+        flex: 0 0 auto;
+        color: #8b95a3;
+        font-size: 0.8em;
+      }
+      table.kvtable td {
+        border-bottom: 1px dotted #dfe4ec;
+        padding: 5px 8px;
+      }
+      table.kvtable td.k {
+        color: #5b6472;
+        width: 220px;
+        font-size: 0.88em;
+      }
+      .divbtn {
+        display: inline-block;
+        padding: 7px 14px;
+        border: 1px solid #c9d0da;
+        border-radius: 3px;
+        background: #eef2f7;
+        cursor: pointer;
+        user-select: none;
+      }
+      .tabs {
+        display: flex;
+        gap: 2px;
+        border-bottom: 2px solid #c9d0da;
+        margin-bottom: 12px;
+      }
+      .tabs [role='tab'] {
+        padding: 7px 14px;
+        cursor: pointer;
+        background: #f2f5f9;
+      }
+      .tabs [role='tab'][aria-selected='true'] {
+        background: #fff;
+        font-weight: 600;
+      }
+      .marquee {
+        background: #fffbe6;
+        border: 1px solid #f0e0a0;
+        padding: 6px 10px;
+        font-size: 0.85em;
+        margin-bottom: 10px;
+      }
+    </style>
+
+    <header class="bar">
+      <div class="brand">Sampoorna</div>
+      <div><span>Ref 9420 3765 2818 6051</span></div>
+    </header>
+    <main>
+      <div class="lvl3">
+        <div class="lvl2">
+          <div class="lvl1">
+            <div class="lvl0">
+              <h1>Claims queue</h1>
+              <table class="kvtable">
+                <tbody>
+                  <tr>
+                    <td class="k">Branch</td>
+                    <td class="v"><span>Tracking 5611 7407 3394 0506</span></td>
+                  </tr>
+                  <tr>
+                    <td class="k">Manager</td>
+                    <td class="v"><span>Aditya Banerjee</span></td>
+                  </tr>
+                  <tr>
+                    <td class="k">Escalation</td>
+                    <td class="v"><span>+91 63299 99828</span></td>
+                  </tr>
+                  <tr>
+                    <td class="k">Email</td>
+                    <td class="v"><span>sneha.mishra@example.com</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Claim</th>
+                    <th>Claimant</th>
+                    <th>Settlement account</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span>Requisition 290817729020</span></td>
+                    <td><span>Lakshmi Bhattacharya</span></td>
+                    <td><span>33840592111953</span></td>
+                    <td>Open</td>
+                  </tr>
+                  <tr>
+                    <td><span>Bill no. 199340480568</span></td>
+                    <td><span>Manish Sharma</span></td>
+                    <td><span>81769162385</span></td>
+                    <td>Settled</td>
+                  </tr>
+                  <tr>
+                    <td><span>Receipt 801343131844</span></td>
+                    <td><span>Ananya Joshi</span></td>
+                    <td><span>2062142244923591</span></td>
+                    <td>Query</td>
+                  </tr>
+                  <tr>
+                    <td><span>Case ID 584130219471</span></td>
+                    <td><span>Manish Kulkarni</span></td>
+                    <td><span>14355701077</span></td>
+                    <td>Open</td>
+                  </tr>
+                  <tr>
+                    <td><span>File no. 242238750695</span></td>
+                    <td><span>Kavya Sundaram</span></td>
+                    <td><span>4309958771534357</span></td>
+                    <td>Settled</td>
+                  </tr>
+                  <tr>
+                    <td><span>Batch 519343418701</span></td>
+                    <td><span>Ravi Banerjee</span></td>
+                    <td><span>90663736211956</span></td>
+                    <td>Query</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>
+                Records are shown for the last twelve months. Reference
+                <span>UTR 4229 0251 3482 3108</span>.
+              </p>
+              <div>
+                <div role="button" tabindex="0" class="divbtn">Export</div>
+                <div role="button" tabindex="0" class="divbtn">Filter</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

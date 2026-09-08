@@ -1,0 +1,354 @@
+{
+  "id": "rep-insurer-claims",
+  "title": "Insurer \u2014 Claims Queue",
+  "half": "replica",
+  "archetype": "insurance",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 143,
+        "w": 89.55,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 248,
+        "y": 173.5,
+        "w": 100.11,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 248,
+        "y": 204,
+        "w": 163.05,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 413.72,
+        "y": 277,
+        "w": 124.23,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 737.22,
+        "y": 277,
+        "w": 98.11,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 413.72,
+        "y": 315.5,
+        "w": 88.44,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 737.22,
+        "y": 315.5,
+        "w": 77.09,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 413.72,
+        "y": 354,
+        "w": 74.47,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 737.22,
+        "y": 354,
+        "w": 112.13,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 413.72,
+        "y": 392.5,
+        "w": 91.38,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 737.22,
+        "y": 392.5,
+        "w": 77.09,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 413.72,
+        "y": 431,
+        "w": 95.08,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 737.22,
+        "y": 431,
+        "w": 112.13,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 413.72,
+        "y": 469.5,
+        "w": 76.83,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 737.22,
+        "y": 469.5,
+        "w": 98.11,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Ref 9420 3765 2818 6051",
+      "box": {
+        "x": 1104.23,
+        "y": 13,
+        "w": 155.77,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Tracking 5611 7407 3394 0506",
+      "box": {
+        "x": 248,
+        "y": 112.5,
+        "w": 173.81,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled requisition",
+      "text": "Requisition 290817729020",
+      "box": {
+        "x": 28,
+        "y": 277,
+        "w": 151.2,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Bill no. 199340480568",
+      "box": {
+        "x": 28,
+        "y": 315.5,
+        "w": 125.91,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Receipt 801343131844",
+      "box": {
+        "x": 28,
+        "y": 354,
+        "w": 129.86,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Case ID 584130219471",
+      "box": {
+        "x": 28,
+        "y": 392.5,
+        "w": 130.78,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "File no. 242238750695",
+      "box": {
+        "x": 28,
+        "y": 431,
+        "w": 128.45,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Batch 519343418701",
+      "box": {
+        "x": 28,
+        "y": 469.5,
+        "w": 119.5,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "UTR 4229 0251 3482 3108",
+      "box": {
+        "x": 371.91,
+        "y": 513,
+        "w": 161.42,
+        "h": 19
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Export",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 547,
+        "w": 69.56,
+        "h": 37
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Filter",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 93.41,
+        "y": 547,
+        "w": 60.56,
+        "h": 37
+      },
+      "inViewport": true
+    }
+  ]
+}

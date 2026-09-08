@@ -1,0 +1,141 @@
+{
+  "id": "syn-scan-cheque",
+  "title": "Vendor Onboarding \u2014 Cheque",
+  "half": "synthetic",
+  "archetype": "scanned-id",
+  "theme": "scan",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 110.69,
+        "y": 114.5,
+        "w": 82.95,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 34,
+        "y": 467,
+        "w": 1112,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 34,
+        "y": 564,
+        "w": 1112,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 37,
+        "y": 167,
+        "w": 620,
+        "h": 240
+      },
+      "boxKind": "element",
+      "medium": "pixels",
+      "tag": "img",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Renewal 01/04/2028",
+      "box": {
+        "x": 205.08,
+        "y": 114.5,
+        "w": 142.73,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Confirm account number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 467,
+        "w": 1112,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Confirm IFSC",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 564,
+        "w": 1112,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Re-upload",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 644.5,
+        "w": 99.14,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Confirm",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 127.14,
+        "y": 644.5,
+        "w": 85.22,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ]
+}

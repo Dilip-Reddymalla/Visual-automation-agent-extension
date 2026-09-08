@@ -1,0 +1,200 @@
+{
+  "id": "syn-ins-status",
+  "title": "Claim Status",
+  "half": "synthetic",
+  "archetype": "insurance",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 148.59,
+        "y": 121.5,
+        "w": 68.53,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 148.59,
+        "y": 171.5,
+        "w": 120.75,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 148.59,
+        "y": 196.5,
+        "w": 82.5,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 148.59,
+        "y": 221.5,
+        "w": 107.81,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 968.5,
+        "y": 354.5,
+        "w": 70.77,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PASSPORT",
+      "why": "the passport format example in the form's help text",
+      "text": "A1234567",
+      "box": {
+        "x": 148.59,
+        "y": 146.5,
+        "w": 61.86,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "EMAIL",
+      "why": "the placeholder in the field's own hint text",
+      "text": "name@company.com",
+      "box": {
+        "x": 28,
+        "y": 316,
+        "w": 124.75,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "UPI",
+      "why": "a utility's collection handle, printed on every bill",
+      "text": "bescom.bill@okaxis",
+      "box": {
+        "x": 598.25,
+        "y": 316,
+        "w": 112.44,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "UPI",
+      "why": "a merchant terminal id, the same for every customer",
+      "text": "merchant0042@ybl",
+      "box": {
+        "x": 28,
+        "y": 354.5,
+        "w": 111.8,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "ACCOUNT",
+      "why": "a branch code, the same for everyone who banks there",
+      "text": "Branch code 00042317",
+      "box": {
+        "x": 598.25,
+        "y": 354.5,
+        "w": 130.58,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "ACCOUNT",
+      "why": "an MICR code, a property of the branch",
+      "text": "MICR 560240021",
+      "box": {
+        "x": 28,
+        "y": 393,
+        "w": 97.59,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "ACCOUNT",
+      "why": "a metering point, printed on a public bill",
+      "text": "Consumer no. 3407120054",
+      "box": {
+        "x": 598.25,
+        "y": 393,
+        "w": 153.41,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Raise a query",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 433.5,
+        "w": 112.08,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Download letter",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 140.08,
+        "y": 433.5,
+        "w": 129.25,
+        "h": 41
+      },
+      "inViewport": true
+    }
+  ]
+}

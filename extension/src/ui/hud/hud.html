@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redaction Gate — resources</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --ink: #10141a;
+        --muted: #4a5462;
+        --line: #c9d1dc;
+        --bg: #ffffff;
+        --panel: #f2f5f9;
+        --accent: #0b5fd0;
+        --warn: #a8360f;
+        --ok: #146c2e;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ink: #f2f5f9;
+          --muted: #aab4c2;
+          --line: #3a434f;
+          --bg: #0f1319;
+          --panel: #171c24;
+          --accent: #6aa9ff;
+          --warn: #ff9b7a;
+          --ok: #6ede8a;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        overflow-x: hidden;
+      }
+      main {
+        padding: 18px 20px 40px;
+        max-width: 900px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        margin: 26px 0 6px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+      }
+      .wrap {
+        overflow-x: auto;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 5px 10px;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-family: ui-monospace, monospace;
+      }
+      .na {
+        color: var(--muted);
+      }
+      .yes {
+        color: var(--ok);
+      }
+      .no {
+        color: var(--warn);
+      }
+      /* The waterfall. One row per stage, bar width proportional to the slowest stage,
+         so the shape is readable across the room rather than the numbers. */
+      .bar {
+        display: block;
+        height: 12px;
+        border-radius: 3px;
+        background: var(--accent);
+        min-width: 2px;
+      }
+      .bar.late {
+        background: var(--warn);
+      }
+      td.track {
+        width: 45%;
+      }
+      p.note {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 8px 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Resources</h1>
+      <p class="note" id="cadence"></p>
+
+      <h2>Inference host</h2>
+      <div class="wrap"><table id="host"></table></div>
+
+      <h2>Memory</h2>
+      <div class="wrap"><table id="memory"></table></div>
+
+      <h2>Latency, this step</h2>
+      <div class="wrap"><table id="waterfall"></table></div>
+
+      <h2>Latency, accumulating</h2>
+      <div class="wrap"><table id="percentiles"></table></div>
+      <p class="note">
+        p50 and p95 over every step this session, from the worker's own trace and the host's
+        ring buffer. Nothing here starts a second timer.
+      </p>
+    </main>
+
+    <script src="hud.js"></script>
+  </body>
+</html>

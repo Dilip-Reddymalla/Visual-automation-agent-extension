@@ -1,0 +1,190 @@
+{
+  "id": "rep-lic-policy",
+  "title": "LIC \u2014 Policy Details",
+  "half": "replica",
+  "archetype": "insurance",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 115.5,
+        "w": 81.19,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 248,
+        "y": 147.5,
+        "w": 71.3,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 179.5,
+        "w": 87.13,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 248,
+        "y": 211.5,
+        "w": 82.66,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 248,
+        "y": 243.5,
+        "w": 120.75,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 248,
+        "y": 275.5,
+        "w": 86.3,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 214.05,
+        "y": 381.5,
+        "w": 317.08,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Meeting 09/11/2026",
+      "box": {
+        "x": 1124.31,
+        "y": 13,
+        "w": 135.69,
+        "h": 20
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Renewal 01/04/2028",
+      "box": {
+        "x": 248,
+        "y": 307.5,
+        "w": 126.28,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Statement period 01/06/2024",
+      "box": {
+        "x": 248,
+        "y": 339.5,
+        "w": 182.19,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Nagpur",
+      "box": {
+        "x": 652.02,
+        "y": 381.5,
+        "w": 50.22,
+        "h": 20
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Edit",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 418,
+        "w": 55.14,
+        "h": 38.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Verify",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 79.25,
+        "y": 418,
+        "w": 67.02,
+        "h": 38.5
+      },
+      "inViewport": true
+    }
+  ]
+}

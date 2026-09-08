@@ -1,0 +1,164 @@
+{
+  "id": "rep-rto-licence",
+  "title": "Driving Licence Status",
+  "half": "replica",
+  "archetype": "transport",
+  "theme": "gov",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "LICENCE",
+      "box": {
+        "x": 98.09,
+        "y": 64,
+        "w": 197.39,
+        "h": 28
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 112.5,
+        "w": 99.39,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 248,
+        "y": 143,
+        "w": 66.2,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 248,
+        "y": 204,
+        "w": 313.67,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 543.78,
+        "y": 365.5,
+        "w": 98.23,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Salem",
+      "box": {
+        "x": 248,
+        "y": 234.5,
+        "w": 34.67,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Georgia",
+      "box": {
+        "x": 248,
+        "y": 265,
+        "w": 45.28,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Jordan",
+      "box": {
+        "x": 248,
+        "y": 295.5,
+        "w": 38.41,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Florence",
+      "box": {
+        "x": 248,
+        "y": 326,
+        "w": 48.59,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Apply for renewal",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 399.5,
+        "w": 138.84,
+        "h": 37
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Print extract",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 162.69,
+        "y": 399.5,
+        "w": 104.3,
+        "h": 37
+      },
+      "inViewport": true
+    }
+  ]
+}

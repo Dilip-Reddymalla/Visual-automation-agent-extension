@@ -1,0 +1,270 @@
+{
+  "id": "syn-job-apply",
+  "title": "Job Application",
+  "half": "synthetic",
+  "archetype": "job-application",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 847
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 34,
+        "y": 163,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 596,
+        "y": 163,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 34,
+        "y": 272,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 34,
+        "y": 361,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 596,
+        "y": 361,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 34,
+        "y": 438,
+        "w": 1112,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Victoria",
+      "box": {
+        "x": 838.88,
+        "y": 208.5,
+        "w": 40.19,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "",
+      "box": {
+        "x": 596,
+        "y": 272,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Full name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 163,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Email",
+      "tag": "input",
+      "type": "email",
+      "box": {
+        "x": 596,
+        "y": 163,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Phone",
+      "tag": "input",
+      "type": "tel",
+      "box": {
+        "x": 34,
+        "y": 272,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Current city",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 596,
+        "y": 272,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "PAN (for offer paperwork)",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 361,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "LinkedIn",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 596,
+        "y": 361,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Address",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 438,
+        "w": 1112,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "file",
+      "name": "Resume",
+      "tag": "input",
+      "type": "file",
+      "box": {
+        "x": 34,
+        "y": 576,
+        "w": 1112,
+        "h": 43
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Cover note",
+      "tag": "textarea",
+      "type": null,
+      "box": {
+        "x": 34,
+        "y": 653.5,
+        "w": 1112,
+        "h": 87.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 788.5,
+        "w": 60.64,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Submit application",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 88.64,
+        "y": 788.5,
+        "w": 154.11,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ]
+}

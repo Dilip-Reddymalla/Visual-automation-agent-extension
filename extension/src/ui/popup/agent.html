@@ -1,0 +1,454 @@
+<!doctype html>
+<!--
+  The Agent tab of the side panel.
+
+  Identical to popup.html except that it has no Evidence buttons, and that difference is
+  the whole reason it exists: inside the panel those two buttons are navigation to
+  sibling tabs the reader is already looking at. The Firefox toolbar popup has no
+  siblings, so it keeps them.
+
+  Both pages load popup.js. There is one implementation of the agent controls and there
+  must stay one -- what differs between the two containers is markup, not behaviour.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redaction Gate — agent</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #12161c;
+        --muted: #5b6472;
+        --line: #e3e7ee;
+        --panel: #f4f6f9;
+        --accent: #1b6feb;
+        --ok: #17794a;
+        --bad: #b3261e;
+        --warn: #8a5a00;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14181e;
+          --fg: #e7ebf1;
+          --muted: #98a2b3;
+          --line: #29313b;
+          --panel: #1b212a;
+          --accent: #5c9dff;
+          --ok: #5bd08d;
+          --bad: #ff8a80;
+          --warn: #e0b25f;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 12px;
+        /* A browser action popup sizes itself to its document, so it needs a definite
+           width or Chrome renders it a few characters wide. Framed in the side panel it
+           needs the opposite: fill whatever column the user has dragged out. The flag is
+           set by index.ts, because CSS cannot ask whether it is in a frame. */
+        width: auto;
+        min-width: 300px;
+        font:
+          13px/1.45 system-ui,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      body[data-framed] {
+        width: auto;
+        min-height: 100vh;
+      }
+      /* In a docked panel the step log is the thing worth reading, and there is room for
+         it. In a popup it has to stay short or the whole window grows past the screen. */
+      body[data-framed] #log {
+        max-height: none;
+      }
+      header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: 0.01em;
+      }
+      #status {
+        font-size: 11px;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      #status[data-status='running'] {
+        color: var(--accent);
+      }
+      #status[data-status='failed'] {
+        color: var(--bad);
+      }
+      #status[data-status='stopped'] {
+        color: var(--warn);
+      }
+
+      #goal {
+        width: 100%;
+        min-height: 52px;
+        resize: vertical;
+        padding: 6px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--fg);
+        font: inherit;
+      }
+      #goal:disabled {
+        color: var(--muted);
+      }
+      #goal.error {
+        border-color: var(--bad);
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      button {
+        flex: 1;
+        padding: 6px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--fg);
+        font: inherit;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #run {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      label.toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      /* The session's tab, when it is not the one in front. Amber rather than red: this
+         is orientation, not an error -- the agent is working exactly as asked, just not
+         on what you are looking at. */
+      #tab-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        padding: 7px 9px;
+        border: 1px solid var(--warn);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--warn);
+        font-size: 11px;
+        line-height: 1.4;
+      }
+      #tab-note[hidden] {
+        display: none;
+      }
+      #tab-note-text {
+        flex: 1 1 auto;
+        overflow-wrap: anywhere;
+      }
+      #tab-note b {
+        font-weight: 600;
+      }
+      #show-tab {
+        flex: 0 0 auto;
+        padding: 3px 8px;
+        font-size: 11px;
+        border-color: var(--warn);
+        color: var(--warn);
+      }
+
+      #coverage {
+        margin-top: 6px;
+        font-size: 11px;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+      #coverage b {
+        font-weight: 600;
+        color: var(--warn);
+      }
+
+      /* Site access. The extension asks for nothing broad at install; this is where the
+         operator can widen it, see that they have, and take it back. */
+      /* Where the planner is. Amber when it is on this machine, because redaction
+         protects data from a planner somewhere else and a local one is protecting nobody
+         -- fine for development, dishonest to demonstrate without saying so. */
+      #planner {
+        margin-top: 10px;
+        padding: 6px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 11px;
+        overflow-wrap: anywhere;
+      }
+      #planner[data-where='local'] {
+        color: var(--warn);
+        border-color: var(--warn);
+      }
+      #planner[data-where='remote'] {
+        color: var(--ok);
+        border-color: var(--ok);
+      }
+
+      #access {
+        margin-top: 6px;
+        padding: 6px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+      }
+      #access[data-access='granted'] {
+        color: var(--ok);
+        border-color: var(--ok);
+      }
+      #access[data-access='narrow'] {
+        color: var(--warn);
+        border-color: var(--warn);
+      }
+      #grant {
+        flex: 0 0 auto;
+        font-size: 11px;
+        padding: 3px 8px;
+      }
+
+      #host {
+        margin-top: 10px;
+        padding: 6px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+      }
+      #host[data-backend='webgpu'] {
+        color: var(--ok);
+        border-color: var(--ok);
+      }
+      #host[data-backend='wasm'] {
+        color: var(--warn);
+        border-color: var(--warn);
+      }
+      #host[data-backend='failed'] {
+        color: var(--bad);
+        border-color: var(--bad);
+      }
+      #selftest {
+        flex: 0 0 auto;
+        font-size: 11px;
+        padding: 3px 8px;
+      }
+      .between h2 {
+        margin: 0;
+      }
+      .between {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      h2 {
+        margin: 12px 0 4px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      #log {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        max-height: 180px;
+        overflow-y: auto;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+      }
+      #log:empty::after {
+        content: 'no steps yet';
+        display: block;
+        padding: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      #log li {
+        display: grid;
+        grid-template-columns: 2.2em 1fr auto;
+        gap: 6px;
+        padding: 5px 8px;
+        border-bottom: 1px solid var(--line);
+        font-variant-numeric: tabular-nums;
+      }
+      #log li:last-child {
+        border-bottom: 0;
+      }
+      #log .idx {
+        color: var(--muted);
+      }
+      #log .ms {
+        color: var(--muted);
+        font-size: 11px;
+      }
+      #log li[data-outcome='ok'] .phase {
+        color: var(--ok);
+      }
+      #log li[data-outcome='failed'] .phase {
+        color: var(--bad);
+      }
+      #log li[data-outcome='interrupted'] .phase,
+      #log li[data-outcome='stopped'] .phase {
+        color: var(--warn);
+      }
+      #log .note {
+        grid-column: 2 / -1;
+        color: var(--muted);
+        font-size: 11px;
+        overflow-wrap: anywhere;
+      }
+      /* The phases of one step, stacked in the order they ran. A step is a sequence, and
+         the row above can only ever show the one it is in right now. */
+      #log .stages {
+        grid-column: 2 / -1;
+        margin: 6px 0 0;
+        padding: 0;
+        list-style: none;
+        border-left: 2px solid var(--line);
+      }
+      #log .stages li {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 1px 0 1px 8px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      #log .stages .ms {
+        font-variant-numeric: tabular-nums;
+      }
+      /* The claim the whole project makes, kept where it cannot be missed. */
+      .counter {
+        margin: 12px 0 0;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        font-variant-numeric: tabular-nums;
+      }
+      .counter strong {
+        font-size: 16px;
+      }
+      .counter .zero {
+        color: var(--accent);
+      }
+      /* The agent's own keystrokes, covered but not claimed. Deliberately small: it is
+         not a protection number and must not read like one. */
+      #self-typed {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      #self-typed[hidden] {
+        display: none;
+      }
+      .links {
+        display: flex;
+        gap: 8px;
+      }
+      .links button {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Redaction Gate</h1>
+      <span id="status" data-status="idle">idle</span>
+    </header>
+
+    <!-- Which tab this session belongs to, shown only when that is not the tab you are
+         looking at. The panel docks beside every tab in the window; the session belongs
+         to exactly one. -->
+    <div id="tab-note" hidden>
+      <span id="tab-note-text"></span>
+      <button id="show-tab" type="button">Show it</button>
+    </div>
+
+    <textarea id="goal" placeholder="What should the agent do on this tab?"></textarea>
+
+    <div id="coverage"></div>
+
+    <div class="row">
+      <button id="run" type="button">Run</button>
+      <button id="stop" type="button" disabled>Stop</button>
+    </div>
+
+    <label class="toggle">
+      <input id="overlay" type="checkbox" /> Show redaction overlay
+    </label>
+
+    <!-- Permanently visible, and true. The right-hand number is not a running total that
+         happens to be zero: nothing in the system can raise it, because a raw value has
+         no path to the wire. -->
+    <p id="counter" class="counter">
+      Values protected this session: <strong id="redacted">0</strong> &middot; Values
+      transmitted: <strong class="zero">0</strong>
+      <span id="self-typed" hidden></span>
+    </p>
+
+    <div id="planner">planner: unknown</div>
+    <!-- The rung between the device and the planner. It was invisible, and it was
+         switched off: ollama answers a chrome-extension:// origin with 403 unless
+         OLLAMA_ORIGINS says otherwise, so tier 1 had never run and nothing said so. -->
+    <div id="local-model">local model: unknown</div>
+
+    <div class="between">
+      <h2>Site access</h2>
+      <button id="grant" type="button">Allow</button>
+    </div>
+    <div id="access">checking&hellip;</div>
+
+    <div class="between">
+      <h2>Inference host</h2>
+      <button id="selftest" type="button">Check</button>
+    </div>
+    <div id="host">not started</div>
+
+    <h2>Steps</h2>
+    <ol id="log"></ol>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

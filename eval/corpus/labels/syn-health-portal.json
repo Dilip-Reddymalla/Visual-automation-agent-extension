@@ -1,0 +1,219 @@
+{
+  "id": "syn-health-portal",
+  "title": "Hospital \u2014 Reports",
+  "half": "synthetic",
+  "archetype": "healthcare",
+  "theme": "health",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 319.22,
+        "y": 121.5,
+        "w": 117.33,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 319.22,
+        "y": 171.5,
+        "w": 71.3,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 319.22,
+        "y": 196.5,
+        "w": 107.81,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 319.22,
+        "y": 221.5,
+        "w": 345.86,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 319.22,
+        "y": 246.5,
+        "w": 120.75,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 661.77,
+        "y": 341,
+        "w": 75.77,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 661.77,
+        "y": 379.5,
+        "w": 87.8,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 661.77,
+        "y": 418,
+        "w": 74.47,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Georgia",
+      "box": {
+        "x": 319.22,
+        "y": 146.5,
+        "w": 48.77,
+        "h": 19
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "link",
+      "name": "Overview",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 63,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Reports",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 102,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Appointments",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 141,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Billing",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 180,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Book a test",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 226,
+        "y": 458.5,
+        "w": 98.94,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Download all",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 332.94,
+        "y": 458.5,
+        "w": 110.77,
+        "h": 41
+      },
+      "inViewport": true
+    }
+  ]
+}

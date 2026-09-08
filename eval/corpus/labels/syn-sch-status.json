@@ -1,0 +1,152 @@
+{
+  "id": "syn-sch-status",
+  "title": "Scholarship \u2014 Status",
+  "half": "synthetic",
+  "archetype": "scholarship",
+  "theme": "portal",
+  "density": "roomy",
+  "fontPx": 18,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 185.77,
+        "y": 203.59,
+        "w": 102.02,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 185.77,
+        "y": 272.78,
+        "w": 126.31,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 185.77,
+        "y": 307.38,
+        "w": 111.67,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 185.77,
+        "y": 341.97,
+        "w": 218.94,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 631.69,
+        "y": 513.45,
+        "w": 199.11,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "File no. 242238750695",
+      "box": {
+        "x": 185.77,
+        "y": 238.19,
+        "w": 177.86,
+        "h": 24
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Batch 519343418701",
+      "box": {
+        "x": 185.77,
+        "y": 376.56,
+        "w": 165.45,
+        "h": 24
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Ref 9420 3765 2818 6051",
+      "box": {
+        "x": 38,
+        "y": 513.45,
+        "w": 1098.19,
+        "h": 54.59
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Download receipt",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 627.64,
+        "w": 170.41,
+        "h": 58.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Track again",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 198.41,
+        "y": 627.64,
+        "w": 118.94,
+        "h": 58.59
+      },
+      "inViewport": true
+    }
+  ]
+}

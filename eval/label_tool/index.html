@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Label a page</title>
+    <style>
+      /* Deliberately dense. A page has to be labellable in under five minutes or the
+         corpus does not get finished, and every extra click is multiplied by fifty. */
+      :root {
+        color-scheme: light dark;
+        --ink: #14181e;
+        --muted: #5b6472;
+        --line: #d9dee7;
+        --bg: #fff;
+        --panel: #f6f8fb;
+        --pii: #0072b2;
+        --neg: #d55e00;
+        --el: #009e73;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ink: #e9edf4;
+          --muted: #a3adbb;
+          --line: #333a45;
+          --bg: #14181e;
+          --panel: #1b1f26;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        height: 100vh;
+      }
+      #stage {
+        overflow: auto;
+        position: relative;
+        background: var(--panel);
+      }
+      #wrap {
+        position: relative;
+        display: inline-block;
+      }
+      #shot {
+        display: block;
+        max-width: none;
+      }
+      #boxes {
+        position: absolute;
+        inset: 0;
+        cursor: crosshair;
+      }
+      aside {
+        border-left: 1px solid var(--line);
+        padding: 14px;
+        overflow: auto;
+        background: var(--bg);
+      }
+      h1 {
+        font-size: 15px;
+        margin: 0 0 10px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin: 10px 0 3px;
+      }
+      select,
+      input,
+      button,
+      textarea {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        background: var(--bg);
+        color: inherit;
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        background: var(--panel);
+      }
+      button.primary {
+        background: var(--pii);
+        border-color: var(--pii);
+        color: #fff;
+        font-weight: 600;
+      }
+      ul {
+        list-style: none;
+        margin: 10px 0 0;
+        padding: 0;
+        font-size: 13px;
+      }
+      li {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 4px 6px;
+        border-bottom: 1px solid var(--line);
+      }
+      li button {
+        width: auto;
+        padding: 0 6px;
+        border: 0;
+        background: none;
+        color: var(--muted);
+      }
+      .kinds {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .kinds button {
+        font-size: 12px;
+      }
+      .kinds button[aria-pressed='true'] {
+        outline: 2px solid var(--pii);
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .swatch::before {
+        content: '';
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        margin-right: 5px;
+        border: 2px solid;
+      }
+      .swatch.pii::before {
+        border-color: var(--pii);
+      }
+      .swatch.neg::before {
+        border-color: var(--neg);
+      }
+      .swatch.el::before {
+        border-color: var(--el);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div id="wrap">
+        <img id="shot" alt="the page being labelled" />
+        <svg id="boxes" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+
+    <aside>
+      <h1>Label a page</h1>
+
+      <label for="file">Screenshot</label>
+      <input id="file" type="file" accept="image/*" />
+
+      <label for="page-id">Page id</label>
+      <input id="page-id" placeholder="cap-portal-profile" />
+
+      <label>What are you drawing?</label>
+      <div class="kinds">
+        <button data-kind="pii" aria-pressed="true" class="swatch pii">PII</button>
+        <button data-kind="neg" aria-pressed="false" class="swatch neg">decoy</button>
+        <button data-kind="el" aria-pressed="false" class="swatch el">element</button>
+      </div>
+
+      <label for="cls">Class</label>
+      <select id="cls"></select>
+
+      <label for="why">Note <span class="muted">(why a decoy is not PII)</span></label>
+      <input id="why" placeholder="twelve digits, labelled invoice no." />
+
+      <p class="hint">
+        Drag on the image to draw. The class stays selected between boxes, so label all the
+        Aadhaars, then switch. <kbd>Backspace</kbd> removes the last box.
+      </p>
+
+      <ul id="list"></ul>
+
+      <label for="out">labels.json</label>
+      <textarea id="out" rows="6" readonly></textarea>
+      <button class="primary" id="save" style="margin-top: 8px">Download labels.json</button>
+
+      <p class="hint">
+        Ground truth for scoring, never a hint to the detector. Nothing here is read by the
+        extension, and the page it ships with carries no marks.
+      </p>
+    </aside>
+
+    <script src="label.js"></script>
+  </body>
+</html>

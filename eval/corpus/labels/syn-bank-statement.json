@@ -1,0 +1,190 @@
+{
+  "id": "syn-bank-statement",
+  "title": "Account Statement",
+  "half": "synthetic",
+  "archetype": "bank-statement",
+  "theme": "bank",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 128.84,
+        "y": 88.89,
+        "w": 108.58,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 128.84,
+        "y": 109.78,
+        "w": 98.11,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 128.84,
+        "y": 130.67,
+        "w": 75.72,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 128.84,
+        "y": 151.56,
+        "w": 325.11,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 189.31,
+        "y": 240.94,
+        "w": 77.97,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 211.22,
+        "y": 326.72,
+        "w": 64.48,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ORG",
+      "box": {
+        "x": 201.23,
+        "y": 355.31,
+        "w": 80.77,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, Luhn-valid, 9-prefix no issuer uses",
+      "text": "Shipment 9269 0993 0142 8867",
+      "box": {
+        "x": 128.84,
+        "y": 172.45,
+        "w": 181.19,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Shipment 6538 3352 7923 4468",
+      "box": {
+        "x": 196.95,
+        "y": 269.53,
+        "w": 167.25,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Policy ref 4889 8172 1116 3619",
+      "box": {
+        "x": 191.91,
+        "y": 298.13,
+        "w": 164.61,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, Luhn-valid, 9-prefix no issuer uses",
+      "text": "UTR 9129 1837 1067 1810",
+      "box": {
+        "x": 194.53,
+        "y": 383.91,
+        "w": 138.36,
+        "h": 16
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Email statement",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 413.5,
+        "w": 121.75,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Download PDF",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 149.75,
+        "y": 413.5,
+        "w": 114.83,
+        "h": 30.89
+      },
+      "inViewport": true
+    }
+  ]
+}

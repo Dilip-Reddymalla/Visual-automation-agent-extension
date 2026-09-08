@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mobile Number Update — demo</title>
+    <style>
+      body {
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+        margin: 0;
+        background: #eaf6ff;
+      }
+      h1 {
+        margin: 0;
+        padding: 10px 16px;
+        font-size: 16px;
+        color: #fff;
+        background: #1b6feb;
+      }
+      .card {
+        margin: 16px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 4px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      /* The caption is a bare <label> with no `for`, sitting beside the control. This is
+         the whole point of the fixture -- see the note at the bottom of the file. */
+      label {
+        width: 260px;
+        text-align: right;
+        font-weight: 600;
+      }
+      input,
+      select {
+        padding: 7px 10px;
+        border: 1px solid #9bb;
+        border-radius: 4px;
+        min-width: 240px;
+      }
+      button {
+        padding: 8px 22px;
+        border: 0;
+        border-radius: 4px;
+        color: #fff;
+        background: #1b6feb;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mobile Number Update</h1>
+
+    <!--
+      A government form that labels nothing.
+
+      Every control here is captioned by an adjacent <label> carrying no `for`, has no
+      `aria-label`, and has no accessible name. That is not a contrived shape: it is
+      parivahan.gov.in's Mobile Number Update page, and a great many public-sector forms
+      besides. It broke the agent twice over.
+
+        1. `associatedLabelText` correctly returns nothing, so the only machine-readable
+           evidence was the id -- and "select state as telangana" scored 5 against a floor
+           of 6 on the one dropdown on the page.
+
+        2. `select state as telangana` parsed backwards. The `as` pattern reads
+           "<value> as <target>", so the target became "telangana" and the agent went
+           looking for a field by that name.
+
+      Typing into the text fields worked throughout, on the same page, in the same session,
+      which is what made it look like a dropdown problem rather than two parsing problems.
+    -->
+    <div class="card">
+      <form onsubmit="return false;">
+        <div class="row">
+          <label>DL Number</label>
+          <input type="text" id="dlNumber" placeholder="ENTER DL NUMBER" />
+        </div>
+
+        <div class="row">
+          <label>Date of Birth</label>
+          <input type="text" id="dob" placeholder="DD-MM-YYYY" />
+        </div>
+
+        <div class="row">
+          <label>DL Holder's Last Transaction State</label>
+          <select id="ddlState">
+            <option value="">SELECT STATE</option>
+            <option value="ka">Karnataka</option>
+            <option value="mh">Maharashtra</option>
+            <option value="tg">Telangana</option>
+            <option value="tn">Tamil Nadu</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label>Captcha</label>
+          <input type="text" id="captcha" placeholder="Enter the Captcha" />
+        </div>
+
+        <div class="row">
+          <label></label>
+          <button type="button" id="submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,163 @@
+{
+  "id": "syn-bank-card",
+  "title": "Credit Card Statement",
+  "half": "synthetic",
+  "archetype": "bank-statement",
+  "theme": "bank",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 122.53,
+        "y": 121.5,
+        "w": 63.23,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "CARD",
+      "box": {
+        "x": 122.53,
+        "y": 146.5,
+        "w": 132.27,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 122.53,
+        "y": 171.5,
+        "w": 350.11,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 82.77,
+        "y": 423.5,
+        "w": 106.48,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Filed on 04/07/2023",
+      "box": {
+        "x": 122.53,
+        "y": 196.5,
+        "w": 124.27,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 3,415 9000 1122",
+      "box": {
+        "x": 543.05,
+        "y": 316,
+        "w": 110.89,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Issued on 12/03/2021",
+      "box": {
+        "x": 543.05,
+        "y": 354.5,
+        "w": 124.59,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Valid till 31/12/2027",
+      "box": {
+        "x": 543.05,
+        "y": 393,
+        "w": 114.86,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Due date 15/09/2024",
+      "box": {
+        "x": 412.11,
+        "y": 423.5,
+        "w": 103.28,
+        "h": 15
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Pay minimum",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 452,
+        "w": 113.91,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Pay total",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 141.91,
+        "y": 452,
+        "w": 83.31,
+        "h": 41
+      },
+      "inViewport": true
+    }
+  ]
+}

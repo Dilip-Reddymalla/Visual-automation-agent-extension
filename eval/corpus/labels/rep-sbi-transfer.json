@@ -1,0 +1,256 @@
+{
+  "id": "rep-sbi-transfer",
+  "title": "OnlineSBI \u2014 Transfer",
+  "half": "replica",
+  "archetype": "bank-statement",
+  "theme": "bank",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 220,
+        "y": 78.89,
+        "w": 940,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 220,
+        "y": 117.78,
+        "w": 940,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 220,
+        "y": 156.67,
+        "w": 940,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 220,
+        "y": 195.56,
+        "w": 940,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "SECRET",
+      "box": {
+        "x": 220,
+        "y": 335.23,
+        "w": 940,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 360.86,
+        "y": 378.13,
+        "w": 100.11,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Receipt 801343131844",
+      "box": {
+        "x": 1130.14,
+        "y": 8,
+        "w": 129.86,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Case ID 584130219471",
+      "box": {
+        "x": 96.02,
+        "y": 233.45,
+        "w": 100.59,
+        "h": 14
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "File no. 242238750695",
+      "box": {
+        "x": 527.45,
+        "y": 378.13,
+        "w": 128.45,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Beneficiary name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 220,
+        "y": 78.89,
+        "w": 940,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Beneficiary account",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 220,
+        "y": 117.78,
+        "w": 940,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Confirm account",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 220,
+        "y": 156.67,
+        "w": 940,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "IFS code",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 220,
+        "y": 195.56,
+        "w": 940,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Amount",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 220,
+        "y": 257.45,
+        "w": 940,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Remarks",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 220,
+        "y": 296.34,
+        "w": 940,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Profile password",
+      "tag": "input",
+      "type": "password",
+      "box": {
+        "x": 220,
+        "y": 335.23,
+        "w": 940,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Back",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 409.02,
+        "w": 56.55,
+        "h": 32.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Confirm transfer",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 80.11,
+        "y": 409.02,
+        "w": 123.33,
+        "h": 32.89
+      },
+      "inViewport": true
+    }
+  ]
+}

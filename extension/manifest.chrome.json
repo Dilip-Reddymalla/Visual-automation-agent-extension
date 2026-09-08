@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Redaction Gate",
+  "version": "0.1.0",
+  "description": "On-device visual perception for a light-weight browser agent. SIH26171.",
+  "minimum_chrome_version": "116",
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "action": {
+    "default_title": "Redaction Gate"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "permissions": ["activeTab", "scripting", "storage", "offscreen", "sidePanel", "tabs"],
+  "host_permissions": ["http://localhost/*"],
+  "optional_host_permissions": ["<all_urls>"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "side_panel": {
+    "default_path": "panel.html"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Redaction Gate",
+  "version": "0.1.0",
+  "description": "On-device visual perception for a light-weight browser agent. SIH26171.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "redaction-gate@sih26171.isro",
+      "strict_min_version": "115.0"
+    }
+  },
+  "background": {
+    "scripts": ["worker.js"]
+  },
+  "action": {
+    "default_title": "Redaction Gate",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": ["http://localhost/*"],
+  "optional_host_permissions": ["<all_urls>"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "sidebar_action": {
+    "default_title": "Redaction Gate",
+    "default_panel": "panel.html",
+    "open_at_install": false
+  }
+}

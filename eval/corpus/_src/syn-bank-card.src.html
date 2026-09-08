@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credit Card Statement</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #14181e;
+        font:
+          14px/1.5 'Segoe UI',
+          system-ui,
+          sans-serif;
+      }
+      a {
+        color: #00524d;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #f4f7f6;
+        border-bottom: 2px solid #00524d;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 11px;
+        color: #5b6472;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #14181e;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #00524d;
+        background: #f4f7f6;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #dde2ea;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #5b6472;
+      }
+      h1 {
+        font-size: 21px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: #5b6472;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #dde2ea;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #14181e;
+      }
+      input[readonly] {
+        background: #f4f7f6;
+      }
+      .hint {
+        font-size: 11px;
+        color: #5b6472;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #dde2ea;
+        vertical-align: top;
+      }
+      th {
+        background: #f4f7f6;
+        font-weight: 600;
+        color: #5b6472;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #5b6472;
+        font-size: 12px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #dde2ea;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f4f7f6;
+        color: #00524d;
+        font-size: 11px;
+        border: 1px solid #dde2ea;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #dde2ea;
+        border-radius: 3px;
+        background: #f4f7f6;
+        font: inherit;
+        cursor: pointer;
+        color: #14181e;
+      }
+      button.primary {
+        background: #00524d;
+        border-color: #00524d;
+        color: #fff;
+      }
+      .muted {
+        color: #5b6472;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #f4f7f6;
+        padding: 16px;
+        border: 1px solid #dde2ea;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #5b6472;
+        font-size: 11px;
+        border-top: 1px solid #dde2ea;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-bank-card">
+    <header class="bar">
+      <div class="brand">Card Services</div>
+      <div>Statement</div>
+    </header>
+    <main>
+      <h1>Credit card statement</h1>
+      <div class="card">
+        <dl class="kv">
+          <dt>Cardholder</dt>
+          <dd><span data-pii="PERSON">Imran Rao</span></dd>
+          <dt>Card number</dt>
+          <dd><span data-pii="CARD">5274 8516 8402 5012</span></dd>
+          <dt>Billing address</dt>
+          <dd>
+            <span data-pii="ADDRESS"
+              >13, SV Road, Andheri West, Bengaluru, Karnataka 560041</span
+            >
+          </dd>
+          <dt>Due date</dt>
+          <dd>
+            <span data-neg="DOB" data-neg-why="a date with no birth context"
+              >Filed on 04/07/2023</span
+            >
+          </dd>
+          <dt>Total due</dt>
+          <dd>Rs 7,359.00</dd>
+        </dl>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Merchant</th>
+            <th>Reference</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>02 Sep</td>
+            <td>AMAZON RETAIL</td>
+            <td>
+              <span
+                data-neg="CARD"
+                data-neg-why="a rupee amount whose grouping mimics a 16-digit card"
+                >Rs 3,415 9000 1122</span
+              >
+            </td>
+            <td class="num">3,499</td>
+          </tr>
+          <tr>
+            <td>05 Sep</td>
+            <td>INDIAN OIL</td>
+            <td>
+              <span data-neg="DOB" data-neg-why="a date with no birth context"
+                >Issued on 12/03/2021</span
+              >
+            </td>
+            <td class="num">2,000</td>
+          </tr>
+          <tr>
+            <td>12 Sep</td>
+            <td>MYNTRA</td>
+            <td>
+              <span data-neg="DOB" data-neg-why="a date with no birth context"
+                >Valid till 31/12/2027</span
+              >
+            </td>
+            <td class="num">1,860</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="hint">
+        Payments to <span data-pii="UPI">pooja.sharma@paytm</span> are credited the same day.
+        Amount in words:
+        <span data-neg="DOB" data-neg-why="a date with no birth context"
+          >Due date 15/09/2024</span
+        >.
+      </p>
+      <div class="actions">
+        <button class="" data-el="1">Pay minimum</button
+        ><button class="primary" data-el="1">Pay total</button>
+      </div>
+    </main>
+  </body>
+</html>

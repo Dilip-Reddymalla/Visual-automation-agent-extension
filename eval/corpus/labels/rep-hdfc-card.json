@@ -1,0 +1,187 @@
+{
+  "id": "rep-hdfc-card",
+  "title": "Credit Card Bill",
+  "half": "replica",
+  "archetype": "bank-statement",
+  "theme": "bank",
+  "density": "compact",
+  "fontPx": 12,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 80.28,
+        "w": 70.33,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "CARD",
+      "box": {
+        "x": 248,
+        "y": 105.58,
+        "w": 98,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 248,
+        "y": 156.17,
+        "w": 202.3,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 248,
+        "y": 206.77,
+        "w": 101.34,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Shipment 6538 3352 7923 4468",
+      "box": {
+        "x": 248,
+        "y": 181.47,
+        "w": 153.31,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Batch 519343418701",
+      "box": {
+        "x": 546.31,
+        "y": 260.36,
+        "w": 101.11,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Ref 9420 3765 2818 6051",
+      "box": {
+        "x": 546.31,
+        "y": 287.66,
+        "w": 122.39,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Tracking 5611 7407 3394 0506",
+      "box": {
+        "x": 546.31,
+        "y": 314.95,
+        "w": 147.08,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "UTR 4229 0251 3482 3108",
+      "box": {
+        "x": 546.31,
+        "y": 342.25,
+        "w": 126.83,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, fails Luhn, labelled a reference",
+      "text": "Policy ref 4889 8172 1116 3619",
+      "box": {
+        "x": 57.67,
+        "y": 375.55,
+        "w": 164.61,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, Luhn-valid, 9-prefix no issuer uses",
+      "text": "UTR 9129 1837 1067 1810",
+      "box": {
+        "x": 364.08,
+        "y": 375.55,
+        "w": 138.36,
+        "h": 16
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Pay now",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 404.14,
+        "w": 74.02,
+        "h": 31.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Download",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 97.31,
+        "y": 404.14,
+        "w": 84.03,
+        "h": 31.59
+      },
+      "inViewport": true
+    }
+  ]
+}

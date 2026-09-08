@@ -1,0 +1,176 @@
+{
+  "id": "syn-shop-order",
+  "title": "Order Details",
+  "half": "synthetic",
+  "archetype": "ecommerce",
+  "theme": "shop",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 31,
+        "y": 271.34,
+        "w": 83.55,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 31,
+        "y": 288.23,
+        "w": 279.23,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 31,
+        "y": 305.13,
+        "w": 70.08,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "CARD",
+      "box": {
+        "x": 104.94,
+        "y": 394.2,
+        "w": 28.03,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 166.16,
+        "y": 394.2,
+        "w": 142.17,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PHONE",
+      "why": "a toll-free helpline, not a personal number",
+      "text": "1800 200 3333",
+      "box": {
+        "x": 20,
+        "y": 84.89,
+        "w": 84.22,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PHONE",
+      "why": "a railway helpline short code",
+      "text": "139",
+      "box": {
+        "x": 155.59,
+        "y": 84.89,
+        "w": 21.03,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "IFSC",
+      "why": "IFSC shape, the all-zero example from the bank's help page",
+      "text": "SBIN0000000",
+      "box": {
+        "x": 362.22,
+        "y": 149.38,
+        "w": 70.72,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "GSTIN",
+      "why": "the GSTIN the government's own documentation uses as an example",
+      "text": "29AAAAA0000A1Z5",
+      "box": {
+        "x": 362.22,
+        "y": 177.97,
+        "w": 105.05,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PHONE",
+      "why": "a postal code, six digits",
+      "text": "PIN 560041",
+      "box": {
+        "x": 362.22,
+        "y": 206.56,
+        "w": 61,
+        "h": 16
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Return",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 442.09,
+        "w": 67.84,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Buy again",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 95.84,
+        "y": 442.09,
+        "w": 86.06,
+        "h": 30.89
+      },
+      "inViewport": true
+    }
+  ]
+}

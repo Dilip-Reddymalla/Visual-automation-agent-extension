@@ -1,0 +1,226 @@
+{
+  "id": "rep-wallet-history",
+  "title": "Wallet History",
+  "half": "replica",
+  "archetype": "ecommerce",
+  "theme": "shop",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 1152.19,
+        "y": 13,
+        "w": 107.81,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 112.5,
+        "w": 65.58,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 248,
+        "y": 143,
+        "w": 112.13,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 248,
+        "y": 173.5,
+        "w": 141.7,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 648.09,
+        "y": 277,
+        "w": 118.86,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 648.09,
+        "y": 315.5,
+        "w": 167.44,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 648.09,
+        "y": 431,
+        "w": 113.28,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "CARD",
+      "why": "sixteen digits, Luhn-valid, 9-prefix no issuer uses",
+      "text": "Shipment 9269 0993 0142 8867",
+      "box": {
+        "x": 28,
+        "y": 277,
+        "w": 181.19,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 4,532 1290 4471",
+      "box": {
+        "x": 28,
+        "y": 315.5,
+        "w": 110.89,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 5,100 2233 8890",
+      "box": {
+        "x": 28,
+        "y": 354,
+        "w": 110.89,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "UPI",
+      "why": "a business collection handle, not a person",
+      "text": "bescom.bill@okaxis",
+      "box": {
+        "x": 648.09,
+        "y": 354,
+        "w": 112.44,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "CARD",
+      "why": "a rupee amount whose grouping mimics a 16-digit card",
+      "text": "Rs 3,415 9000 1122",
+      "box": {
+        "x": 28,
+        "y": 392.5,
+        "w": 110.89,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "UPI",
+      "why": "a business collection handle, not a person",
+      "text": "merchant0042@ybl",
+      "box": {
+        "x": 648.09,
+        "y": 392.5,
+        "w": 111.8,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Issued on 12/03/2021",
+      "box": {
+        "x": 28,
+        "y": 431,
+        "w": 124.59,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Add money",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 459.5,
+        "w": 101.64,
+        "h": 37
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Statement",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 125.48,
+        "y": 459.5,
+        "w": 92.97,
+        "h": 37
+      },
+      "inViewport": true
+    }
+  ]
+}

@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wallet History</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #1a1a1a;
+        font:
+          14px/1.5 system-ui,
+          'Helvetica Neue',
+          sans-serif;
+      }
+      a {
+        color: #c2410c;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #fafafa;
+        border-bottom: 2px solid #c2410c;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 11px;
+        color: #666666;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #1a1a1a;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #c2410c;
+        background: #fafafa;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #e6e6e6;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #666666;
+      }
+      h1 {
+        font-size: 21px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: #666666;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #e6e6e6;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #1a1a1a;
+      }
+      input[readonly] {
+        background: #fafafa;
+      }
+      .hint {
+        font-size: 11px;
+        color: #666666;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #e6e6e6;
+        vertical-align: top;
+      }
+      th {
+        background: #fafafa;
+        font-weight: 600;
+        color: #666666;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #666666;
+        font-size: 12px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #e6e6e6;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #fafafa;
+        color: #c2410c;
+        font-size: 11px;
+        border: 1px solid #e6e6e6;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #e6e6e6;
+        border-radius: 3px;
+        background: #fafafa;
+        font: inherit;
+        cursor: pointer;
+        color: #1a1a1a;
+      }
+      button.primary {
+        background: #c2410c;
+        border-color: #c2410c;
+        color: #fff;
+      }
+      .muted {
+        color: #666666;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #fafafa;
+        padding: 16px;
+        border: 1px solid #e6e6e6;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #666666;
+        font-size: 11px;
+        border-top: 1px solid #e6e6e6;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="rep-wallet-history">
+    <style>
+      .lvl0,
+      .lvl1,
+      .lvl2,
+      .lvl3,
+      .lvl4,
+      .lvl5,
+      .lvl6 {
+        display: block;
+      }
+      .rowf {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .fake-label {
+        flex: 0 0 190px;
+        color: #5b6472;
+        font-size: 0.85em;
+        text-align: right;
+      }
+      .rowf input {
+        flex: 1 1 auto;
+      }
+      .fake-hint {
+        flex: 0 0 auto;
+        color: #8b95a3;
+        font-size: 0.8em;
+      }
+      table.kvtable td {
+        border-bottom: 1px dotted #dfe4ec;
+        padding: 5px 8px;
+      }
+      table.kvtable td.k {
+        color: #5b6472;
+        width: 220px;
+        font-size: 0.88em;
+      }
+      .divbtn {
+        display: inline-block;
+        padding: 7px 14px;
+        border: 1px solid #c9d0da;
+        border-radius: 3px;
+        background: #eef2f7;
+        cursor: pointer;
+        user-select: none;
+      }
+      .tabs {
+        display: flex;
+        gap: 2px;
+        border-bottom: 2px solid #c9d0da;
+        margin-bottom: 12px;
+      }
+      .tabs [role='tab'] {
+        padding: 7px 14px;
+        cursor: pointer;
+        background: #f2f5f9;
+      }
+      .tabs [role='tab'][aria-selected='true'] {
+        background: #fff;
+        font-weight: 600;
+      }
+      .marquee {
+        background: #fffbe6;
+        border: 1px solid #f0e0a0;
+        padding: 6px 10px;
+        font-size: 0.85em;
+        margin-bottom: 10px;
+      }
+    </style>
+
+    <header class="bar">
+      <div class="brand">Wallet</div>
+      <div><span data-pii="PHONE">+91 98022 04430</span></div>
+    </header>
+    <main>
+      <div class="lvl2">
+        <div class="lvl1">
+          <div class="lvl0">
+            <h1>Transaction history</h1>
+            <table class="kvtable">
+              <tbody>
+                <tr>
+                  <td class="k">Account holder</td>
+                  <td class="v"><span data-pii="PERSON">Imran Khan</span></td>
+                </tr>
+                <tr>
+                  <td class="k">Linked bank</td>
+                  <td class="v"><span data-pii="ACCOUNT">0960201338742311</span></td>
+                </tr>
+                <tr>
+                  <td class="k">Primary UPI</td>
+                  <td class="v"><span data-pii="UPI">rohan.chatterjee@paytm</span></td>
+                </tr>
+                <tr>
+                  <td class="k">KYC status</td>
+                  <td class="v">Full KYC, verified against Aadhaar</td>
+                </tr>
+              </tbody>
+            </table>
+            <table>
+              <thead>
+                <tr>
+                  <th>Txn</th>
+                  <th>Type</th>
+                  <th>Counterparty</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span
+                      data-neg="CARD"
+                      data-neg-why="sixteen digits, Luhn-valid, 9-prefix no issuer uses"
+                      >Shipment 9269 0993 0142 8867</span
+                    >
+                  </td>
+                  <td>Paid to</td>
+                  <td><span data-pii="UPI">farhan.banerjee@apl</span></td>
+                  <td class="num">240</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span
+                      data-neg="CARD"
+                      data-neg-why="a rupee amount whose grouping mimics a 16-digit card"
+                      >Rs 4,532 1290 4471</span
+                    >
+                  </td>
+                  <td>Received from</td>
+                  <td><span data-pii="UPI">neha.sundaram@okhdfcbank</span></td>
+                  <td class="num">1,500</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span
+                      data-neg="CARD"
+                      data-neg-why="a rupee amount whose grouping mimics a 16-digit card"
+                      >Rs 5,100 2233 8890</span
+                    >
+                  </td>
+                  <td>Paid to</td>
+                  <td>
+                    <span
+                      data-neg="UPI"
+                      data-neg-why="a business collection handle, not a person"
+                      >bescom.bill@okaxis</span
+                    >
+                  </td>
+                  <td class="num">2,310</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span
+                      data-neg="CARD"
+                      data-neg-why="a rupee amount whose grouping mimics a 16-digit card"
+                      >Rs 3,415 9000 1122</span
+                    >
+                  </td>
+                  <td>Paid to</td>
+                  <td>
+                    <span
+                      data-neg="UPI"
+                      data-neg-why="a business collection handle, not a person"
+                      >merchant0042@ybl</span
+                    >
+                  </td>
+                  <td class="num">99</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span data-neg="DOB" data-neg-why="a date with no birth context"
+                      >Issued on 12/03/2021</span
+                    >
+                  </td>
+                  <td>Sent to</td>
+                  <td><span data-pii="UPI">aditya.reddy@oksbi</span></td>
+                  <td class="num">5,000</td>
+                </tr>
+              </tbody>
+            </table>
+            <div>
+              <div role="button" tabindex="0" class="divbtn" data-el="1">Add money</div>
+              <div role="button" tabindex="0" class="divbtn" data-el="1">Statement</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

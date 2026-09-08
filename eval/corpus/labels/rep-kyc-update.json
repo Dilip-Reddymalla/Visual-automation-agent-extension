@@ -1,0 +1,296 @@
+{
+  "id": "rep-kyc-update",
+  "title": "KYC Update",
+  "half": "replica",
+  "archetype": "bank-statement",
+  "theme": "bank",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 420,
+        "y": 78.89,
+        "w": 740,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 420,
+        "y": 117.78,
+        "w": 740,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 420,
+        "y": 156.67,
+        "w": 740,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PASSPORT",
+      "box": {
+        "x": 420,
+        "y": 195.56,
+        "w": 740,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 420,
+        "y": 234.45,
+        "w": 740,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 420,
+        "y": 273.34,
+        "w": 740,
+        "h": 30.89
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 355.3,
+        "y": 316.23,
+        "w": 139.34,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PHONE",
+      "why": "a toll-free helpline, not a personal number",
+      "text": "1800 200 3333",
+      "box": {
+        "x": 1175.78,
+        "y": 8,
+        "w": 84.22,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PHONE",
+      "why": "a railway helpline short code",
+      "text": "139",
+      "box": {
+        "x": 591.61,
+        "y": 316.23,
+        "w": 21.03,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "link",
+      "name": "Accounts",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 46.89,
+        "w": 190,
+        "h": 28.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "KYC",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 75.78,
+        "w": 190,
+        "h": 28.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Nominee",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 104.67,
+        "w": 190,
+        "h": 28.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Service requests",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 133.56,
+        "w": 190,
+        "h": 28.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Name as per PAN",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 78.89,
+        "w": 740,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "PAN",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 117.78,
+        "w": 740,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Aadhaar",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 156.67,
+        "w": 740,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Passport",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 195.56,
+        "w": 740,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Communication address",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 234.45,
+        "w": 740,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Mobile",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 273.34,
+        "w": 740,
+        "h": 30.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 220,
+        "y": 347.13,
+        "w": 56.55,
+        "h": 32.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Submit",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 280.11,
+        "y": 347.13,
+        "w": 70.67,
+        "h": 32.89
+      },
+      "inViewport": true
+    }
+  ]
+}

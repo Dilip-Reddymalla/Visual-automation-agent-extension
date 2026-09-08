@@ -1,0 +1,243 @@
+{
+  "id": "rep-itd-dashboard",
+  "title": "e-Filing Dashboard",
+  "half": "replica",
+  "archetype": "gov-form",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 1171.08,
+        "y": 13,
+        "w": 88.92,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 122.88,
+        "y": 64,
+        "w": 112.06,
+        "h": 28
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 248,
+        "y": 161.5,
+        "w": 91.22,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 248,
+        "y": 192,
+        "w": 66.2,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 248,
+        "y": 222.5,
+        "w": 80.66,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 248,
+        "y": 253,
+        "w": 170.81,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 248,
+        "y": 283.5,
+        "w": 330.83,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 248,
+        "y": 314,
+        "w": 112.13,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 577.42,
+        "y": 414.5,
+        "w": 30.19,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled waybill",
+      "text": "Waybill 736561952930",
+      "box": {
+        "x": 248,
+        "y": 344.5,
+        "w": 129.3,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled consignment",
+      "text": "Consignment 914230602568",
+      "box": {
+        "x": 248,
+        "y": 375,
+        "w": 164.13,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled docket",
+      "text": "Docket 258696798958",
+      "box": {
+        "x": 659.78,
+        "y": 414.5,
+        "w": 137.92,
+        "h": 19
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "tab",
+      "name": "Dashboard",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 106.5,
+        "w": 96.97,
+        "h": 35
+      },
+      "inViewport": true
+    },
+    {
+      "role": "tab",
+      "name": "e-File",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 118.97,
+        "y": 106.5,
+        "w": 61.86,
+        "h": 35
+      },
+      "inViewport": true
+    },
+    {
+      "role": "tab",
+      "name": "Authorised partners",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 182.83,
+        "y": 106.5,
+        "w": 150.45,
+        "h": 35
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "File a return",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 448.5,
+        "w": 103.39,
+        "h": 37
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "View 26AS",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 127.23,
+        "y": 448.5,
+        "w": 94.92,
+        "h": 37
+      },
+      "inViewport": true
+    }
+  ]
+}

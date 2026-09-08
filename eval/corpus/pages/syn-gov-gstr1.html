@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GSTR-1 — Outward Supplies</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #101418;
+        font:
+          14px/1.5 'Segoe UI',
+          system-ui,
+          sans-serif;
+      }
+      a {
+        color: #0b4a8f;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #eef2f7;
+        border-bottom: 2px solid #0b4a8f;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 11px;
+        color: #4d5762;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #101418;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #0b4a8f;
+        background: #eef2f7;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #c9d0da;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #4d5762;
+      }
+      h1 {
+        font-size: 21px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: #4d5762;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #c9d0da;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #101418;
+      }
+      input[readonly] {
+        background: #eef2f7;
+      }
+      .hint {
+        font-size: 11px;
+        color: #4d5762;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #c9d0da;
+        vertical-align: top;
+      }
+      th {
+        background: #eef2f7;
+        font-weight: 600;
+        color: #4d5762;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #4d5762;
+        font-size: 12px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #c9d0da;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #eef2f7;
+        color: #0b4a8f;
+        font-size: 11px;
+        border: 1px solid #c9d0da;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #c9d0da;
+        border-radius: 3px;
+        background: #eef2f7;
+        font: inherit;
+        cursor: pointer;
+        color: #101418;
+      }
+      button.primary {
+        background: #0b4a8f;
+        border-color: #0b4a8f;
+        color: #fff;
+      }
+      .muted {
+        color: #4d5762;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #eef2f7;
+        padding: 16px;
+        border: 1px solid #c9d0da;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #4d5762;
+        font-size: 11px;
+        border-top: 1px solid #c9d0da;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-gov-gstr1">
+    <header class="bar">
+      <div class="brand">Goods and Services Tax Network</div>
+      <div><span>08IEOPH6094M5ZF</span></div>
+    </header>
+    <div class="crumb">Returns › GSTR-1 › Outward supplies</div>
+    <main>
+      <h1>Outward supplies — September</h1>
+      <div class="card">
+        <dl class="kv">
+          <dt>Legal name</dt>
+          <dd><span>Kaveri Textiles Pvt Ltd</span></dd>
+          <dt>Authorised signatory</dt>
+          <dd><span>Nikhil Iyer</span></dd>
+          <dt>PAN</dt>
+          <dd><span>XXMCY4954J</span></dd>
+          <dt>Registered email</dt>
+          <dd><span>neha.sundaram@example.com</span></dd>
+          <dt>Format example</dt>
+          <dd><span>Bill no. 199340480568</span></dd>
+        </dl>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Invoice</th>
+            <th>Rate</th>
+            <th>Taxable value</th>
+            <th>Tax</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span>Docket 258696798958</span></td>
+            <td>18%</td>
+            <td class="num">1,24,000</td>
+            <td class="num">22,320</td>
+          </tr>
+          <tr>
+            <td><span>Ticket 414268427341</span></td>
+            <td>12%</td>
+            <td class="num">86,500</td>
+            <td class="num">10,380</td>
+          </tr>
+          <tr>
+            <td><span>Requisition 290817729020</span></td>
+            <td>5%</td>
+            <td class="num">2,40,000</td>
+            <td class="num">12,000</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="actions">
+        <button class="">Save</button><button class="primary">File with EVC</button>
+      </div>
+    </main>
+  </body>
+</html>

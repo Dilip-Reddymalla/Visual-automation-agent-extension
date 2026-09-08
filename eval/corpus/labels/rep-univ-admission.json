@@ -1,0 +1,309 @@
+{
+  "id": "rep-univ-admission",
+  "title": "University Admission",
+  "half": "replica",
+  "archetype": "scholarship",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 426,
+        "y": 109.5,
+        "w": 734,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 426,
+        "y": 160,
+        "w": 734,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 426,
+        "y": 210.5,
+        "w": 734,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 426,
+        "y": 261,
+        "w": 734,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 426,
+        "y": 311.5,
+        "w": 734,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 426,
+        "y": 362,
+        "w": 734,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 349.05,
+        "y": 420.5,
+        "w": 196.28,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 745.92,
+        "y": 420.5,
+        "w": 115.52,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "GSTIN",
+      "why": "the GSTIN the government's own documentation uses as an example",
+      "text": "29AAAAA0000A1Z5",
+      "box": {
+        "x": 1128.7,
+        "y": 13,
+        "w": 131.3,
+        "h": 20
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PHONE",
+      "why": "a postal code, six digits",
+      "text": "PIN 560041",
+      "box": {
+        "x": 618.25,
+        "y": 420.5,
+        "w": 76.25,
+        "h": 20
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "link",
+      "name": "Apply",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 64.5,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Documents",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 105,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Fee",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 145.5,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Status",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 186,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Candidate name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 109.5,
+        "w": 734,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Date of birth",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 160,
+        "w": 734,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Aadhaar",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 210.5,
+        "w": 734,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Guardian mobile",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 261,
+        "w": 734,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Correspondence address",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 311.5,
+        "w": 734,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Fee account",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 362,
+        "w": 734,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 226,
+        "y": 457,
+        "w": 60.64,
+        "h": 38.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Submit",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 290.75,
+        "y": 457,
+        "w": 76.92,
+        "h": 38.5
+      },
+      "inViewport": true
+    }
+  ]
+}

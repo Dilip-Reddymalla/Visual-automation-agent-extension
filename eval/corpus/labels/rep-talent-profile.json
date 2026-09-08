@@ -1,0 +1,165 @@
+{
+  "id": "rep-talent-profile",
+  "title": "Candidate Profile",
+  "half": "replica",
+  "archetype": "job-application",
+  "theme": "portal",
+  "density": "roomy",
+  "fontPx": 18,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 20,
+        "y": 92.59,
+        "w": 186.16,
+        "h": 33
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 118.17,
+        "y": 258.98,
+        "w": 272.38,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 118.17,
+        "y": 293.58,
+        "w": 111.67,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PASSPORT",
+      "box": {
+        "x": 118.17,
+        "y": 362.77,
+        "w": 76.41,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ORG",
+      "box": {
+        "x": 38,
+        "y": 499.66,
+        "w": 186.36,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 630.05,
+        "y": 499.66,
+        "w": 112.86,
+        "h": 24
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Chelsea",
+      "box": {
+        "x": 20,
+        "y": 154.09,
+        "w": 61.31,
+        "h": 24
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Preston",
+      "box": {
+        "x": 118.17,
+        "y": 328.17,
+        "w": 60.23,
+        "h": 24
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PAN",
+      "why": "PAN shape with an entity code that does not exist",
+      "text": "ABCDX1234Z",
+      "box": {
+        "x": 330.58,
+        "y": 499.66,
+        "w": 104.88,
+        "h": 24
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Message",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 583.25,
+        "w": 100.03,
+        "h": 58.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Shortlist",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 128.03,
+        "y": 583.25,
+        "w": 95.11,
+        "h": 58.59
+      },
+      "inViewport": true
+    }
+  ]
+}

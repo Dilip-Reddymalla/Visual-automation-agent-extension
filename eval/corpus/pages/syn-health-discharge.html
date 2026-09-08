@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Discharge Summary</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #0f172a;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+      }
+      a {
+        color: #0e7490;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #f0f9ff;
+        border-bottom: 2px solid #0e7490;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 12px;
+        color: #64748b;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #0f172a;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #0e7490;
+        background: #f0f9ff;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 18px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #e2e8f0;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #0f172a;
+      }
+      input[readonly] {
+        background: #f0f9ff;
+      }
+      .hint {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: top;
+      }
+      th {
+        background: #f0f9ff;
+        font-weight: 600;
+        color: #64748b;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #64748b;
+        font-size: 13px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f0f9ff;
+        color: #0e7490;
+        font-size: 12px;
+        border: 1px solid #e2e8f0;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 3px;
+        background: #f0f9ff;
+        font: inherit;
+        cursor: pointer;
+        color: #0f172a;
+      }
+      button.primary {
+        background: #0e7490;
+        border-color: #0e7490;
+        color: #fff;
+      }
+      .muted {
+        color: #64748b;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #f0f9ff;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #64748b;
+        font-size: 12px;
+        border-top: 1px solid #e2e8f0;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-health-discharge">
+    <header class="bar">
+      <div class="brand">Apex Hospitals</div>
+      <div>Discharge summary</div>
+    </header>
+    <main>
+      <h1>Discharge summary</h1>
+      <div class="card">
+        <p>
+          <span>Pooja Mishra</span>, <span>25/05/1991</span>, resident of
+          <span>34, Banjara Hills Road No. 3, Bengaluru, Karnataka 560041</span>, was admitted
+          on <span>Austin</span> and discharged today. The insurer was billed against member
+          number <span>7820784644773296</span> and the claim reference is <span>Madison</span>.
+        </p>
+        <p>
+          Follow-up has been arranged; the appointment reminder will be sent to
+          <span>+91 95162 08045</span> and copied to <span>pooja.mishra@mail.example.org</span>.
+          The treating consultant was Dr <span>Divya Rao</span>. Identity was verified against
+          Aadhaar <span>7119 3581 7755</span> at admission.
+        </p>
+      </div>
+      <div class="actions">
+        <button class="">Print</button><button class="primary">Email to me</button>
+      </div>
+    </main>
+  </body>
+</html>

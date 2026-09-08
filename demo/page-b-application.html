@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scheme Application — Demo</title>
+    <style>
+      :root {
+        --line: #d9dee7;
+        --ink: #14181e;
+        --muted: #5b6472;
+        --accent: #1b6feb;
+        --bad: #b3261e;
+        --panel: #f6f8fb;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 system-ui,
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        font-weight: 650;
+      }
+      main {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      fieldset {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        margin: 0 0 20px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      input[type='text'],
+      input[type='email'],
+      textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font: inherit;
+        background: #fff;
+        color: var(--ink);
+      }
+      /* Carried over from the previous page, and shown read-only. This is where the
+         placeholder numbering has to stay stable: same human, same «PERSON_1». */
+      .carried {
+        background: var(--panel);
+        color: var(--muted);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      button {
+        padding: 9px 16px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        font: inherit;
+        cursor: pointer;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      [role='alert'] {
+        color: var(--bad);
+        font-size: 13px;
+        margin-top: 4px;
+      }
+
+      /* The custom dropdown. Deliberately not a <select>: no native popup, no `value`
+         to set, and the options do not exist in the DOM until it is opened. Operating
+         it requires click, settle, re-perceive, click -- which is the whole point. */
+      .combo {
+        position: relative;
+      }
+      .combo-button {
+        width: 100%;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+      }
+      .combo-list {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 4px);
+        z-index: 20;
+        margin: 0;
+        padding: 4px;
+        list-style: none;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        box-shadow: 0 6px 20px rgba(20, 24, 30, 0.12);
+      }
+      .combo-list li {
+        padding: 8px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .combo-list li:hover,
+      .combo-list li[aria-selected='true'] {
+        background: var(--panel);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar">
+      <span class="brand">National Scholarship Portal</span>
+      <nav><a href="page-a-enrolment.html">Back to enrolment</a></nav>
+    </header>
+
+    <main>
+      <h1>Scheme application</h1>
+      <p id="carried-note">
+        Details carried over from your enrolment. Check them, choose a scheme, and submit.
+      </p>
+
+      <form id="application">
+        <fieldset>
+          <legend>Applicant</legend>
+
+          <!-- Same person, same Aadhaar as page A. Across a full navigation the
+               placeholders must still read «PERSON_1» and «AADHAAR_1». -->
+          <div class="field">
+            <label for="b-name">Full name</label>
+            <input
+              id="b-name"
+              name="applicant_name"
+              type="text"
+              autocomplete="name"
+              class="carried"
+              value="Asha Menon"
+              readonly
+            />
+          </div>
+
+          <div class="field">
+            <label for="b-aadhaar">Aadhaar number</label>
+            <input
+              id="b-aadhaar"
+              name="aadhaar_no"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              maxlength="12"
+              class="carried"
+              value="919442736092"
+              readonly
+            />
+          </div>
+
+          <div class="field">
+            <label for="b-email">Email address</label>
+            <input
+              id="b-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="you@example.in"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Scheme</legend>
+
+          <div class="field">
+            <label id="scheme-label" for="scheme-button"
+              >Which scheme are you applying for?</label
+            >
+            <div class="combo">
+              <button
+                id="scheme-button"
+                class="combo-button"
+                type="button"
+                role="combobox"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="scheme-label"
+              >
+                <span id="scheme-value">Select a scheme</span>
+                <span aria-hidden="true">▾</span>
+              </button>
+              <!-- The list is not in the DOM until the button is clicked. -->
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="b-reason">Why are you applying?</label>
+            <textarea id="b-reason" name="reason" rows="3"></textarea>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="button" id="b-back">Back</button>
+          <button type="submit" class="primary" id="b-submit">Submit application</button>
+        </div>
+      </form>
+
+      <p id="done-note" hidden role="status">Application submitted.</p>
+    </main>
+
+    <script>
+      // A custom dropdown whose options do not exist until it opens. There is no
+      // `value` to set and no native popup to drive: the only way through it is to
+      // click, wait for the DOM to settle, look again, and click the option that is now
+      // there. That is exactly what the perception layer is for.
+      const SCHEMES = [
+        'Merit-cum-Means Scholarship',
+        "Prime Minister's Special Scholarship",
+        'Post-Matric Scholarship',
+        'Central Sector Scheme',
+      ];
+
+      const button = document.getElementById('scheme-button');
+      const combo = button.parentElement;
+      const valueLabel = document.getElementById('scheme-value');
+
+      function close() {
+        combo.querySelector('.combo-list')?.remove();
+        button.setAttribute('aria-expanded', 'false');
+      }
+
+      button.addEventListener('click', () => {
+        if (combo.querySelector('.combo-list')) {
+          close();
+          return;
+        }
+        const list = document.createElement('ul');
+        list.className = 'combo-list';
+        list.setAttribute('role', 'listbox');
+        list.setAttribute('aria-labelledby', 'scheme-label');
+
+        for (const scheme of SCHEMES) {
+          const item = document.createElement('li');
+          item.setAttribute('role', 'option');
+          item.setAttribute('aria-selected', String(valueLabel.textContent === scheme));
+          item.tabIndex = 0;
+          item.textContent = scheme;
+          item.addEventListener('click', () => {
+            valueLabel.textContent = scheme;
+            close();
+          });
+          list.append(item);
+        }
+
+        combo.append(list);
+        button.setAttribute('aria-expanded', 'true');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!combo.contains(e.target)) close();
+      });
+
+      document.getElementById('b-back').addEventListener('click', () => {
+        location.href = 'page-a-enrolment.html';
+      });
+
+      document.getElementById('application').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('b-email');
+        const chosen = valueLabel.textContent !== 'Select a scheme';
+
+        document.getElementById('b-error')?.remove();
+        if (!email.value || !chosen) {
+          const alert = document.createElement('div');
+          alert.setAttribute('role', 'alert');
+          alert.id = 'b-error';
+          alert.textContent = !email.value
+            ? 'Email is required.'
+            : 'Choose a scheme before submitting.';
+          e.target.prepend(alert);
+          return;
+        }
+        document.getElementById('done-note').hidden = false;
+      });
+    </script>
+  </body>
+</html>

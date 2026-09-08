@@ -1,0 +1,296 @@
+{
+  "id": "rep-telecom-bill",
+  "title": "Postpaid Bill",
+  "half": "replica",
+  "archetype": "utility",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 426,
+        "y": 106.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 426,
+        "y": 155.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 426,
+        "y": 204.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 426,
+        "y": 253.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "CARD",
+      "box": {
+        "x": 426,
+        "y": 302.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 426,
+        "y": 351.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 346.59,
+        "y": 407.5,
+        "w": 167.36,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PHONE",
+      "why": "ten digits that happen to be an amount in paise",
+      "text": "Bill amount 9845012345",
+      "box": {
+        "x": 1110.69,
+        "y": 13,
+        "w": 149.31,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "EMAIL",
+      "why": "a support desk, not a person",
+      "text": "support@example.in",
+      "box": {
+        "x": 643.7,
+        "y": 407.5,
+        "w": 127.73,
+        "h": 19
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "link",
+      "name": "Overview",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 63,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Bills",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 102,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Plans",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 141,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Support",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 180,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Account holder",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 106.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Billing address",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 155.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Alternate contact",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 204.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Email for bills",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 253.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Autopay card",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 302.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Autopay UPI",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 351.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 226,
+        "y": 441.5,
+        "w": 58.59,
+        "h": 37
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Submit",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 288.44,
+        "y": 441.5,
+        "w": 73.8,
+        "h": 37
+      },
+      "inViewport": true
+    }
+  ]
+}

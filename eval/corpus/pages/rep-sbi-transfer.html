@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OnlineSBI — Transfer</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #14181e;
+        font:
+          13px/1.3 'Segoe UI',
+          system-ui,
+          sans-serif;
+      }
+      a {
+        color: #00524d;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 9px 20px;
+        background: #f4f7f6;
+        border-bottom: 2px solid #00524d;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 11px;
+        color: #5b6472;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 10px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 6px 10px;
+        text-decoration: none;
+        color: #14181e;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #00524d;
+        background: #f4f7f6;
+      }
+      section {
+        margin-bottom: 10px;
+      }
+      fieldset {
+        border: 1px solid #dde2ea;
+        border-radius: 4px;
+        padding: 10px;
+        margin: 0 0 10px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #5b6472;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 6px;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 0 0 6px;
+      }
+      h3 {
+        font-size: 14px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 6px;
+      }
+      label {
+        display: block;
+        font-size: 11px;
+        color: #5b6472;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 6px 9px;
+        border: 1px solid #dde2ea;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #14181e;
+      }
+      input[readonly] {
+        background: #f4f7f6;
+      }
+      .hint {
+        font-size: 10px;
+        color: #5b6472;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 6px 8px;
+        border-bottom: 1px solid #dde2ea;
+        vertical-align: top;
+      }
+      th {
+        background: #f4f7f6;
+        font-weight: 600;
+        color: #5b6472;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 6px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #5b6472;
+        font-size: 11px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #dde2ea;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 6px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f4f7f6;
+        color: #00524d;
+        font-size: 10px;
+        border: 1px solid #dde2ea;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 6px 14px;
+        border: 1px solid #dde2ea;
+        border-radius: 3px;
+        background: #f4f7f6;
+        font: inherit;
+        cursor: pointer;
+        color: #14181e;
+      }
+      button.primary {
+        background: #00524d;
+        border-color: #00524d;
+        color: #fff;
+      }
+      .muted {
+        color: #5b6472;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #f4f7f6;
+        padding: 10px;
+        border: 1px solid #dde2ea;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 10px 20px;
+        color: #5b6472;
+        font-size: 10px;
+        border-top: 1px solid #dde2ea;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="rep-sbi-transfer">
+    <style>
+      .lvl0,
+      .lvl1,
+      .lvl2,
+      .lvl3,
+      .lvl4,
+      .lvl5,
+      .lvl6 {
+        display: block;
+      }
+      .rowf {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .fake-label {
+        flex: 0 0 190px;
+        color: #5b6472;
+        font-size: 0.85em;
+        text-align: right;
+      }
+      .rowf input {
+        flex: 1 1 auto;
+      }
+      .fake-hint {
+        flex: 0 0 auto;
+        color: #8b95a3;
+        font-size: 0.8em;
+      }
+      table.kvtable td {
+        border-bottom: 1px dotted #dfe4ec;
+        padding: 5px 8px;
+      }
+      table.kvtable td.k {
+        color: #5b6472;
+        width: 220px;
+        font-size: 0.88em;
+      }
+      .divbtn {
+        display: inline-block;
+        padding: 7px 14px;
+        border: 1px solid #c9d0da;
+        border-radius: 3px;
+        background: #eef2f7;
+        cursor: pointer;
+        user-select: none;
+      }
+      .tabs {
+        display: flex;
+        gap: 2px;
+        border-bottom: 2px solid #c9d0da;
+        margin-bottom: 12px;
+      }
+      .tabs [role='tab'] {
+        padding: 7px 14px;
+        cursor: pointer;
+        background: #f2f5f9;
+      }
+      .tabs [role='tab'][aria-selected='true'] {
+        background: #fff;
+        font-weight: 600;
+      }
+      .marquee {
+        background: #fffbe6;
+        border: 1px solid #f0e0a0;
+        padding: 6px 10px;
+        font-size: 0.85em;
+        margin-bottom: 10px;
+      }
+    </style>
+
+    <header class="bar">
+      <div class="brand">OnlineSBI</div>
+      <div>Last login <span>Receipt 801343131844</span></div>
+    </header>
+    <main>
+      <div class="lvl4">
+        <div class="lvl3">
+          <div class="lvl2">
+            <div class="lvl1">
+              <div class="lvl0">
+                <h1>Transfer to another bank</h1>
+                <div class="rowf">
+                  <span class="fake-label">Beneficiary name</span
+                  ><input
+                    type="text"
+                    name="benName"
+                    value="Suresh Sharma"
+                    placeholder="Beneficiary name"
+                    style=""
+                  />
+                </div>
+                <div class="rowf">
+                  <span class="fake-label">Beneficiary account</span
+                  ><input
+                    type="text"
+                    name="benAcc"
+                    value="32012193609"
+                    placeholder="Beneficiary account"
+                    style=""
+                  />
+                </div>
+                <div class="rowf">
+                  <span class="fake-label">Confirm account</span
+                  ><input
+                    type="text"
+                    name="benAcc2"
+                    value="10632214213"
+                    placeholder="Confirm account"
+                    style=""
+                  />
+                </div>
+                <div class="rowf">
+                  <span class="fake-label">IFS code</span
+                  ><input
+                    type="text"
+                    name="ifsc"
+                    value="ICIC0480618"
+                    placeholder="IFS code"
+                    style=""
+                  />
+                </div>
+                <p class="hint">Format example: <span>Case ID 584130219471</span></p>
+                <div class="rowf">
+                  <span class="fake-label">Amount</span
+                  ><input type="text" name="amt" value="25000" placeholder="Amount" style="" />
+                </div>
+                <div class="rowf">
+                  <span class="fake-label">Remarks</span
+                  ><input
+                    type="text"
+                    name="rem"
+                    value="Rent for September"
+                    placeholder="Remarks"
+                    style=""
+                  />
+                </div>
+                <div class="rowf">
+                  <span class="fake-label">Profile password</span>
+                  <input type="password" name="pp" value="pknp49xtc7" style="" />
+                </div>
+                <p>
+                  An OTP will be sent to the mobile registered with the bank,
+                  <span>+91 66573 42140</span>. Reference <span>File no. 242238750695</span>.
+                </p>
+                <div>
+                  <div role="button" tabindex="0" class="divbtn">Back</div>
+                  <div role="button" tabindex="0" class="divbtn">Confirm transfer</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

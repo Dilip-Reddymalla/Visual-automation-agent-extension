@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redaction Gate — what was sent</title>
+    <style>
+      /* Tokens first, both themes, because this gets projected and often badly. Contrast
+         is set for a washed-out beamer rather than for a good monitor: the greys are
+         darker than they need to be on glass, which costs nothing and saves the demo. */
+      :root {
+        color-scheme: light dark;
+        --ink: #10141a;
+        --muted: #4a5462;
+        --line: #c9d1dc;
+        --bg: #ffffff;
+        --panel: #f2f5f9;
+        --accent: #0b5fd0;
+        --warn: #a8360f;
+        --shade: rgba(16, 20, 26, 0.55);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ink: #f2f5f9;
+          --muted: #aab4c2;
+          --line: #3a434f;
+          --bg: #0f1319;
+          --panel: #171c24;
+          --accent: #6aa9ff;
+          --warn: #ff9b7a;
+          --shade: rgba(0, 0, 0, 0.62);
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        /* The page never scrolls sideways; wide things scroll inside themselves. */
+        overflow-x: hidden;
+      }
+      header {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      .counter {
+        margin-left: auto;
+        font-variant-numeric: tabular-nums;
+        font-size: 15px;
+      }
+      .counter strong {
+        font-size: 19px;
+      }
+      .zero {
+        color: var(--accent);
+      }
+      select {
+        padding: 5px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--bg);
+        color: inherit;
+        font: inherit;
+      }
+      main {
+        padding: 16px 20px 40px;
+      }
+      .frames {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 900px) {
+        .frames {
+          grid-template-columns: 1fr;
+        }
+      }
+      figure {
+        margin: 0;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--panel);
+      }
+      figcaption {
+        padding: 8px 12px;
+        font-size: 13px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      figcaption .tag {
+        color: var(--muted);
+      }
+      .shot {
+        position: relative;
+        background: #fff;
+      }
+      .shot img,
+      .shot svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .shot svg {
+        position: absolute;
+        inset: 0;
+      }
+      /* Everything dims except the hovered box. Drawn as one shape with an even-odd
+         hole, so there is exactly one dark layer and no seams between rectangles. */
+      .veil {
+        fill: var(--shade);
+        pointer-events: none;
+      }
+      .outline {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 3;
+        pointer-events: none;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 18px;
+        font-size: 14px;
+      }
+      .wrap {
+        overflow-x: auto;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 6px 10px;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      tbody tr:hover {
+        background: var(--panel);
+        cursor: crosshair;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-family: ui-monospace, monospace;
+      }
+      code {
+        font-family: ui-monospace, monospace;
+        font-size: 13px;
+      }
+      .keep {
+        color: var(--warn);
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 10px 0 0;
+      }
+      .empty {
+        padding: 40px 0;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      /* The local-step card. Deliberately as prominent as the frames it replaces: a step
+         that sent nothing is the strongest claim this project makes, and it used to be
+         displayed as an empty state telling the operator to come back later. */
+      .local {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px 20px;
+        background: var(--panel);
+      }
+      .local h2 {
+        margin: 0 0 6px;
+        font-size: 17px;
+      }
+      .local .facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0 0;
+      }
+      .local .fact {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-size: 12px;
+        background: var(--bg);
+      }
+      .local .why {
+        margin: 14px 0 0;
+        padding: 10px 12px;
+        border-left: 3px solid var(--warn);
+        background: var(--bg);
+        font-size: 13px;
+      }
+      .local .why strong {
+        display: block;
+        margin-bottom: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>What was sent</h1>
+      <label for="step">Step</label>
+      <select id="step"></select>
+      <p class="counter" id="counter"></p>
+    </header>
+
+    <main>
+      <div id="empty" class="empty">
+        No step recorded yet. Run a task, then come back — the panel holds the last ten.
+      </div>
+
+      <!-- A step that never reached the network. There is no pair of frames to show,
+           because no frame was ever taken: the plan was made from the DOM. -->
+      <div id="local" class="local" hidden>
+        <h2 id="local-title">Nothing was sent</h2>
+        <p id="local-lede" class="note"></p>
+        <div class="facts" id="local-facts"></div>
+        <div class="why" id="local-why" hidden></div>
+      </div>
+
+      <div id="content" hidden>
+        <div class="frames">
+          <figure>
+            <figcaption>
+              <span><strong>Before the gate</strong> — the real screen</span>
+              <span class="tag">in memory only</span>
+            </figcaption>
+            <div class="shot"><img id="before" alt="the screen as captured" /></div>
+          </figure>
+
+          <figure>
+            <figcaption>
+              <span><strong>After the gate</strong> — the exact bytes POSTed</span>
+              <span class="tag" id="sent-tag"></span>
+            </figcaption>
+            <div class="shot">
+              <img id="after" alt="the image that was sent to the planner" />
+              <svg id="overlay" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+            </div>
+          </figure>
+        </div>
+
+        <div class="wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>class</th>
+                <th>origin</th>
+                <th>operation</th>
+                <th>detector</th>
+                <th>placeholder</th>
+                <th class="num">x</th>
+                <th class="num">y</th>
+                <th class="num">w</th>
+                <th class="num">h</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+
+        <p class="note" id="summary"></p>
+        <p class="note">
+          Hover a row to see exactly which pixels it accounts for. The frame on the left is held
+          in this page's memory for as long as it is open, is never written to storage and is
+          never encoded — which is also why there is no button here to save it.
+        </p>
+      </div>
+    </main>
+
+    <script src="sidebyside.js"></script>
+  </body>
+</html>

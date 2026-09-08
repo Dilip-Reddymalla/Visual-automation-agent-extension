@@ -1,0 +1,6 @@
+dist/
+node_modules/
+extension/models/
+server/schema.json
+server/schema.request.json
+eval/report/

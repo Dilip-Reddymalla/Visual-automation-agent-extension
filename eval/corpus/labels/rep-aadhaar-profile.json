@@ -1,0 +1,190 @@
+{
+  "id": "rep-aadhaar-profile",
+  "title": "Aadhaar \u2014 My Profile",
+  "half": "replica",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "roomy",
+  "fontPx": 17,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 155.69,
+        "w": 110.09,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 248,
+        "y": 193.88,
+        "w": 112.27,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 248,
+        "y": 232.06,
+        "w": 81.47,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 248,
+        "y": 270.25,
+        "w": 311.63,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 248,
+        "y": 308.44,
+        "w": 86.25,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 248,
+        "y": 346.63,
+        "w": 208.3,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 433.81,
+        "y": 473.19,
+        "w": 396.03,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Valid till 31/12/2027",
+      "box": {
+        "x": 1109.8,
+        "y": 19,
+        "w": 150.2,
+        "h": 22
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Filed on 04/07/2023",
+      "box": {
+        "x": 248,
+        "y": 384.81,
+        "w": 142.02,
+        "h": 21
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Due date 15/09/2024",
+      "box": {
+        "x": 248,
+        "y": 423,
+        "w": 150.23,
+        "h": 21
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Last updated 28/02/2025",
+      "box": {
+        "x": 916.78,
+        "y": 473.19,
+        "w": 188.44,
+        "h": 22
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Edit",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 516.08,
+        "w": 58.5,
+        "h": 44.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Verify",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 83.17,
+        "y": 516.08,
+        "w": 71.95,
+        "h": 44.89
+      },
+      "inViewport": true
+    }
+  ]
+}

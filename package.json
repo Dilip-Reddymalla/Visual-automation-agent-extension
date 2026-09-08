@@ -1,0 +1,42 @@
+{
+  "name": "sih26171-redaction-gate",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SIH26171 — privacy-preserving browser agent with on-device visual perception and a one-way redaction gate.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "schema:gen": "node scripts/gen-schema.mjs",
+    "schema:check": "node scripts/gen-schema.mjs --check",
+    "build": "npm run schema:gen && node extension/build.mjs chrome",
+    "build:firefox": "npm run schema:gen && node extension/build.mjs firefox",
+    "build:all": "npm run schema:gen && node extension/build.mjs chrome && node extension/build.mjs firefox",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:gate": "node extension/build.mjs chrome && node extension/build.mjs firefox && node scripts/test-gate.mjs"
+  },
+  "dependencies": {
+    "onnxruntime-web": "^1.29.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/chrome": "^0.0.300",
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "jsdom": "^29.1.1",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^2.1.0"
+  }
+}

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Job Application</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #111827;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+      }
+      a {
+        color: #4338ca;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #f9fafb;
+        border-bottom: 2px solid #4338ca;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 12px;
+        color: #6b7280;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #111827;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #4338ca;
+        background: #f9fafb;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b7280;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 18px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #111827;
+      }
+      input[readonly] {
+        background: #f9fafb;
+      }
+      .hint {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: top;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #6b7280;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #6b7280;
+        font-size: 13px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f9fafb;
+        color: #4338ca;
+        font-size: 12px;
+        border: 1px solid #e5e7eb;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        background: #f9fafb;
+        font: inherit;
+        cursor: pointer;
+        color: #111827;
+      }
+      button.primary {
+        background: #4338ca;
+        border-color: #4338ca;
+        color: #fff;
+      }
+      .muted {
+        color: #6b7280;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #f9fafb;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #6b7280;
+        font-size: 12px;
+        border-top: 1px solid #e5e7eb;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-job-apply">
+    <header class="bar">
+      <div class="brand">Careers</div>
+      <div>Software Engineer, Intern</div>
+    </header>
+    <main>
+      <h1>Apply</h1>
+      <fieldset>
+        <legend>About you</legend>
+        <div class="grid">
+          <div class="f">
+            <label>Full name</label
+            ><input type="text" value="Rohan Pillai" data-el="1" data-pii="PERSON" />
+          </div>
+          <div class="f">
+            <label>Email</label
+            ><input type="email" value="rohan.pillai@example.in" data-el="1" data-pii="EMAIL" />
+            <div class="hint">
+              We will only use this to contact you. Example:
+              <span
+                data-neg="PERSON"
+                data-neg-why="a place name that is also a common given or family name"
+                >Victoria</span
+              >
+            </div>
+          </div>
+          <div class="f">
+            <label>Phone</label
+            ><input type="tel" value="09701 825476" data-el="1" data-pii="PHONE" />
+          </div>
+          <div class="f">
+            <label>Current city</label
+            ><input
+              type="text"
+              value="Chelsea"
+              data-el="1"
+              data-neg="PERSON"
+              data-neg-why="a place name that is also a common given or family name"
+            />
+          </div>
+          <div class="f">
+            <label>PAN (for offer paperwork)</label
+            ><input type="text" value="LEMPL5780N" data-el="1" data-pii="PAN" />
+          </div>
+          <div class="f">
+            <label>LinkedIn</label
+            ><input
+              type="text"
+              value="linkedin.example/in/rohan-pillai"
+              data-el="1"
+              data-pii="PERSON"
+            />
+          </div>
+        </div>
+        <div class="f">
+          <label>Address</label
+          ><input
+            type="text"
+            value="146, Salt Lake Sector V, New Delhi, Delhi 110075"
+            data-el="1"
+            data-pii="ADDRESS"
+          />
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Attachments</legend>
+        <div class="f"><label>Resume</label><input type="file" data-el="1" /></div>
+        <div class="f">
+          <label>Cover note</label>
+          <textarea rows="3" data-el="1">Reachable on 06356 300111 at short notice.</textarea>
+        </div>
+      </fieldset>
+      <div class="actions">
+        <button class="" data-el="1">Save</button
+        ><button class="primary" data-el="1">Submit application</button>
+      </div>
+    </main>
+  </body>
+</html>

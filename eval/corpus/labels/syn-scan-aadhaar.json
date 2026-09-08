@@ -1,0 +1,88 @@
+{
+  "id": "syn-scan-aadhaar",
+  "title": "DigiLocker \u2014 Aadhaar",
+  "half": "synthetic",
+  "archetype": "scanned-id",
+  "theme": "scan",
+  "density": "roomy",
+  "fontPx": 16,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 45,
+        "y": 212.47,
+        "w": 460,
+        "h": 280
+      },
+      "boxKind": "element",
+      "medium": "pixels",
+      "tag": "img",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Last updated 28/02/2025",
+      "box": {
+        "x": 150.22,
+        "y": 148.28,
+        "w": 184.3,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Meeting 09/11/2026",
+      "box": {
+        "x": 444.11,
+        "y": 530.66,
+        "w": 118.92,
+        "h": 15
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Share",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 569.75,
+        "w": 70.64,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Download",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 98.64,
+        "y": 569.75,
+        "w": 102.31,
+        "h": 55.19
+      },
+      "inViewport": true
+    }
+  ]
+}

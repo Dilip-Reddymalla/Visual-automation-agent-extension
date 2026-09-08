@@ -1,0 +1,139 @@
+{
+  "id": "rep-digilocker",
+  "title": "DigiLocker \u2014 Issued",
+  "half": "replica",
+  "archetype": "scanned-id",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 1172.58,
+        "y": 13,
+        "w": 87.42,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "LICENCE",
+      "box": {
+        "x": 590.38,
+        "y": 199.5,
+        "w": 123.05,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 590.38,
+        "y": 239.5,
+        "w": 77.95,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 37,
+        "y": 326.5,
+        "w": 460,
+        "h": 280
+      },
+      "boxKind": "element",
+      "medium": "pixels",
+      "tag": "img",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled ticket",
+      "text": "Ticket 414268427341",
+      "box": {
+        "x": 590.38,
+        "y": 159.5,
+        "w": 130.63,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled requisition",
+      "text": "Requisition 290817729020",
+      "box": {
+        "x": 590.38,
+        "y": 279.5,
+        "w": 162.84,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Bill no. 199340480568",
+      "box": {
+        "x": 589.31,
+        "y": 645,
+        "w": 145.28,
+        "h": 20
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Share",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 681.5,
+        "w": 67.16,
+        "h": 38.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Refresh",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 91.27,
+        "y": 681.5,
+        "w": 78.98,
+        "h": 38.5
+      },
+      "inViewport": true
+    }
+  ]
+}

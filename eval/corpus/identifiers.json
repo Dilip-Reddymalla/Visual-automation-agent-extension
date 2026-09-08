@@ -1,0 +1,425 @@
+{
+  "generatedBy": "scripts/make-pii-fixture.py",
+  "seed": 26171,
+  "note": "Checksums computed by an independent Python implementation. The TypeScript validators are tested against these, not against themselves.",
+  "valid": [
+    {
+      "cls": "AADHAAR",
+      "text": "7237 2429 6561"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "6933 7752 9506"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "2382 3294 2503"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "3242 0053 7484"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "9388 9915 4252"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "9569 8859 0168"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "3102 4124 9815"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "9777 6675 0810"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "919442736092"
+    },
+    {
+      "cls": "AADHAAR",
+      "text": "6640-2164-9544"
+    },
+    {
+      "cls": "PAN",
+      "text": "JMRPN3229K"
+    },
+    {
+      "cls": "PAN",
+      "text": "VTQCJ9212G"
+    },
+    {
+      "cls": "PAN",
+      "text": "RYAHP9975K"
+    },
+    {
+      "cls": "PAN",
+      "text": "YKPFY9209N"
+    },
+    {
+      "cls": "GSTIN",
+      "text": "25YNWPB3548P5ZJ"
+    },
+    {
+      "cls": "GSTIN",
+      "text": "33VZSPF6533Q8ZX"
+    },
+    {
+      "cls": "GSTIN",
+      "text": "32UHMCK2060Z2ZR"
+    },
+    {
+      "cls": "IFSC",
+      "text": "HDFC0040273"
+    },
+    {
+      "cls": "IFSC",
+      "text": "SBIN0315604"
+    },
+    {
+      "cls": "IFSC",
+      "text": "ICIC0416193"
+    },
+    {
+      "cls": "IFSC",
+      "text": "PUNB0979151"
+    },
+    {
+      "cls": "UPI",
+      "text": "asha.menon@okhdfcbank"
+    },
+    {
+      "cls": "UPI",
+      "text": "9845012345@paytm"
+    },
+    {
+      "cls": "UPI",
+      "text": "ravi@ybl"
+    },
+    {
+      "cls": "CARD",
+      "text": "4860697548861784"
+    },
+    {
+      "cls": "CARD",
+      "text": "5425362579170697"
+    },
+    {
+      "cls": "CARD",
+      "text": "348372879490062"
+    },
+    {
+      "cls": "CARD",
+      "text": "6521890561421919"
+    },
+    {
+      "cls": "PHONE",
+      "text": "9845012345"
+    },
+    {
+      "cls": "PHONE",
+      "text": "+91 98450 12345"
+    },
+    {
+      "cls": "PHONE",
+      "text": "08762345678"
+    },
+    {
+      "cls": "PHONE",
+      "text": "7012345678"
+    },
+    {
+      "cls": "EMAIL",
+      "text": "asha.menon@example.in"
+    },
+    {
+      "cls": "EMAIL",
+      "text": "r.kumar+tax@dept.gov.in"
+    },
+    {
+      "cls": "EMAIL",
+      "text": "x@y.co"
+    },
+    {
+      "cls": "EMAIL",
+      "text": "name@company.com"
+    },
+    {
+      "cls": "PASSPORT",
+      "text": "K1234567"
+    },
+    {
+      "cls": "PASSPORT",
+      "text": "M7654321"
+    },
+    {
+      "cls": "LICENCE",
+      "text": "KA0120199912345"
+    },
+    {
+      "cls": "LICENCE",
+      "text": "MH12 20051234567"
+    },
+    {
+      "cls": "DOB",
+      "text": "DOB: 17/04/1999",
+      "needsContext": true
+    },
+    {
+      "cls": "DOB",
+      "text": "Date of birth 1999-04-17",
+      "needsContext": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "text": "Account number 50100234567890",
+      "needsContext": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "text": "A/c no. 003701548921",
+      "needsContext": true
+    }
+  ],
+  "negatives": [
+    {
+      "text": "Invoice no. 669436125079",
+      "why": "verhoeff-valid but labelled an invoice"
+    },
+    {
+      "text": "Order ID 245540512144",
+      "why": "verhoeff-valid but labelled an order"
+    },
+    {
+      "text": "Reference 535920530701",
+      "why": "verhoeff-valid but labelled a reference"
+    },
+    {
+      "text": "Txn 691974748514",
+      "why": "verhoeff-valid but labelled a transaction"
+    },
+    {
+      "text": "INV-2024-000123",
+      "why": "invoice number"
+    },
+    {
+      "text": "ORD-4532-9981-2210",
+      "why": "order id shaped like an Aadhaar"
+    },
+    {
+      "text": "Receipt 2024/00045678",
+      "why": "receipt number"
+    },
+    {
+      "text": "Challan 190823456712",
+      "why": "twelve digits, fails Verhoeff"
+    },
+    {
+      "text": "Ticket 100000000000",
+      "why": "starts with 1, fails the Aadhaar leading rule"
+    },
+    {
+      "text": "Ref 012345678901",
+      "why": "starts with 0"
+    },
+    {
+      "text": "Rs. 1,23,456.00",
+      "why": "currency amount"
+    },
+    {
+      "text": "\u20b9 45,000",
+      "why": "currency amount"
+    },
+    {
+      "text": "Total: 123456.78",
+      "why": "decimal amount"
+    },
+    {
+      "text": "INR 9845012345.00",
+      "why": "amount that looks like a mobile number"
+    },
+    {
+      "text": "Balance -50100234567890",
+      "why": "signed amount"
+    },
+    {
+      "text": "Valid until 31/12/2030",
+      "why": "expiry date"
+    },
+    {
+      "text": "Issued on 01/04/2024",
+      "why": "issue date"
+    },
+    {
+      "text": "Last updated 2024-08-27",
+      "why": "timestamp"
+    },
+    {
+      "text": "Meeting on 17/04/2026",
+      "why": "future date"
+    },
+    {
+      "text": "Financial year 2023-24",
+      "why": "year range"
+    },
+    {
+      "text": "Bangalore",
+      "why": "place name"
+    },
+    {
+      "text": "Madras Cafe",
+      "why": "place name in a business name"
+    },
+    {
+      "text": "Victoria Terminus",
+      "why": "place name"
+    },
+    {
+      "text": "Kerala",
+      "why": "state"
+    },
+    {
+      "text": "ABCDE1234",
+      "why": "nine chars, not a PAN"
+    },
+    {
+      "text": "ABCDE12345",
+      "why": "PAN shape but ten chars wrong layout"
+    },
+    {
+      "text": "AAADA0000Z",
+      "why": "fourth char D is not a PAN entity type"
+    },
+    {
+      "text": "HDFC1234567",
+      "why": "IFSC without the zero in position five"
+    },
+    {
+      "text": "ZZZZ0123456",
+      "why": "IFSC shape, unknown bank code"
+    },
+    {
+      "text": "user@localhost",
+      "why": "not a UPI PSP"
+    },
+    {
+      "text": "4111111111111112",
+      "why": "sixteen digits, fails Luhn"
+    },
+    {
+      "text": "1234567890123456",
+      "why": "sequential digits, fails Luhn"
+    },
+    {
+      "text": "0000000000000000",
+      "why": "all zeroes"
+    },
+    {
+      "text": "5425233430109902",
+      "why": "card shape, fails Luhn"
+    },
+    {
+      "text": "1234567890",
+      "why": "ten digits, wrong leading digit"
+    },
+    {
+      "text": "5555555555",
+      "why": "ten digits, leading 5"
+    },
+    {
+      "text": "0000000000",
+      "why": "all zeroes"
+    },
+    {
+      "text": "v1.2.3",
+      "why": "version"
+    },
+    {
+      "text": "192.168.1.1",
+      "why": "private IP"
+    },
+    {
+      "text": "Pin 000000",
+      "why": "invalid pincode"
+    },
+    {
+      "text": "ISBN 978-3-16-148410-0",
+      "why": "ISBN"
+    },
+    {
+      "text": "GSTIN 29ABCDE1234F1Z9",
+      "why": "GSTIN shape, wrong check character"
+    },
+    {
+      "text": "PIN 560038",
+      "why": "pincode is not high-severity PII on its own"
+    },
+    {
+      "text": "Employee 12345",
+      "why": "short id"
+    },
+    {
+      "text": "PO 4500123456",
+      "why": "purchase order"
+    },
+    {
+      "text": "Batch 20240827001",
+      "why": "batch code"
+    },
+    {
+      "text": "SKU 8901234567890",
+      "why": "thirteen digits, fails Luhn"
+    },
+    {
+      "text": "Serial ABCD-EFGH-IJKL",
+      "why": "letters only"
+    },
+    {
+      "text": "Case No. 1234/2024",
+      "why": "case number"
+    },
+    {
+      "text": "Room 401",
+      "why": "small number"
+    },
+    {
+      "text": "Score 98.5%",
+      "why": "percentage"
+    },
+    {
+      "text": "Lat 12.9716 Lon 77.5946",
+      "why": "coordinates"
+    },
+    {
+      "text": "Temp 36.6 C",
+      "why": "measurement"
+    },
+    {
+      "text": "+91",
+      "why": "country code alone"
+    },
+    {
+      "text": "IFSC",
+      "why": "the word, no value"
+    },
+    {
+      "text": "Aadhaar",
+      "why": "the word, no value"
+    },
+    {
+      "text": "PAN card",
+      "why": "the words, no value"
+    },
+    {
+      "text": "2024",
+      "why": "a year"
+    },
+    {
+      "text": "9,845,012,345",
+      "why": "grouped number, not a phone"
+    }
+  ]
+}

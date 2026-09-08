@@ -1,0 +1,309 @@
+{
+  "id": "rep-nps-account",
+  "title": "NPS \u2014 Subscriber Details",
+  "half": "replica",
+  "archetype": "gov-form",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 426,
+        "y": 106.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 426,
+        "y": 155.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 426,
+        "y": 204.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 426,
+        "y": 253.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 426,
+        "y": 302.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 426,
+        "y": 351.5,
+        "w": 734,
+        "h": 41
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 385.2,
+        "y": 407.5,
+        "w": 157.39,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 627.56,
+        "y": 407.5,
+        "w": 75.47,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PAN",
+      "why": "PAN shape, a placeholder in the site's own help text",
+      "text": "TESTP0000A",
+      "box": {
+        "x": 1183.75,
+        "y": 13,
+        "w": 76.25,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PAN",
+      "why": "PAN shape appearing inside the word FORM in a heading",
+      "text": "FORMP1234X",
+      "box": {
+        "x": 823.89,
+        "y": 407.5,
+        "w": 84.63,
+        "h": 19
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "link",
+      "name": "Home",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 63,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Profile",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 102,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Contributions",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 141,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Withdrawal",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 180,
+        "w": 190,
+        "h": 39
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "PRAN holder",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 106.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Date of birth",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 155.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "PAN",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 204.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Aadhaar",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 253.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Bank account",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 302.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "IFSC",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 426,
+        "y": 351.5,
+        "w": 734,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 226,
+        "y": 441.5,
+        "w": 58.59,
+        "h": 37
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Submit",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 288.44,
+        "y": 441.5,
+        "w": 73.8,
+        "h": 37
+      },
+      "inViewport": true
+    }
+  ]
+}

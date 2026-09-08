@@ -1,0 +1,205 @@
+{
+  "id": "syn-health-booking",
+  "title": "Appointment Booking",
+  "half": "synthetic",
+  "archetype": "healthcare",
+  "theme": "health",
+  "density": "roomy",
+  "fontPx": 16,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 41.17,
+        "y": 147.28,
+        "w": 80.52,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 38,
+        "y": 205.47,
+        "w": 1104,
+        "h": 55.19
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 38,
+        "y": 280.66,
+        "w": 1104,
+        "h": 55.19
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 38,
+        "y": 355.84,
+        "w": 1104,
+        "h": 55.19
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 38,
+        "y": 431.03,
+        "w": 1104,
+        "h": 55.19
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 38,
+        "y": 506.22,
+        "w": 1104,
+        "h": 55.19
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Jordan",
+      "box": {
+        "x": 269.02,
+        "y": 147.28,
+        "w": 47.27,
+        "h": 21
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Florence",
+      "box": {
+        "x": 133.48,
+        "y": 676.59,
+        "w": 48.59,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Patient name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 38,
+        "y": 205.47,
+        "w": 1104,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Mobile number",
+      "tag": "input",
+      "type": "tel",
+      "box": {
+        "x": 38,
+        "y": 280.66,
+        "w": 1104,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Email (optional)",
+      "tag": "input",
+      "type": "email",
+      "box": {
+        "x": 38,
+        "y": 355.84,
+        "w": 1104,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Date of birth",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 38,
+        "y": 431.03,
+        "w": 1104,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Insurance member ID",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 38,
+        "y": 506.22,
+        "w": 1104,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Confirm booking",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 38,
+        "y": 581.41,
+        "w": 149.41,
+        "h": 55.19
+      },
+      "inViewport": true
+    }
+  ]
+}

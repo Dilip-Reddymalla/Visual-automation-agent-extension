@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Passport Seva — Review</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #101418;
+        font:
+          17px/1.7 'Segoe UI',
+          system-ui,
+          sans-serif;
+      }
+      a {
+        color: #0b4a8f;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 20px;
+        background: #eef2f7;
+        border-bottom: 2px solid #0b4a8f;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 14px;
+        color: #4d5762;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 24px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 13px 10px;
+        text-decoration: none;
+        color: #101418;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #0b4a8f;
+        background: #eef2f7;
+      }
+      section {
+        margin-bottom: 24px;
+      }
+      fieldset {
+        border: 1px solid #c9d0da;
+        border-radius: 4px;
+        padding: 17px;
+        margin: 0 0 24px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #4d5762;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0 0 20px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 0 0 20px;
+      }
+      h3 {
+        font-size: 18px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        font-size: 15px;
+        color: #4d5762;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 13px 9px;
+        border: 1px solid #c9d0da;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #101418;
+      }
+      input[readonly] {
+        background: #eef2f7;
+      }
+      .hint {
+        font-size: 14px;
+        color: #4d5762;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 16px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 13px 8px;
+        border-bottom: 1px solid #c9d0da;
+        vertical-align: top;
+      }
+      th {
+        background: #eef2f7;
+        font-weight: 600;
+        color: #4d5762;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 20px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #4d5762;
+        font-size: 15px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #c9d0da;
+        border-radius: 6px;
+        padding: 17px;
+        margin-bottom: 20px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #eef2f7;
+        color: #0b4a8f;
+        font-size: 14px;
+        border: 1px solid #c9d0da;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 13px 14px;
+        border: 1px solid #c9d0da;
+        border-radius: 3px;
+        background: #eef2f7;
+        font: inherit;
+        cursor: pointer;
+        color: #101418;
+      }
+      button.primary {
+        background: #0b4a8f;
+        border-color: #0b4a8f;
+        color: #fff;
+      }
+      .muted {
+        color: #4d5762;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #eef2f7;
+        padding: 24px;
+        border: 1px solid #c9d0da;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 24px 20px;
+        color: #4d5762;
+        font-size: 14px;
+        border-top: 1px solid #c9d0da;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-gov-passport">
+    <header class="bar">
+      <div class="brand">Passport Seva</div>
+      <div>Application ID <span>Challan 560768253990</span></div>
+    </header>
+    <main>
+      <h1>Review your application</h1>
+      <p class="muted">
+        Check every detail. Once submitted, corrections require a fresh appointment.
+      </p>
+      <div class="card">
+        <h3>Applicant details</h3>
+        <dl class="kv">
+          <dt>Given name</dt>
+          <dd><span>Meera</span></dd>
+          <dt>Surname</dt>
+          <dd><span>Joshi</span></dd>
+          <dt>Date of birth</dt>
+          <dd><span>04/02/1960</span></dd>
+          <dt>Previous passport</dt>
+          <dd><span>L6002992</span></dd>
+          <dt>Aadhaar</dt>
+          <dd><span>3249 8177 7767</span></dd>
+          <dt>Address</dt>
+          <dd><span>114, Banjara Hills Road No. 3, Pune, Maharashtra 411001</span></dd>
+          <dt>Mobile</dt>
+          <dd><span>6602474403</span></dd>
+          <dt>Email</dt>
+          <dd><span>meera.joshi@example.com</span></dd>
+        </dl>
+      </div>
+      <div class="card">
+        <h3>Appointment</h3>
+        <dl class="kv">
+          <dt>Centre</dt>
+          <dd>RPO Bengaluru</dd>
+          <dt>Slot</dt>
+          <dd><span>Waybill 736561952930</span></dd>
+          <dt>Helpline</dt>
+          <dd><span>Consignment 914230602568</span></dd>
+        </dl>
+      </div>
+      <div class="actions">
+        <button class="">Edit</button><button class="primary">Pay and schedule</button>
+      </div>
+    </main>
+  </body>
+</html>

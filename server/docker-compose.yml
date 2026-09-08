@@ -1,0 +1,93 @@
+# The whole planner, offline.
+#
+# Two services. vLLM holds the weights and the GPU; the API in front of it holds the
+# contract and the session state. They are separate because the API has to start and
+# answer /health whether or not a GPU exists -- the stub planner is a supported mode, not
+# a degraded one, and the client team develops against it.
+#
+# Offline is the point. Weights are pinned by revision and mounted from a local volume,
+# never pulled at start. See OFFLINE.md for the one-time fetch and the disconnection
+# test; the claim is only worth making if it has been demonstrated.
+
+services:
+  vllm:
+    image: vllm/vllm-openai:v0.11.0
+    # Pinned. "latest" is a demo that worked yesterday.
+    command:
+      - --model=/models/Qwen3-VL-4B-Instruct
+      - --served-model-name=Qwen/Qwen3-VL-4B-Instruct
+      # Verified against server/schema.json by check_guided_decoding.py: the nine-branch
+      # action union compiles and accepts every action shape. If a future schema change
+      # breaks that, the fallback is --guided-decoding-backend=outlines.
+      - --guided-decoding-backend=xgrammar
+      - --max-model-len=8192
+      # 4B on a laptop GPU. Raise for 8B; see README.md for the measured figures.
+      - --gpu-memory-utilization=0.85
+      - --limit-mm-per-prompt=image=1
+      - --port=8000
+    volumes:
+      # Read-only: nothing at run time should be able to modify the weights that the
+      # offline claim rests on.
+      - ./models:/models:ro
+    environment:
+      # No telemetry, no hub calls, no surprises on a disconnected machine.
+      - HF_HUB_OFFLINE=1
+      - TRANSFORMERS_OFFLINE=1
+      - VLLM_NO_USAGE_STATS=1
+      - DO_NOT_TRACK=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')",
+        ]
+      interval: 10s
+      timeout: 5s
+      # Model load is slow and a demo machine is slower. Do not shorten this.
+      start_period: 300s
+      retries: 30
+    networks: [planner]
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - VLLM_BASE_URL=http://vllm:8000/v1
+      - VLLM_MODEL=Qwen/Qwen3-VL-4B-Instruct
+      # Set PLANNER=stub to run with no GPU at all. The client cannot tell the
+      # difference at the contract level, which is the point.
+      - PLANNER=${PLANNER:-vlm}
+    ports:
+      - '8000:8000'
+    depends_on:
+      vllm:
+        condition: service_healthy
+        required: false
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks: [planner]
+
+networks:
+  planner:
+    # No external access. The extension reaches the API on the published port; the API
+    # reaches vLLM inside this network; neither reaches the internet.
+    driver: bridge

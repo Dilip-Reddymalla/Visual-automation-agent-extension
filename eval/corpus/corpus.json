@@ -1,0 +1,984 @@
+{
+  "seed": 26171,
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "deviceScaleFactor": 1.0,
+  "generatedBy": "eval/corpus/generate.py",
+  "note": "Ground truth is read from the browser's own layout of the marked source in _src/ and is never present in pages/. The shipped pages carry no marks; the extension never reads a label file.",
+  "holdout": [
+    "rep-aadhaar-profile",
+    "rep-epfo-passbook",
+    "rep-hdfc-card",
+    "rep-univ-admission",
+    "rep-utility-bill",
+    "syn-bank-card",
+    "syn-gov-passport",
+    "syn-health-discharge",
+    "syn-scan-cheque",
+    "syn-shop-addresses"
+  ],
+  "totals": {
+    "pages": 50,
+    "synthetic": 25,
+    "replica": 25,
+    "heldOut": 10,
+    "piiText": 366,
+    "piiPixels": 6,
+    "negatives": 171,
+    "elements": 260
+  },
+  "pages": [
+    {
+      "id": "syn-gov-enrolment",
+      "title": "Aadhaar Enrolment / Update",
+      "half": "synthetic",
+      "archetype": "gov-form",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/syn-gov-enrolment.html",
+      "labels": "labels/syn-gov-enrolment.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 10,
+        "inViewportPii": 8,
+        "inViewportElements": 10
+      }
+    },
+    {
+      "id": "syn-gov-pan-49a",
+      "title": "Form 49A \u2014 PAN Application",
+      "half": "synthetic",
+      "archetype": "gov-form",
+      "density": "compact",
+      "fontPx": 12,
+      "heldOut": false,
+      "page": "pages/syn-gov-pan-49a.html",
+      "labels": "labels/syn-gov-pan-49a.json",
+      "counts": {
+        "piiText": 9,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 12,
+        "inViewportPii": 9,
+        "inViewportElements": 12
+      }
+    },
+    {
+      "id": "syn-gov-passport",
+      "title": "Passport Seva \u2014 Review",
+      "half": "synthetic",
+      "archetype": "gov-form",
+      "density": "roomy",
+      "fontPx": 17,
+      "heldOut": true,
+      "page": "pages/syn-gov-passport.html",
+      "labels": "labels/syn-gov-passport.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 2,
+        "inViewportPii": 8,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-gov-gstr1",
+      "title": "GSTR-1 \u2014 Outward Supplies",
+      "half": "synthetic",
+      "archetype": "gov-form",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/syn-gov-gstr1.html",
+      "labels": "labels/syn-gov-gstr1.json",
+      "counts": {
+        "piiText": 5,
+        "piiPixels": 0,
+        "negatives": 4,
+        "elements": 2,
+        "inViewportPii": 5,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-sch-apply",
+      "title": "Scholarship \u2014 Bank Details",
+      "half": "synthetic",
+      "archetype": "scholarship",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/syn-sch-apply.html",
+      "labels": "labels/syn-sch-apply.json",
+      "counts": {
+        "piiText": 5,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 13,
+        "inViewportPii": 5,
+        "inViewportElements": 13
+      }
+    },
+    {
+      "id": "syn-sch-status",
+      "title": "Scholarship \u2014 Status",
+      "half": "synthetic",
+      "archetype": "scholarship",
+      "density": "roomy",
+      "fontPx": 18,
+      "heldOut": false,
+      "page": "pages/syn-sch-status.html",
+      "labels": "labels/syn-sch-status.json",
+      "counts": {
+        "piiText": 5,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 2,
+        "inViewportPii": 5,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-sch-docs",
+      "title": "Scholarship \u2014 Documents",
+      "half": "synthetic",
+      "archetype": "scholarship",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/syn-sch-docs.html",
+      "labels": "labels/syn-sch-docs.json",
+      "counts": {
+        "piiText": 4,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 2,
+        "inViewportPii": 4,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-bank-statement",
+      "title": "Account Statement",
+      "half": "synthetic",
+      "archetype": "bank-statement",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/syn-bank-statement.html",
+      "labels": "labels/syn-bank-statement.json",
+      "counts": {
+        "piiText": 7,
+        "piiPixels": 0,
+        "negatives": 4,
+        "elements": 2,
+        "inViewportPii": 7,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-bank-transfer",
+      "title": "NetBanking \u2014 Transfer",
+      "half": "synthetic",
+      "archetype": "bank-statement",
+      "density": "compact",
+      "fontPx": 12,
+      "heldOut": false,
+      "page": "pages/syn-bank-transfer.html",
+      "labels": "labels/syn-bank-transfer.json",
+      "counts": {
+        "piiText": 13,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 12,
+        "inViewportPii": 13,
+        "inViewportElements": 12
+      }
+    },
+    {
+      "id": "syn-bank-card",
+      "title": "Credit Card Statement",
+      "half": "synthetic",
+      "archetype": "bank-statement",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": true,
+      "page": "pages/syn-bank-card.html",
+      "labels": "labels/syn-bank-card.json",
+      "counts": {
+        "piiText": 4,
+        "piiPixels": 0,
+        "negatives": 5,
+        "elements": 2,
+        "inViewportPii": 4,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-scan-aadhaar",
+      "title": "DigiLocker \u2014 Aadhaar",
+      "half": "synthetic",
+      "archetype": "scanned-id",
+      "density": "roomy",
+      "fontPx": 16,
+      "heldOut": false,
+      "page": "pages/syn-scan-aadhaar.html",
+      "labels": "labels/syn-scan-aadhaar.json",
+      "counts": {
+        "piiText": 0,
+        "piiPixels": 1,
+        "negatives": 2,
+        "elements": 2,
+        "inViewportPii": 1,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-scan-cheque",
+      "title": "Vendor Onboarding \u2014 Cheque",
+      "half": "synthetic",
+      "archetype": "scanned-id",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": true,
+      "page": "pages/syn-scan-cheque.html",
+      "labels": "labels/syn-scan-cheque.json",
+      "counts": {
+        "piiText": 3,
+        "piiPixels": 1,
+        "negatives": 1,
+        "elements": 4,
+        "inViewportPii": 4,
+        "inViewportElements": 4
+      }
+    },
+    {
+      "id": "syn-scan-invoice",
+      "title": "Expense Claim \u2014 Invoice",
+      "half": "synthetic",
+      "archetype": "scanned-id",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/syn-scan-invoice.html",
+      "labels": "labels/syn-scan-invoice.json",
+      "counts": {
+        "piiText": 2,
+        "piiPixels": 1,
+        "negatives": 2,
+        "elements": 2,
+        "inViewportPii": 3,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-scan-signature",
+      "title": "Nominee Declaration",
+      "half": "synthetic",
+      "archetype": "scanned-id",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/syn-scan-signature.html",
+      "labels": "labels/syn-scan-signature.json",
+      "counts": {
+        "piiText": 6,
+        "piiPixels": 1,
+        "negatives": 1,
+        "elements": 10,
+        "inViewportPii": 7,
+        "inViewportElements": 10
+      }
+    },
+    {
+      "id": "syn-health-portal",
+      "title": "Hospital \u2014 Reports",
+      "half": "synthetic",
+      "archetype": "healthcare",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/syn-health-portal.html",
+      "labels": "labels/syn-health-portal.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 1,
+        "elements": 6,
+        "inViewportPii": 8,
+        "inViewportElements": 6
+      }
+    },
+    {
+      "id": "syn-health-booking",
+      "title": "Appointment Booking",
+      "half": "synthetic",
+      "archetype": "healthcare",
+      "density": "roomy",
+      "fontPx": 16,
+      "heldOut": false,
+      "page": "pages/syn-health-booking.html",
+      "labels": "labels/syn-health-booking.json",
+      "counts": {
+        "piiText": 6,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 6,
+        "inViewportPii": 6,
+        "inViewportElements": 6
+      }
+    },
+    {
+      "id": "syn-health-discharge",
+      "title": "Discharge Summary",
+      "half": "synthetic",
+      "archetype": "healthcare",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": true,
+      "page": "pages/syn-health-discharge.html",
+      "labels": "labels/syn-health-discharge.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 2,
+        "inViewportPii": 8,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-job-apply",
+      "title": "Job Application",
+      "half": "synthetic",
+      "archetype": "job-application",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/syn-job-apply.html",
+      "labels": "labels/syn-job-apply.json",
+      "counts": {
+        "piiText": 6,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 11,
+        "inViewportPii": 6,
+        "inViewportElements": 11
+      }
+    },
+    {
+      "id": "syn-job-offer",
+      "title": "Accept Your Offer",
+      "half": "synthetic",
+      "archetype": "job-application",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/syn-job-offer.html",
+      "labels": "labels/syn-job-offer.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 6,
+        "inViewportPii": 8,
+        "inViewportElements": 6
+      }
+    },
+    {
+      "id": "syn-shop-checkout",
+      "title": "Checkout",
+      "half": "synthetic",
+      "archetype": "ecommerce",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/syn-shop-checkout.html",
+      "labels": "labels/syn-shop-checkout.json",
+      "counts": {
+        "piiText": 6,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 8,
+        "inViewportPii": 6,
+        "inViewportElements": 8
+      }
+    },
+    {
+      "id": "syn-shop-order",
+      "title": "Order Details",
+      "half": "synthetic",
+      "archetype": "ecommerce",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/syn-shop-order.html",
+      "labels": "labels/syn-shop-order.json",
+      "counts": {
+        "piiText": 5,
+        "piiPixels": 0,
+        "negatives": 5,
+        "elements": 2,
+        "inViewportPii": 5,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-shop-addresses",
+      "title": "Saved Addresses",
+      "half": "synthetic",
+      "archetype": "ecommerce",
+      "density": "roomy",
+      "fontPx": 16,
+      "heldOut": true,
+      "page": "pages/syn-shop-addresses.html",
+      "labels": "labels/syn-shop-addresses.json",
+      "counts": {
+        "piiText": 9,
+        "piiPixels": 0,
+        "negatives": 1,
+        "elements": 7,
+        "inViewportPii": 8,
+        "inViewportElements": 4
+      }
+    },
+    {
+      "id": "syn-ins-claim",
+      "title": "Intimate a Claim",
+      "half": "synthetic",
+      "archetype": "insurance",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/syn-ins-claim.html",
+      "labels": "labels/syn-ins-claim.json",
+      "counts": {
+        "piiText": 7,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 12,
+        "inViewportPii": 7,
+        "inViewportElements": 12
+      }
+    },
+    {
+      "id": "syn-ins-status",
+      "title": "Claim Status",
+      "half": "synthetic",
+      "archetype": "insurance",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/syn-ins-status.html",
+      "labels": "labels/syn-ins-status.json",
+      "counts": {
+        "piiText": 5,
+        "piiPixels": 0,
+        "negatives": 7,
+        "elements": 2,
+        "inViewportPii": 5,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "syn-ins-card",
+      "title": "Cashless Health Card",
+      "half": "synthetic",
+      "archetype": "insurance",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/syn-ins-card.html",
+      "labels": "labels/syn-ins-card.json",
+      "counts": {
+        "piiText": 2,
+        "piiPixels": 1,
+        "negatives": 2,
+        "elements": 2,
+        "inViewportPii": 3,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-irctc-pnr",
+      "title": "PNR Status",
+      "half": "replica",
+      "archetype": "transport",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/rep-irctc-pnr.html",
+      "labels": "labels/rep-irctc-pnr.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 2,
+        "inViewportPii": 8,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-epfo-passbook",
+      "title": "EPFO Member Passbook",
+      "half": "replica",
+      "archetype": "gov-form",
+      "density": "compact",
+      "fontPx": 12,
+      "heldOut": true,
+      "page": "pages/rep-epfo-passbook.html",
+      "labels": "labels/rep-epfo-passbook.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 4,
+        "inViewportPii": 8,
+        "inViewportElements": 4
+      }
+    },
+    {
+      "id": "rep-itd-dashboard",
+      "title": "e-Filing Dashboard",
+      "half": "replica",
+      "archetype": "gov-form",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/rep-itd-dashboard.html",
+      "labels": "labels/rep-itd-dashboard.json",
+      "counts": {
+        "piiText": 9,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 5,
+        "inViewportPii": 9,
+        "inViewportElements": 5
+      }
+    },
+    {
+      "id": "rep-digilocker",
+      "title": "DigiLocker \u2014 Issued",
+      "half": "replica",
+      "archetype": "scanned-id",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/rep-digilocker.html",
+      "labels": "labels/rep-digilocker.json",
+      "counts": {
+        "piiText": 3,
+        "piiPixels": 1,
+        "negatives": 3,
+        "elements": 2,
+        "inViewportPii": 4,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-sbi-transfer",
+      "title": "OnlineSBI \u2014 Transfer",
+      "half": "replica",
+      "archetype": "bank-statement",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/rep-sbi-transfer.html",
+      "labels": "labels/rep-sbi-transfer.json",
+      "counts": {
+        "piiText": 6,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 9,
+        "inViewportPii": 6,
+        "inViewportElements": 9
+      }
+    },
+    {
+      "id": "rep-hdfc-card",
+      "title": "Credit Card Bill",
+      "half": "replica",
+      "archetype": "bank-statement",
+      "density": "compact",
+      "fontPx": 12,
+      "heldOut": true,
+      "page": "pages/rep-hdfc-card.html",
+      "labels": "labels/rep-hdfc-card.json",
+      "counts": {
+        "piiText": 4,
+        "piiPixels": 0,
+        "negatives": 7,
+        "elements": 2,
+        "inViewportPii": 4,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-wallet-history",
+      "title": "Wallet History",
+      "half": "replica",
+      "archetype": "ecommerce",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/rep-wallet-history.html",
+      "labels": "labels/rep-wallet-history.json",
+      "counts": {
+        "piiText": 7,
+        "piiPixels": 0,
+        "negatives": 7,
+        "elements": 2,
+        "inViewportPii": 7,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-market-checkout",
+      "title": "Marketplace Checkout",
+      "half": "replica",
+      "archetype": "ecommerce",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/rep-market-checkout.html",
+      "labels": "labels/rep-market-checkout.json",
+      "counts": {
+        "piiText": 7,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 7,
+        "inViewportPii": 7,
+        "inViewportElements": 7
+      }
+    },
+    {
+      "id": "rep-utility-bill",
+      "title": "Electricity Bill",
+      "half": "replica",
+      "archetype": "utility",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": true,
+      "page": "pages/rep-utility-bill.html",
+      "labels": "labels/rep-utility-bill.json",
+      "counts": {
+        "piiText": 3,
+        "piiPixels": 0,
+        "negatives": 5,
+        "elements": 2,
+        "inViewportPii": 3,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-rto-licence",
+      "title": "Driving Licence Status",
+      "half": "replica",
+      "archetype": "transport",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/rep-rto-licence.html",
+      "labels": "labels/rep-rto-licence.json",
+      "counts": {
+        "piiText": 5,
+        "piiPixels": 0,
+        "negatives": 4,
+        "elements": 2,
+        "inViewportPii": 5,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-ration-household",
+      "title": "Ration Card \u2014 Household",
+      "half": "replica",
+      "archetype": "gov-form",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/rep-ration-household.html",
+      "labels": "labels/rep-ration-household.json",
+      "counts": {
+        "piiText": 16,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 4,
+        "inViewportPii": 16,
+        "inViewportElements": 4
+      }
+    },
+    {
+      "id": "rep-talent-profile",
+      "title": "Candidate Profile",
+      "half": "replica",
+      "archetype": "job-application",
+      "density": "roomy",
+      "fontPx": 18,
+      "heldOut": false,
+      "page": "pages/rep-talent-profile.html",
+      "labels": "labels/rep-talent-profile.json",
+      "counts": {
+        "piiText": 6,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 2,
+        "inViewportPii": 6,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-nps-account",
+      "title": "NPS \u2014 Subscriber Details",
+      "half": "replica",
+      "archetype": "gov-form",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/rep-nps-account.html",
+      "labels": "labels/rep-nps-account.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 12,
+        "inViewportPii": 8,
+        "inViewportElements": 12
+      }
+    },
+    {
+      "id": "rep-gst-registration",
+      "title": "GST \u2014 Registration",
+      "half": "replica",
+      "archetype": "gov-form",
+      "density": "compact",
+      "fontPx": 12,
+      "heldOut": false,
+      "page": "pages/rep-gst-registration.html",
+      "labels": "labels/rep-gst-registration.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 12,
+        "inViewportPii": 8,
+        "inViewportElements": 12
+      }
+    },
+    {
+      "id": "rep-univ-admission",
+      "title": "University Admission",
+      "half": "replica",
+      "archetype": "scholarship",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": true,
+      "page": "pages/rep-univ-admission.html",
+      "labels": "labels/rep-univ-admission.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 12,
+        "inViewportPii": 8,
+        "inViewportElements": 12
+      }
+    },
+    {
+      "id": "rep-kyc-update",
+      "title": "KYC Update",
+      "half": "replica",
+      "archetype": "bank-statement",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/rep-kyc-update.html",
+      "labels": "labels/rep-kyc-update.json",
+      "counts": {
+        "piiText": 7,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 12,
+        "inViewportPii": 7,
+        "inViewportElements": 12
+      }
+    },
+    {
+      "id": "rep-telecom-bill",
+      "title": "Postpaid Bill",
+      "half": "replica",
+      "archetype": "utility",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/rep-telecom-bill.html",
+      "labels": "labels/rep-telecom-bill.json",
+      "counts": {
+        "piiText": 7,
+        "piiPixels": 0,
+        "negatives": 2,
+        "elements": 12,
+        "inViewportPii": 7,
+        "inViewportElements": 12
+      }
+    },
+    {
+      "id": "rep-pf-members",
+      "title": "Establishment \u2014 Members",
+      "half": "replica",
+      "archetype": "gov-form",
+      "density": "compact",
+      "fontPx": 12,
+      "heldOut": false,
+      "page": "pages/rep-pf-members.html",
+      "labels": "labels/rep-pf-members.json",
+      "counts": {
+        "piiText": 21,
+        "piiPixels": 0,
+        "negatives": 9,
+        "elements": 2,
+        "inViewportPii": 21,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-upi-ledger",
+      "title": "UPI Ledger",
+      "half": "replica",
+      "archetype": "ecommerce",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/rep-upi-ledger.html",
+      "labels": "labels/rep-upi-ledger.json",
+      "counts": {
+        "piiText": 17,
+        "piiPixels": 0,
+        "negatives": 10,
+        "elements": 2,
+        "inViewportPii": 17,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-insurer-claims",
+      "title": "Insurer \u2014 Claims Queue",
+      "half": "replica",
+      "archetype": "insurance",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/rep-insurer-claims.html",
+      "labels": "labels/rep-insurer-claims.json",
+      "counts": {
+        "piiText": 15,
+        "piiPixels": 0,
+        "negatives": 9,
+        "elements": 2,
+        "inViewportPii": 15,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-hospital-billing",
+      "title": "Hospital \u2014 Billing",
+      "half": "replica",
+      "archetype": "healthcare",
+      "density": "compact",
+      "fontPx": 13,
+      "heldOut": false,
+      "page": "pages/rep-hospital-billing.html",
+      "labels": "labels/rep-hospital-billing.json",
+      "counts": {
+        "piiText": 14,
+        "piiPixels": 0,
+        "negatives": 8,
+        "elements": 2,
+        "inViewportPii": 14,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-aadhaar-profile",
+      "title": "Aadhaar \u2014 My Profile",
+      "half": "replica",
+      "archetype": "gov-form",
+      "density": "roomy",
+      "fontPx": 17,
+      "heldOut": true,
+      "page": "pages/rep-aadhaar-profile.html",
+      "labels": "labels/rep-aadhaar-profile.json",
+      "counts": {
+        "piiText": 7,
+        "piiPixels": 0,
+        "negatives": 4,
+        "elements": 2,
+        "inViewportPii": 7,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-lic-policy",
+      "title": "LIC \u2014 Policy Details",
+      "half": "replica",
+      "archetype": "insurance",
+      "density": "normal",
+      "fontPx": 15,
+      "heldOut": false,
+      "page": "pages/rep-lic-policy.html",
+      "labels": "labels/rep-lic-policy.json",
+      "counts": {
+        "piiText": 7,
+        "piiPixels": 0,
+        "negatives": 4,
+        "elements": 2,
+        "inViewportPii": 7,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-food-profile",
+      "title": "Delivery \u2014 Profile",
+      "half": "replica",
+      "archetype": "ecommerce",
+      "density": "normal",
+      "fontPx": 14,
+      "heldOut": false,
+      "page": "pages/rep-food-profile.html",
+      "labels": "labels/rep-food-profile.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 3,
+        "elements": 2,
+        "inViewportPii": 8,
+        "inViewportElements": 2
+      }
+    },
+    {
+      "id": "rep-passport-appointment",
+      "title": "Passport \u2014 Appointment",
+      "half": "replica",
+      "archetype": "gov-form",
+      "density": "compact",
+      "fontPx": 12,
+      "heldOut": false,
+      "page": "pages/rep-passport-appointment.html",
+      "labels": "labels/rep-passport-appointment.json",
+      "counts": {
+        "piiText": 8,
+        "piiPixels": 0,
+        "negatives": 4,
+        "elements": 2,
+        "inViewportPii": 8,
+        "inViewportElements": 2
+      }
+    }
+  ]
+}

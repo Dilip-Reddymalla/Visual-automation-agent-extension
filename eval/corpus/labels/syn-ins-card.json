@@ -1,0 +1,114 @@
+{
+  "id": "syn-ins-card",
+  "title": "Cashless Health Card",
+  "half": "synthetic",
+  "archetype": "insurance",
+  "theme": "health",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 974.64,
+        "y": 154.5,
+        "w": 108.75,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 974.64,
+        "y": 207.5,
+        "w": 80.86,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 37,
+        "y": 126.5,
+        "w": 460,
+        "h": 280
+      },
+      "boxKind": "element",
+      "medium": "pixels",
+      "tag": "img",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PASSPORT",
+      "why": "a form serial that happens to match the passport shape",
+      "text": "Form no. Z9876543",
+      "box": {
+        "x": 974.64,
+        "y": 181,
+        "w": 128.16,
+        "h": 20
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "LICENCE",
+      "why": "the licence format example on the RTO's own page",
+      "text": "KA00 00000000000",
+      "box": {
+        "x": 974.64,
+        "y": 234,
+        "w": 127.61,
+        "h": 20
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Add dependant",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 441,
+        "w": 133.33,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Download card",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 161.33,
+        "y": 441,
+        "w": 130.25,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ]
+}

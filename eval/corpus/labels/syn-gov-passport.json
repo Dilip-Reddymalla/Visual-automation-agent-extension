@@ -1,0 +1,191 @@
+{
+  "id": "syn-gov-passport",
+  "title": "Passport Seva \u2014 Review",
+  "half": "synthetic",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "roomy",
+  "fontPx": 17,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 813
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 175.13,
+        "y": 251.17,
+        "w": 47.61,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 175.13,
+        "y": 284.06,
+        "w": 36.98,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 175.13,
+        "y": 316.95,
+        "w": 86.56,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PASSPORT",
+      "box": {
+        "x": 175.13,
+        "y": 349.84,
+        "w": 72.16,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 175.13,
+        "y": 382.73,
+        "w": 119.3,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 175.13,
+        "y": 415.63,
+        "w": 423.14,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 175.13,
+        "y": 448.52,
+        "w": 91.64,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 175.13,
+        "y": 481.41,
+        "w": 201.06,
+        "h": 22
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled challan",
+      "text": "Challan 560768253990",
+      "box": {
+        "x": 1090.06,
+        "y": 19,
+        "w": 169.94,
+        "h": 22
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled waybill",
+      "text": "Waybill 736561952930",
+      "box": {
+        "x": 112.55,
+        "y": 635.78,
+        "w": 169.06,
+        "h": 22
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled consignment",
+      "text": "Consignment 914230602568",
+      "box": {
+        "x": 112.55,
+        "y": 668.67,
+        "w": 214.61,
+        "h": 22
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Edit",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 732.56,
+        "w": 58.5,
+        "h": 56.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Pay and schedule",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 86.5,
+        "y": 732.56,
+        "w": 159.63,
+        "h": 56.89
+      },
+      "inViewport": true
+    }
+  ]
+}

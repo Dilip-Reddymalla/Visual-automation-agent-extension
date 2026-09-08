@@ -1,0 +1,432 @@
+{
+  "id": "rep-pf-members",
+  "title": "Establishment \u2014 Members",
+  "half": "replica",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "compact",
+  "fontPx": 12,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "ORG",
+      "box": {
+        "x": 248,
+        "y": 80.28,
+        "w": 95.91,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 248,
+        "y": 105.58,
+        "w": 58.64,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 248,
+        "y": 130.88,
+        "w": 219.94,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 88.03,
+        "y": 209.77,
+        "w": 54.11,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 369.16,
+        "y": 209.77,
+        "w": 56.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 582.19,
+        "y": 209.77,
+        "w": 77.19,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 88.03,
+        "y": 237.06,
+        "w": 89.42,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 369.16,
+        "y": 237.06,
+        "w": 56.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 582.19,
+        "y": 237.06,
+        "w": 77.19,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 88.03,
+        "y": 264.36,
+        "w": 68.11,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 369.16,
+        "y": 264.36,
+        "w": 56.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 582.19,
+        "y": 264.36,
+        "w": 77.19,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 88.03,
+        "y": 291.66,
+        "w": 49.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 369.16,
+        "y": 291.66,
+        "w": 56.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 582.19,
+        "y": 291.66,
+        "w": 77.19,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 88.03,
+        "y": 318.95,
+        "w": 55.5,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 369.16,
+        "y": 318.95,
+        "w": 56.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 582.19,
+        "y": 318.95,
+        "w": 77.19,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 88.03,
+        "y": 346.25,
+        "w": 64.95,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 369.16,
+        "y": 346.25,
+        "w": 56.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 582.19,
+        "y": 346.25,
+        "w": 77.19,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "ACCOUNT",
+      "why": "a metering point, printed on a public bill",
+      "text": "Consumer no. 3407120054",
+      "box": {
+        "x": 1118.39,
+        "y": 8,
+        "w": 141.61,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PASSPORT",
+      "why": "the passport format example in the form's help text",
+      "text": "A1234567",
+      "box": {
+        "x": 248,
+        "y": 156.17,
+        "w": 48.61,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "EMAIL",
+      "why": "an unattended mailbox",
+      "text": "noreply@example.in",
+      "box": {
+        "x": 830.69,
+        "y": 209.77,
+        "w": 99.25,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "EMAIL",
+      "why": "the placeholder in the field's own hint text",
+      "text": "name@company.com",
+      "box": {
+        "x": 830.69,
+        "y": 237.06,
+        "w": 105.56,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "UPI",
+      "why": "a utility's collection handle, printed on every bill",
+      "text": "bescom.bill@okaxis",
+      "box": {
+        "x": 830.69,
+        "y": 264.36,
+        "w": 95.14,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "UPI",
+      "why": "a merchant terminal id, the same for every customer",
+      "text": "merchant0042@ybl",
+      "box": {
+        "x": 830.69,
+        "y": 291.66,
+        "w": 94.59,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "ACCOUNT",
+      "why": "a branch code, the same for everyone who banks there",
+      "text": "Branch code 00042317",
+      "box": {
+        "x": 830.69,
+        "y": 318.95,
+        "w": 110.48,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "ACCOUNT",
+      "why": "an MICR code, a property of the branch",
+      "text": "MICR 560240021",
+      "box": {
+        "x": 830.69,
+        "y": 346.25,
+        "w": 82.58,
+        "h": 15
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PASSPORT",
+      "why": "a form serial that happens to match the passport shape",
+      "text": "Form no. Z9876543",
+      "box": {
+        "x": 321.63,
+        "y": 379.55,
+        "w": 102.53,
+        "h": 16
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Export",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 408.14,
+        "w": 63.91,
+        "h": 31.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Filter",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 87.2,
+        "y": 408.14,
+        "w": 56.19,
+        "h": 31.59
+      },
+      "inViewport": true
+    }
+  ]
+}

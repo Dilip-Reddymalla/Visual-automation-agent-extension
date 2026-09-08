@@ -1,0 +1,191 @@
+{
+  "id": "rep-irctc-pnr",
+  "title": "PNR Status",
+  "half": "replica",
+  "archetype": "transport",
+  "theme": "gov",
+  "density": "compact",
+  "fontPx": 13,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 201.03,
+        "w": 97.81,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 248,
+        "y": 227.63,
+        "w": 74.45,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 248,
+        "y": 254.22,
+        "w": 136.55,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 101.11,
+        "y": 310.41,
+        "w": 59.19,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 101.11,
+        "y": 339,
+        "w": 69.94,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 101.11,
+        "y": 367.59,
+        "w": 87.77,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 101.11,
+        "y": 396.19,
+        "w": 85.81,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 166.78,
+        "y": 431.78,
+        "w": 100.11,
+        "h": 17
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled invoice no.",
+      "text": "Invoice no. 625831667177",
+      "box": {
+        "x": 248,
+        "y": 121.25,
+        "w": 138.13,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled order id",
+      "text": "Order ID 415337052639",
+      "box": {
+        "x": 248,
+        "y": 174.44,
+        "w": 126.55,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled reference",
+      "text": "Reference 257685032730",
+      "box": {
+        "x": 468.23,
+        "y": 431.78,
+        "w": 144.2,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Cancel ticket",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 462.67,
+        "w": 102.77,
+        "h": 32.89
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Print ERS",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 126.33,
+        "y": 462.67,
+        "w": 81.53,
+        "h": 32.89
+      },
+      "inViewport": true
+    }
+  ]
+}

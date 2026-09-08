@@ -1,0 +1,245 @@
+{
+  "id": "syn-shop-addresses",
+  "title": "Saved Addresses",
+  "half": "synthetic",
+  "archetype": "ecommerce",
+  "theme": "shop",
+  "density": "roomy",
+  "fontPx": 16,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 1037
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 38,
+        "y": 252.56,
+        "w": 60.72,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 38,
+        "y": 279.75,
+        "w": 294.23,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 38,
+        "y": 306.94,
+        "w": 123.22,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 38,
+        "y": 509.41,
+        "w": 105.91,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 38,
+        "y": 536.59,
+        "w": 304.95,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 38,
+        "y": 563.78,
+        "w": 123.22,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 38,
+        "y": 766.25,
+        "w": 86.56,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 38,
+        "y": 793.44,
+        "w": 331.13,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 38,
+        "y": 820.63,
+        "w": 86.25,
+        "h": 21
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": false
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PHONE",
+      "why": "ten digits that happen to be an amount in paise",
+      "text": "Bill amount 9845012345",
+      "box": {
+        "x": 164.58,
+        "y": 147.28,
+        "w": 170.64,
+        "h": 21
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Edit",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 38,
+        "y": 351.13,
+        "w": 56.81,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Delete",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 102.81,
+        "y": 351.13,
+        "w": 75.63,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Edit",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 38,
+        "y": 607.97,
+        "w": 56.81,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Delete",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 102.81,
+        "y": 607.97,
+        "w": 75.63,
+        "h": 55.19
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Edit",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 38,
+        "y": 864.81,
+        "w": 56.81,
+        "h": 55.19
+      },
+      "inViewport": false
+    },
+    {
+      "role": "button",
+      "name": "Delete",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 102.81,
+        "y": 864.81,
+        "w": 75.63,
+        "h": 55.19
+      },
+      "inViewport": false
+    },
+    {
+      "role": "button",
+      "name": "Add a new address",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 958,
+        "w": 163.94,
+        "h": 55.19
+      },
+      "inViewport": false
+    }
+  ]
+}

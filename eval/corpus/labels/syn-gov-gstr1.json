@@ -1,0 +1,164 @@
+{
+  "id": "syn-gov-gstr1",
+  "title": "GSTR-1 \u2014 Outward Supplies",
+  "half": "synthetic",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "normal",
+  "fontPx": 14,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "GSTIN",
+      "box": {
+        "x": 1140.63,
+        "y": 13,
+        "w": 119.38,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ORG",
+      "box": {
+        "x": 156.27,
+        "y": 150,
+        "w": 132.23,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 156.27,
+        "y": 175,
+        "w": 62.06,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 156.27,
+        "y": 200,
+        "w": 80.69,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 156.27,
+        "y": 225,
+        "w": 189.55,
+        "h": 19
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Bill no. 199340480568",
+      "box": {
+        "x": 156.27,
+        "y": 250,
+        "w": 135.59,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled docket",
+      "text": "Docket 258696798958",
+      "box": {
+        "x": 28,
+        "y": 344.5,
+        "w": 128.06,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled ticket",
+      "text": "Ticket 414268427341",
+      "box": {
+        "x": 28,
+        "y": 383,
+        "w": 121.3,
+        "h": 17
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled requisition",
+      "text": "Requisition 290817729020",
+      "box": {
+        "x": 28,
+        "y": 421.5,
+        "w": 151.2,
+        "h": 17
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Save",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 462,
+        "w": 58.59,
+        "h": 41
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "File with EVC",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 86.59,
+        "y": 462,
+        "w": 108.89,
+        "h": 41
+      },
+      "inViewport": true
+    }
+  ]
+}

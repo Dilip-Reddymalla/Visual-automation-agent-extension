@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>inference host</title>
+  </head>
+  <body>
+    <!--
+      Never shown. This document exists because the service worker has no WebGPU and no
+      ORT WASM backend (CLAUDE.md invariant 8). All model work happens here.
+      Firefox reaches the same code through its background event page instead.
+    -->
+    <script src="offscreen.js"></script>
+  </body>
+</html>

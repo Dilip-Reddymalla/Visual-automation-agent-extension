@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Claim Status</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #111827;
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+      }
+      a {
+        color: #4338ca;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #f9fafb;
+        border-bottom: 2px solid #4338ca;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 11px;
+        color: #6b7280;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #111827;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #4338ca;
+        background: #f9fafb;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b7280;
+      }
+      h1 {
+        font-size: 21px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #111827;
+      }
+      input[readonly] {
+        background: #f9fafb;
+      }
+      .hint {
+        font-size: 11px;
+        color: #6b7280;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: top;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #6b7280;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #6b7280;
+        font-size: 12px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f9fafb;
+        color: #4338ca;
+        font-size: 11px;
+        border: 1px solid #e5e7eb;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        background: #f9fafb;
+        font: inherit;
+        cursor: pointer;
+        color: #111827;
+      }
+      button.primary {
+        background: #4338ca;
+        border-color: #4338ca;
+        color: #fff;
+      }
+      .muted {
+        color: #6b7280;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #f9fafb;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #6b7280;
+        font-size: 11px;
+        border-top: 1px solid #e5e7eb;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-ins-status">
+    <header class="bar">
+      <div class="brand">Sampoorna General Insurance</div>
+      <div>Claim status</div>
+    </header>
+    <main>
+      <h1>Claim progress</h1>
+      <div class="card">
+        <dl class="kv">
+          <dt>Claimant</dt>
+          <dd><span>Pooja Joshi</span></dd>
+          <dt>Policy</dt>
+          <dd><span>A1234567</span></dd>
+          <dt>Settlement account</dt>
+          <dd><span>4557127494874349</span></dd>
+          <dt>IFSC</dt>
+          <dd><span>SBIN0939783</span></dd>
+          <dt>Contact</dt>
+          <dd><span>+91 94380 24644</span></dd>
+        </dl>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Event</th>
+            <th>On</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span>name@company.com</span></td>
+            <td>Documents received</td>
+            <td><span>bescom.bill@okaxis</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span>merchant0042@ybl</span></td>
+            <td>Surveyor assigned</td>
+            <td><span>Branch code 00042317</span></td>
+            <td>Dr <span>Divya Reddy</span></td>
+          </tr>
+          <tr>
+            <td><span>MICR 560240021</span></td>
+            <td>Approved</td>
+            <td><span>Consumer no. 3407120054</span></td>
+            <td>Rs 48,200</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="actions">
+        <button class="">Raise a query</button><button class="primary">Download letter</button>
+      </div>
+    </main>
+  </body>
+</html>

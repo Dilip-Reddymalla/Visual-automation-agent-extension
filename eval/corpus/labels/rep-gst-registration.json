@@ -1,0 +1,309 @@
+{
+  "id": "rep-gst-registration",
+  "title": "GST \u2014 Registration",
+  "half": "replica",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "compact",
+  "fontPx": 12,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 420,
+        "y": 76.28,
+        "w": 740,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "GSTIN",
+      "box": {
+        "x": 420,
+        "y": 113.88,
+        "w": 740,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 420,
+        "y": 151.47,
+        "w": 740,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 420,
+        "y": 189.06,
+        "w": 740,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 420,
+        "y": 226.66,
+        "w": 740,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 420,
+        "y": 264.25,
+        "w": 740,
+        "h": 29.59
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 372.38,
+        "y": 304.84,
+        "w": 92.42,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 491.34,
+        "y": 304.84,
+        "w": 132.28,
+        "h": 16
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "IFSC",
+      "why": "IFSC shape, branch masked by the site itself",
+      "text": "HDFC0XXXXXX",
+      "box": {
+        "x": 1180.83,
+        "y": 8,
+        "w": 79.17,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "IFSC",
+      "why": "IFSC shape, the all-zero example from the bank's help page",
+      "text": "SBIN0000000",
+      "box": {
+        "x": 692.91,
+        "y": 304.84,
+        "w": 70.72,
+        "h": 16
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "link",
+      "name": "Dashboard",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 45.59,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Registration",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 73.19,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Returns",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 100.78,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Payments",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 128.38,
+        "w": 190,
+        "h": 27.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Legal name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 76.28,
+        "w": 740,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "GSTIN",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 113.88,
+        "w": 740,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "PAN of business",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 151.47,
+        "w": 740,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Principal place",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 189.06,
+        "w": 740,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Authorised mobile",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 226.66,
+        "w": 740,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Authorised email",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 420,
+        "y": 264.25,
+        "w": 740,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 220,
+        "y": 333.44,
+        "w": 54.52,
+        "h": 31.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Submit",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 277.81,
+        "y": 333.44,
+        "w": 67.53,
+        "h": 31.59
+      },
+      "inViewport": true
+    }
+  ]
+}

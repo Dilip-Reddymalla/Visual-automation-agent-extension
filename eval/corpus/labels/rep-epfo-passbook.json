@@ -1,0 +1,205 @@
+{
+  "id": "rep-epfo-passbook",
+  "title": "EPFO Member Passbook",
+  "half": "replica",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "compact",
+  "fontPx": 12,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 93.19,
+        "w": 49.69,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 248,
+        "y": 118.48,
+        "w": 75.7,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 248,
+        "y": 143.78,
+        "w": 56.02,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 248,
+        "y": 169.08,
+        "w": 77.19,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 248,
+        "y": 194.38,
+        "w": 65.38,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 248,
+        "y": 219.67,
+        "w": 65.23,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 248,
+        "y": 244.97,
+        "w": 69.22,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ORG",
+      "box": {
+        "x": 248,
+        "y": 270.27,
+        "w": 73.78,
+        "h": 15
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled txn",
+      "text": "Txn 400629831243",
+      "box": {
+        "x": 1161.55,
+        "y": 8,
+        "w": 98.45,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled challan",
+      "text": "Challan 560768253990",
+      "box": {
+        "x": 248,
+        "y": 295.56,
+        "w": 109.95,
+        "h": 15
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "tab",
+      "name": "Passbook",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 45.59,
+        "w": 79.14,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "tab",
+      "name": "KYC",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 101.14,
+        "y": 45.59,
+        "w": 48.8,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "tab",
+      "name": "Claims",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 151.94,
+        "y": 45.59,
+        "w": 62.78,
+        "h": 29.59
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Download passbook",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 507.94,
+        "w": 137.73,
+        "h": 31.59
+      },
+      "inViewport": true
+    }
+  ]
+}

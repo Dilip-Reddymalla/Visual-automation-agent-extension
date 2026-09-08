@@ -1,0 +1,283 @@
+{
+  "id": "syn-sch-apply",
+  "title": "Scholarship \u2014 Bank Details",
+  "half": "synthetic",
+  "archetype": "scholarship",
+  "theme": "portal",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 240,
+        "y": 203.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 699,
+        "y": 203.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 240,
+        "y": 341.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 699,
+        "y": 341.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "IFSC",
+      "box": {
+        "x": 240,
+        "y": 430.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "Receipt 801343131844",
+      "box": {
+        "x": 290.16,
+        "y": 476,
+        "w": 119.86,
+        "h": 16
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "twelve digits, wrong checksum, wrong label",
+      "text": "",
+      "box": {
+        "x": 699,
+        "y": 430.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "link",
+      "name": "Profile",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 64.5,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Academic",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 105,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Bank",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 145.5,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Documents",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 186,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "link",
+      "name": "Submit",
+      "tag": "a",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 226.5,
+        "w": 190,
+        "h": 40.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Name as per bank record",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 240,
+        "y": 203.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Aadhaar linked to account",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 699,
+        "y": 203.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Account number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 240,
+        "y": 341.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Re-enter account number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 699,
+        "y": 341.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "IFSC",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 240,
+        "y": 430.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Branch",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 699,
+        "y": 430.5,
+        "w": 447,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Back",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 226,
+        "y": 535,
+        "w": 60.63,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save and continue",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 294.63,
+        "y": 535,
+        "w": 151.55,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ]
+}

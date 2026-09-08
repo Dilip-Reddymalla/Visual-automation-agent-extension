@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Checkout</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #1a1a1a;
+        font:
+          15px/1.5 system-ui,
+          'Helvetica Neue',
+          sans-serif;
+      }
+      a {
+        color: #c2410c;
+      }
+      header.bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #fafafa;
+        border-bottom: 2px solid #c2410c;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .crumb {
+        font-size: 12px;
+        color: #666666;
+        padding: 6px 20px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1180px;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .cols > .side {
+        flex: 0 0 190px;
+      }
+      .cols > .pane {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      nav.side a {
+        display: block;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: #1a1a1a;
+        border-left: 3px solid transparent;
+      }
+      nav.side a[aria-current] {
+        border-left-color: #c2410c;
+        background: #fafafa;
+      }
+      section {
+        margin-bottom: 16px;
+      }
+      fieldset {
+        border: 1px solid #e6e6e6;
+        border-radius: 4px;
+        padding: 13px;
+        margin: 0 0 16px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #666666;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 12px;
+      }
+      h2 {
+        font-size: 18px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 0 0 6px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .f {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: #666666;
+        margin-bottom: 3px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 9px;
+        border: 1px solid #e6e6e6;
+        border-radius: 3px;
+        font: inherit;
+        background: #fff;
+        color: #1a1a1a;
+      }
+      input[readonly] {
+        background: #fafafa;
+      }
+      .hint {
+        font-size: 12px;
+        color: #666666;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid #e6e6e6;
+        vertical-align: top;
+      }
+      th {
+        background: #fafafa;
+        font-weight: 600;
+        color: #666666;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      dl.kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 12px;
+        margin: 0;
+      }
+      dl.kv dt {
+        color: #666666;
+        font-size: 13px;
+      }
+      dl.kv dd {
+        margin: 0;
+      }
+      .card {
+        border: 1px solid #e6e6e6;
+        border-radius: 6px;
+        padding: 13px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #fafafa;
+        color: #c2410c;
+        font-size: 12px;
+        border: 1px solid #e6e6e6;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 14px;
+        border: 1px solid #e6e6e6;
+        border-radius: 3px;
+        background: #fafafa;
+        font: inherit;
+        cursor: pointer;
+        color: #1a1a1a;
+      }
+      button.primary {
+        background: #c2410c;
+        border-color: #c2410c;
+        color: #fff;
+      }
+      .muted {
+        color: #666666;
+      }
+      .mono {
+        font-family: 'Cascadia Mono', 'Consolas', monospace;
+      }
+      .scanwrap {
+        background: #fafafa;
+        padding: 16px;
+        border: 1px solid #e6e6e6;
+      }
+      .rail {
+        flex: 0 0 260px;
+      }
+      footer {
+        padding: 16px 20px;
+        color: #666666;
+        font-size: 12px;
+        border-top: 1px solid #e6e6e6;
+      }
+    </style>
+  </head>
+  <body data-corpus-id="syn-shop-checkout">
+    <header class="bar">
+      <div class="brand">Bazaar</div>
+      <div>Checkout</div>
+    </header>
+    <main>
+      <div class="cols">
+        <div class="pane">
+          <h1>Delivery address</h1>
+          <div class="card">
+            <div class="f">
+              <label>Full name</label><input type="text" value="Imran Sharma" style="" />
+            </div>
+            <div class="f">
+              <label>Address</label
+              ><input
+                type="text"
+                value="48, 4th Cross, Jayanagar, Kochi, Kerala 682016"
+                style=""
+              />
+            </div>
+            <div class="f">
+              <label>Mobile</label><input type="tel" value="07714 139669" style="" />
+            </div>
+          </div>
+          <h2>Payment</h2>
+          <div class="card">
+            <div class="f">
+              <label>Card number</label
+              ><input type="text" value="5234 7338 7460 3718" style="" />
+            </div>
+            <div class="grid">
+              <div class="f">
+                <label>Expiry</label><input type="text" value="09/29" style="" />
+              </div>
+              <div class="f"><label>CVV</label><input type="password" style="" /></div>
+            </div>
+            <div class="f">
+              <label>Or pay by UPI</label
+              ><input type="text" value="arjun.mishra@apl" style="" />
+            </div>
+          </div>
+        </div>
+        <div class="rail">
+          <div class="card">
+            <h3>Order summary</h3>
+            <dl class="kv">
+              <dt>Order</dt>
+              <dd><span>TESTP0000A</span></dd>
+              <dt>Items</dt>
+              <dd>3</dd>
+              <dt>Total</dt>
+              <dd><span>FORMP1234X</span></dd>
+              <dt>Delivery by</dt>
+              <dd><span>HDFC0XXXXXX</span></dd>
+            </dl>
+            <div class="actions"><button class="primary">Place order</button></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

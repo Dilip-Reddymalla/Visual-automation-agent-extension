@@ -1,0 +1,283 @@
+{
+  "id": "syn-gov-enrolment",
+  "title": "Aadhaar Enrolment / Update",
+  "half": "synthetic",
+  "archetype": "gov-form",
+  "theme": "gov",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 839
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 34,
+        "y": 204,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 596,
+        "y": 204,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 34,
+        "y": 293,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PAN",
+      "box": {
+        "x": 596,
+        "y": 293,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 34,
+        "y": 451,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 596,
+        "y": 451,
+        "w": 550,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 34,
+        "y": 528,
+        "w": 1112,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "SECRET",
+      "box": {
+        "x": 34,
+        "y": 666,
+        "w": 1112,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled invoice no.",
+      "text": "Invoice no. 625831667177",
+      "box": {
+        "x": 491.13,
+        "y": 114,
+        "w": 172.64,
+        "h": 20
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "AADHAAR",
+      "why": "verhoeff-valid but labelled order id",
+      "text": "Order ID 415337052639",
+      "box": {
+        "x": 89.48,
+        "y": 721.5,
+        "w": 126.55,
+        "h": 16
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Full name (as on supporting document) *",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 204,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Date of birth *",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 596,
+        "y": 204,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Aadhaar number *",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 293,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "PAN",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 596,
+        "y": 293,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Mobile *",
+      "tag": "input",
+      "type": "tel",
+      "box": {
+        "x": 34,
+        "y": 451,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Email",
+      "tag": "input",
+      "type": "email",
+      "box": {
+        "x": 596,
+        "y": 451,
+        "w": 550,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Address *",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 528,
+        "w": 1112,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Enrolment centre passcode",
+      "tag": "input",
+      "type": "password",
+      "box": {
+        "x": 34,
+        "y": 666,
+        "w": 1112,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Save draft",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 780.5,
+        "w": 96.2,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Submit",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 124.2,
+        "y": 780.5,
+        "w": 76.92,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Release a saved secret?</title>
+    <style>
+      /* Deliberately plain, and deliberately not styled like the rest of the extension.
+         This window is not part of a flow the operator is already in the middle of --
+         it is an interruption, and it should look like one. */
+      :root {
+        color-scheme: light dark;
+        --ink: #14181e;
+        --muted: #5b6472;
+        --line: #d9dee7;
+        --danger: #b3261e;
+        --bg: #fff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ink: #e9edf4;
+          --muted: #a3adbb;
+          --line: #333a45;
+          --danger: #f2b8b5;
+          --bg: #1b1f26;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+      }
+      main {
+        padding: 20px;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 17px;
+      }
+      p {
+        margin: 0 0 10px;
+      }
+      .origin {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        /* An origin can be long; wrapping it is better than hiding half of it. */
+        overflow-wrap: anywhere;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 16px;
+      }
+      button {
+        padding: 8px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      /* The releasing button is not the default and is not the styled-primary one. */
+      button.danger {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+      button.secondary {
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Release a saved secret?</h1>
+
+      <p class="what">
+        The agent is asking for <strong id="label">a saved value</strong>, to enter on:
+      </p>
+
+      <!-- Shown whole and unabbreviated. portal.gov.in.evil.example is only
+           distinguishable from portal.gov.in if the entire thing is visible. -->
+      <p class="origin"><bdi id="origin">unknown origin</bdi></p>
+
+      <p class="note">
+        It will be typed into the page on that site. Nothing is sent to the planner, now or ever
+        &mdash; it never sees this value and cannot ask for it.
+      </p>
+
+      <div class="actions">
+        <button id="deny" class="secondary" autofocus>Don't release</button>
+        <button id="allow" class="danger">Release once</button>
+      </div>
+    </main>
+    <script src="confirm.js"></script>
+  </body>
+</html>

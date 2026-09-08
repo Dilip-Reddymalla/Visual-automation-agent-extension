@@ -1,0 +1,243 @@
+{
+  "id": "rep-market-checkout",
+  "title": "Marketplace Checkout",
+  "half": "replica",
+  "archetype": "ecommerce",
+  "theme": "shop",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 34,
+        "y": 147,
+        "w": 111.33,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 152.7,
+        "y": 147,
+        "w": 298.28,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 80.13,
+        "y": 169.5,
+        "w": 115.52,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "CARD",
+      "box": {
+        "x": 234,
+        "y": 292,
+        "w": 912,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 234,
+        "y": 342.5,
+        "w": 912,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "SECRET",
+      "box": {
+        "x": 234,
+        "y": 443.5,
+        "w": 912,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 234,
+        "y": 494,
+        "w": 912,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Valid till 31/12/2027",
+      "box": {
+        "x": 248,
+        "y": 576.5,
+        "w": 123.7,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Filed on 04/07/2023",
+      "box": {
+        "x": 248,
+        "y": 608.5,
+        "w": 124.27,
+        "h": 19
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "DOB",
+      "why": "a date with no birth context",
+      "text": "Due date 15/09/2024",
+      "box": {
+        "x": 248,
+        "y": 640.5,
+        "w": 131.45,
+        "h": 19
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Change",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 34,
+        "y": 191,
+        "w": 80.58,
+        "h": 38.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Card number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 234,
+        "y": 292,
+        "w": 912,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Name on card",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 234,
+        "y": 342.5,
+        "w": 912,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Expiry",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 234,
+        "y": 393,
+        "w": 912,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "CVV",
+      "tag": "input",
+      "type": "password",
+      "box": {
+        "x": 234,
+        "y": 443.5,
+        "w": 912,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Or UPI ID",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 234,
+        "y": 494,
+        "w": 912,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Place order",
+      "tag": "div",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 666.5,
+        "w": 104.45,
+        "h": 38.5
+      },
+      "inViewport": true
+    }
+  ]
+}

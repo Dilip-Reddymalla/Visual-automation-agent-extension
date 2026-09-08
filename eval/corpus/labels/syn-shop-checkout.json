@@ -1,0 +1,243 @@
+{
+  "id": "syn-shop-checkout",
+  "title": "Checkout",
+  "half": "synthetic",
+  "archetype": "ecommerce",
+  "theme": "shop",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": false,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 34,
+        "y": 146,
+        "w": 836,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 34,
+        "y": 223,
+        "w": 836,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 34,
+        "y": 300,
+        "w": 836,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "CARD",
+      "box": {
+        "x": 34,
+        "y": 456,
+        "w": 836,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "SECRET",
+      "box": {
+        "x": 458,
+        "y": 533,
+        "w": 412,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    },
+    {
+      "cls": "UPI",
+      "box": {
+        "x": 34,
+        "y": 610,
+        "w": 836,
+        "h": 42.5
+      },
+      "boxKind": "element",
+      "medium": "text",
+      "tag": "input",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PAN",
+      "why": "PAN shape, a placeholder in the site's own help text",
+      "text": "TESTP0000A",
+      "box": {
+        "x": 989.55,
+        "y": 109.5,
+        "w": 81.7,
+        "h": 20
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PAN",
+      "why": "PAN shape appearing inside the word FORM in a heading",
+      "text": "FORMP1234X",
+      "box": {
+        "x": 989.55,
+        "y": 162.5,
+        "w": 90.67,
+        "h": 20
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "IFSC",
+      "why": "IFSC shape, branch masked by the site itself",
+      "text": "HDFC0XXXXXX",
+      "box": {
+        "x": 989.55,
+        "y": 189,
+        "w": 98.95,
+        "h": 20
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Full name",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 146,
+        "w": 836,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Address",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 223,
+        "w": 836,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Mobile",
+      "tag": "input",
+      "type": "tel",
+      "box": {
+        "x": 34,
+        "y": 300,
+        "w": 836,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Card number",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 456,
+        "w": 836,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Expiry",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 533,
+        "w": 412,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "CVV",
+      "tag": "input",
+      "type": "password",
+      "box": {
+        "x": 458,
+        "y": 533,
+        "w": 412,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "textbox",
+      "name": "Or pay by UPI",
+      "tag": "input",
+      "type": "text",
+      "box": {
+        "x": 34,
+        "y": 610,
+        "w": 836,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Place order",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 914,
+        "y": 222.5,
+        "w": 104.45,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ]
+}

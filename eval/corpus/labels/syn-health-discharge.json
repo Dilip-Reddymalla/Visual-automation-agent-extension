@@ -1,0 +1,179 @@
+{
+  "id": "syn-health-discharge",
+  "title": "Discharge Summary",
+  "half": "synthetic",
+  "archetype": "healthcare",
+  "theme": "health",
+  "density": "normal",
+  "fontPx": 15,
+  "heldOut": true,
+  "labelledBy": "generated",
+  "viewport": {
+    "w": 1280,
+    "h": 800
+  },
+  "document": {
+    "w": 1280,
+    "h": 800
+  },
+  "spans": [
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 34,
+        "y": 139.5,
+        "w": 85.61,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "DOB",
+      "box": {
+        "x": 126.98,
+        "y": 139.5,
+        "w": 76.39,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ADDRESS",
+      "box": {
+        "x": 285.75,
+        "y": 139.5,
+        "w": 381.89,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "ACCOUNT",
+      "box": {
+        "x": 201.34,
+        "y": 162,
+        "w": 129.38,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PHONE",
+      "box": {
+        "x": 511,
+        "y": 199.5,
+        "w": 115.52,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "EMAIL",
+      "box": {
+        "x": 726.63,
+        "y": 199.5,
+        "w": 212.23,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "PERSON",
+      "box": {
+        "x": 53.84,
+        "y": 222,
+        "w": 65.73,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    },
+    {
+      "cls": "AADHAAR",
+      "box": {
+        "x": 374.2,
+        "y": 222,
+        "w": 105.25,
+        "h": 20
+      },
+      "boxKind": "text",
+      "medium": "text",
+      "tag": "span",
+      "inViewport": true
+    }
+  ],
+  "negatives": [
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Austin",
+      "box": {
+        "x": 789.31,
+        "y": 139.5,
+        "w": 41.73,
+        "h": 20
+      },
+      "inViewport": true
+    },
+    {
+      "looksLike": "PERSON",
+      "why": "a place name that is also a common given or family name",
+      "text": "Madison",
+      "box": {
+        "x": 508.41,
+        "y": 162,
+        "w": 57.22,
+        "h": 20
+      },
+      "inViewport": true
+    }
+  ],
+  "elements": [
+    {
+      "role": "button",
+      "name": "Print",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 20,
+        "y": 284.5,
+        "w": 60.83,
+        "h": 42.5
+      },
+      "inViewport": true
+    },
+    {
+      "role": "button",
+      "name": "Email to me",
+      "tag": "button",
+      "type": null,
+      "box": {
+        "x": 88.83,
+        "y": 284.5,
+        "w": 108.27,
+        "h": 42.5
+      },
+      "inViewport": true
+    }
+  ]
+}

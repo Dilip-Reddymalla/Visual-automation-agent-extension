@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scholarship Enrolment — Demo</title>
+    <style>
+      :root {
+        --line: #d9dee7;
+        --ink: #14181e;
+        --muted: #5b6472;
+        --accent: #1b6feb;
+        --bad: #b3261e;
+        --panel: #f6f8fb;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.55 system-ui,
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      header.bar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 24px;
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        font-weight: 650;
+      }
+      main {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      fieldset {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        margin: 0 0 20px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      input[type='text'],
+      input[type='email'],
+      input[type='tel'],
+      input[type='password'],
+      input[type='date'],
+      select,
+      textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font: inherit;
+        background: #fff;
+        color: var(--ink);
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+      }
+      .row > * {
+        flex: 1;
+      }
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+      }
+      .check input {
+        width: 16px;
+        height: 16px;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      button {
+        padding: 9px 16px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        font: inherit;
+        cursor: pointer;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      [role='alert'] {
+        color: var(--bad);
+        font-size: 13px;
+        margin-top: 4px;
+      }
+      .card {
+        display: block;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        margin-bottom: 12px;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+      }
+      .card p {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .card .card-actions {
+        display: flex;
+        gap: 8px;
+      }
+      #cookie {
+        position: fixed;
+        inset: auto 0 0 0;
+        padding: 14px 24px;
+        background: #14181e;
+        color: #fff;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 50;
+      }
+      #cookie button {
+        background: #fff;
+        border-color: #fff;
+      }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 14, 20, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+      .modal-backdrop[data-open='1'] {
+        display: flex;
+      }
+      .modal {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        width: 380px;
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar">
+      <span class="brand">National Scholarship Portal</span>
+      <nav>
+        <a href="#help">Help</a>
+        <a href="#status">Application status</a>
+        <button id="open-modal" type="button">Verify identity</button>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Scholarship enrolment</h1>
+
+      <form id="enrol">
+        <fieldset>
+          <legend>Applicant</legend>
+
+          <div class="field">
+            <label for="name">Full name</label>
+            <input
+              id="name"
+              name="applicant_name"
+              type="text"
+              autocomplete="name"
+              value="Asha Menon"
+            />
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="dob">Date of birth</label>
+              <input id="dob" name="dob" type="date" autocomplete="bday" value="1999-04-17" />
+            </div>
+            <div class="field">
+              <label for="phone">Mobile number</label>
+              <input
+                id="phone"
+                name="mobile"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel"
+                value="9845012345"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="you@example.in"
+            />
+            <div role="alert" id="email-error">Email is required</div>
+          </div>
+
+          <div class="field">
+            <label for="address">Address</label>
+            <textarea id="address" name="street_address" autocomplete="street-address" rows="2">
+14 Rose Villa, Indiranagar, Bengaluru 560038</textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Identity</legend>
+
+          <div class="field">
+            <label for="aadhaar">Aadhaar number</label>
+            <input
+              id="aadhaar"
+              name="aadhaar_no"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              maxlength="12"
+              pattern="[0-9]{12}"
+              aria-describedby="aadhaar-hint"
+              value="919442736092"
+            />
+            <div class="hint" id="aadhaar-hint">Twelve digits, no spaces</div>
+          </div>
+
+          <div class="field">
+            <label for="pan">PAN</label>
+            <input id="pan" name="pan" type="text" maxlength="10" value="JMRPN3229K" />
+          </div>
+
+          <div class="field">
+            <label for="portal-pin">Portal PIN</label>
+            <input
+              id="portal-pin"
+              name="pin"
+              type="password"
+              autocomplete="current-password"
+              value="hunter2"
+            />
+          </div>
+
+          <div class="field">
+            <label for="state">State</label>
+            <select id="state" name="state">
+              <option>Andhra Pradesh</option>
+              <option selected>Karnataka</option>
+              <option>Kerala</option>
+              <option>Tamil Nadu</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Category</legend>
+          <!-- Component-library pattern: the label wraps the control. -->
+          <label class="check"
+            ><input type="radio" name="cat" value="gen" checked /> General</label
+          >
+          <label class="check"><input type="radio" name="cat" value="obc" /> OBC</label>
+          <label class="check"><input type="radio" name="cat" value="sc" /> SC / ST</label>
+          <label class="check"
+            ><input type="checkbox" name="consent" /> I agree to the terms</label
+          >
+        </fieldset>
+
+        <div class="actions">
+          <button type="button" id="save-draft">Save draft</button>
+          <button type="submit" class="primary">Save and continue</button>
+        </div>
+      </form>
+
+      <h2>Recommended schemes</h2>
+
+      <!-- Each card is one clickable thing containing several. Collapse should keep
+           the card and its two named buttons, not every div inside it. -->
+      <a class="card" href="#merit">
+        <h3>Merit-cum-Means Scholarship</h3>
+        <p>For students with family income below 8 lakh per annum.</p>
+        <span class="card-actions">
+          <button type="button">Read more</button>
+          <button type="button" class="primary">Apply</button>
+        </span>
+      </a>
+
+      <a class="card" href="#pmss">
+        <h3>Prime Minister's Special Scholarship</h3>
+        <p>For students from Jammu and Kashmir and Ladakh.</p>
+        <span class="card-actions">
+          <button type="button">Read more</button>
+          <button type="button" class="primary">Apply</button>
+        </span>
+      </a>
+
+      <h2>Support</h2>
+      <!-- A custom element with a closed shadow root: unreachable by design. -->
+      <support-widget></support-widget>
+      <!-- An open one: its contents should be found. -->
+      <div id="chat-host"></div>
+
+      <p class="visually-hidden"><a href="#skip">Skip to footer</a></p>
+    </main>
+
+    <div id="cookie">
+      <span>We use cookies to improve this service.</span>
+      <span>
+        <button type="button" id="cookie-reject">Reject non-essential</button>
+        <button type="button" id="cookie-accept">Accept all</button>
+      </span>
+    </div>
+
+    <div class="modal-backdrop" id="modal">
+      <div class="modal" role="dialog" aria-label="Verify identity">
+        <h2>Verify identity</h2>
+        <div class="field">
+          <label for="otp">One-time password</label>
+          <input id="otp" name="otp" type="text" inputmode="numeric" maxlength="6" />
+        </div>
+        <div class="actions">
+          <button type="button" id="modal-cancel">Cancel</button>
+          <button type="button" class="primary" id="modal-verify">Verify</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // An open shadow root, whose contents the walker must find.
+      const chat = document.getElementById('chat-host').attachShadow({ mode: 'open' });
+      chat.innerHTML = `
+        <style>button { padding: 8px 14px; font: inherit; cursor: pointer; }</style>
+        <button type="button">Chat with support</button>
+      `;
+
+      // A closed one, which it must report as opaque rather than as nothing.
+      class SupportWidget extends HTMLElement {
+        connectedCallback() {
+          const root = this.attachShadow({ mode: 'closed' });
+          root.innerHTML = `<button type="button">Hidden helpdesk</button>`;
+        }
+      }
+      customElements.define('support-widget', SupportWidget);
+
+      const modal = document.getElementById('modal');
+      document.getElementById('open-modal').addEventListener('click', () => {
+        modal.dataset.open = '1';
+      });
+      document.getElementById('modal-cancel').addEventListener('click', () => {
+        delete modal.dataset.open;
+      });
+
+      // Two outcomes, both of which the agent has to handle. An empty email prepends an
+      // error banner -- same page, new node, which is what the mutation-settle watcher
+      // and the diff exist for. A filled one navigates, which throws away the element
+      // indices and the screenshot the planner was looking at, and is the reason a
+      // click that navigates has to be the last action in a batch.
+      document.getElementById('enrol').addEventListener('submit', (e) => {
+        e.preventDefault();
+        document.getElementById('submit-error')?.remove();
+
+        const email = document.getElementById('email');
+        if (email.value) {
+          location.href = 'page-b-application.html';
+          return;
+        }
+
+        const banner = document.createElement('div');
+        banner.setAttribute('role', 'alert');
+        banner.id = 'submit-error';
+        banner.textContent = 'Please correct the errors above.';
+        e.target.prepend(banner);
+      });
+    </script>
+  </body>
+</html>
