@@ -3,125 +3,277 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Redaction Gate — what was sent</title>
+    <title>Redaction Gate — What Was Sent</title>
     <style>
-      /* Tokens first, both themes, because this gets projected and often badly. Contrast
-         is set for a washed-out beamer rather than for a good monitor: the greys are
-         darker than they need to be on glass, which costs nothing and saves the demo. */
       :root {
-        color-scheme: light dark;
-        --ink: #10141a;
-        --muted: #4a5462;
-        --line: #c9d1dc;
-        --bg: #ffffff;
-        --panel: #f2f5f9;
-        --accent: #0b5fd0;
-        --warn: #a8360f;
-        --shade: rgba(16, 20, 26, 0.55);
+        --bg: #0d1117;
+        --bg-elevated: #161b22;
+        --bg-subtle: #21262d;
+        --fg: #f0f6fc;
+        --fg-muted: #8b949e;
+        --line: #30363d;
+        --line-subtle: #21262d;
+        --panel: #161b22;
+        --accent: #58a6ff;
+        --accent-glow: rgba(88, 166, 255, 0.15);
+        --ok: #3fb950;
+        --ok-glow: rgba(63, 185, 80, 0.15);
+        --warn: #d29922;
+        --warn-glow: rgba(210, 153, 34, 0.15);
+        --bad: #f85149;
+        --shade: rgba(0, 0, 0, 0.65);
+        --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
       }
-      @media (prefers-color-scheme: dark) {
+      @media (prefers-color-scheme: light) {
         :root {
-          --ink: #f2f5f9;
-          --muted: #aab4c2;
-          --line: #3a434f;
-          --bg: #0f1319;
-          --panel: #171c24;
-          --accent: #6aa9ff;
-          --warn: #ff9b7a;
-          --shade: rgba(0, 0, 0, 0.62);
+          --bg: #ffffff;
+          --bg-elevated: #f6f8fa;
+          --bg-subtle: #eaeef2;
+          --fg: #1f2328;
+          --fg-muted: #656d76;
+          --line: #d0d7de;
+          --line-subtle: #eaeef2;
+          --panel: #f6f8fa;
+          --accent: #0969da;
+          --accent-glow: rgba(9, 105, 218, 0.1);
+          --ok: #1a7f37;
+          --ok-glow: rgba(26, 127, 55, 0.1);
+          --warn: #9a6700;
+          --warn-glow: rgba(154, 103, 0, 0.1);
+          --bad: #cf222e;
+          --shade: rgba(16, 20, 26, 0.55);
         }
       }
+
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html, body {
+        height: 100%;
+        width: 100%;
       }
       body {
-        margin: 0;
-        font:
-          15px/1.5 system-ui,
-          sans-serif;
-        color: var(--ink);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--fg);
         background: var(--bg);
-        /* The page never scrolls sideways; wide things scroll inside themselves. */
+        height: 100%;
+        overflow-y: auto;
         overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
       }
-      header {
+
+      /* Sticky Header */
+      header.audit-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
         display: flex;
-        align-items: baseline;
-        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
         flex-wrap: wrap;
-        padding: 14px 20px;
-        border-bottom: 1px solid var(--line);
+        padding: 10px 16px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line-subtle);
+        backdrop-filter: blur(8px);
       }
-      h1 {
-        font-size: 18px;
-        margin: 0;
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
       }
-      .counter {
-        margin-left: auto;
-        font-variant-numeric: tabular-nums;
-        font-size: 15px;
+      .brand-title {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
-      .counter strong {
-        font-size: 19px;
-      }
-      .zero {
+      .brand-title svg {
+        width: 16px;
+        height: 16px;
         color: var(--accent);
       }
-      select {
-        padding: 5px 8px;
-        border: 1px solid var(--line);
+      .step-picker {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      select#step {
+        padding: 4px 10px;
         border-radius: 6px;
-        background: var(--bg);
-        color: inherit;
-        font: inherit;
+        border: 1px solid var(--line);
+        background: var(--bg-elevated);
+        color: var(--fg);
+        font-family: var(--font-sans);
+        font-size: 12px;
+        outline: none;
+        cursor: pointer;
       }
+      select#step:focus {
+        border-color: var(--accent);
+      }
+      .counter-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: var(--ok-glow);
+        border: 1px solid var(--ok);
+        color: var(--ok);
+        font-size: 11.5px;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+      }
+      .counter-pill strong {
+        font-weight: 700;
+      }
+
       main {
-        padding: 16px 20px 40px;
+        padding: 16px 16px 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
+
+      .empty {
+        padding: 48px 16px;
+        text-align: center;
+        color: var(--fg-muted);
+        background: var(--bg-elevated);
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        font-size: 13px;
+      }
+
+      /* Local Step Proof Card */
+      .local-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        background: var(--bg-elevated);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .local-card-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .badge-on-device {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--ok-glow);
+        color: var(--ok);
+        border: 1px solid var(--ok);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .local-title {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .local-lede {
+        font-size: 12.5px;
+        color: var(--fg-muted);
+        line-height: 1.45;
+      }
+      .local-facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .fact-pill {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 11.5px;
+        background: var(--bg-subtle);
+        color: var(--fg-muted);
+        font-family: var(--font-mono);
+      }
+      .local-why {
+        padding: 10px 12px;
+        border-left: 3px solid var(--warn);
+        background: var(--bg-subtle);
+        border-radius: 0 6px 6px 0;
+        font-size: 12px;
+        color: var(--fg-muted);
+        line-height: 1.4;
+      }
+      .local-why strong {
+        color: var(--warn);
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      /* Comparator Frames */
       .frames {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
+        gap: 14px;
       }
-      @media (max-width: 900px) {
+      @media (max-width: 768px) {
         .frames {
           grid-template-columns: 1fr;
         }
       }
-      figure {
-        margin: 0;
+      figure.frame-card {
         border: 1px solid var(--line);
         border-radius: 8px;
         overflow: hidden;
-        background: var(--panel);
+        background: var(--bg-elevated);
+        display: flex;
+        flex-direction: column;
       }
       figcaption {
         padding: 8px 12px;
-        font-size: 13px;
-        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+        border-bottom: 1px solid var(--line-subtle);
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        gap: 10px;
+        background: var(--bg-subtle);
       }
-      figcaption .tag {
-        color: var(--muted);
+      figcaption .badge-tag {
+        font-size: 10.5px;
+        padding: 1px 6px;
+        border-radius: 4px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--line);
+        color: var(--fg-muted);
+        font-family: var(--font-mono);
       }
-      .shot {
+      .shot-container {
         position: relative;
-        background: #fff;
+        background: #000000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .shot img,
-      .shot svg {
+      .shot-container img,
+      .shot-container svg {
         display: block;
         width: 100%;
         height: auto;
       }
-      .shot svg {
+      .shot-container svg {
         position: absolute;
         inset: 0;
       }
-      /* Everything dims except the hovered box. Drawn as one shape with an even-odd
-         hole, so there is exactly one dark layer and no seams between rectangles. */
       .veil {
         fill: var(--shade);
         pointer-events: none;
@@ -132,162 +284,158 @@
         stroke-width: 3;
         pointer-events: none;
       }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-top: 18px;
-        font-size: 14px;
+
+      /* Findings Table */
+      .table-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--bg-elevated);
+        overflow: hidden;
+      }
+      .table-header-row {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line-subtle);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--fg-muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       .wrap {
         overflow-x: auto;
       }
-      th,
-      td {
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 12px;
+      }
+      th, td {
         text-align: left;
         padding: 6px 10px;
-        border-bottom: 1px solid var(--line);
+        border-bottom: 1px solid var(--line-subtle);
         white-space: nowrap;
       }
       th {
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: var(--muted);
+        color: var(--fg-muted);
+        background: var(--bg-subtle);
       }
       tbody tr:hover {
-        background: var(--panel);
-        cursor: crosshair;
+        background: var(--accent-glow);
+        cursor: pointer;
       }
       td.num {
         text-align: right;
         font-variant-numeric: tabular-nums;
-        font-family: ui-monospace, monospace;
+        font-family: var(--font-mono);
       }
       code {
-        font-family: ui-monospace, monospace;
-        font-size: 13px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        padding: 1px 4px;
+        border-radius: 3px;
+        background: var(--bg-subtle);
       }
       .keep {
         color: var(--warn);
       }
-      .note {
-        color: var(--muted);
-        font-size: 13px;
-        margin: 10px 0 0;
-      }
-      .empty {
-        padding: 40px 0;
-        text-align: center;
-        color: var(--muted);
-      }
-
-      /* The local-step card. Deliberately as prominent as the frames it replaces: a step
-         that sent nothing is the strongest claim this project makes, and it used to be
-         displayed as an empty state telling the operator to come back later. */
-      .local {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 18px 20px;
-        background: var(--panel);
-      }
-      .local h2 {
-        margin: 0 0 6px;
-        font-size: 17px;
-      }
-      .local .facts {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 12px 0 0;
-      }
-      .local .fact {
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 3px 10px;
+      .note-text {
         font-size: 12px;
-        background: var(--bg);
-      }
-      .local .why {
-        margin: 14px 0 0;
-        padding: 10px 12px;
-        border-left: 3px solid var(--warn);
-        background: var(--bg);
-        font-size: 13px;
-      }
-      .local .why strong {
-        display: block;
-        margin-bottom: 3px;
+        color: var(--fg-muted);
+        line-height: 1.45;
+        padding: 4px 2px;
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>What was sent</h1>
-      <label for="step">Step</label>
-      <select id="step"></select>
-      <p class="counter" id="counter"></p>
+    <header class="audit-header">
+      <div class="header-left">
+        <div class="brand-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          What was sent
+        </div>
+        <div class="step-picker">
+          <label for="step" style="font-size:12px;color:var(--fg-muted)">Step:</label>
+          <select id="step"></select>
+        </div>
+      </div>
+      <div class="counter-pill" id="counter"></div>
     </header>
 
     <main>
       <div id="empty" class="empty">
-        No step recorded yet. Run a task, then come back — the panel holds the last ten.
+        No step recorded yet. Run a task, then switch here to view transmission proofs.
       </div>
 
-      <!-- A step that never reached the network. There is no pair of frames to show,
-           because no frame was ever taken: the plan was made from the DOM. -->
-      <div id="local" class="local" hidden>
-        <h2 id="local-title">Nothing was sent</h2>
-        <p id="local-lede" class="note"></p>
-        <div class="facts" id="local-facts"></div>
-        <div class="why" id="local-why" hidden></div>
+      <!-- Local on-device execution proof -->
+      <div id="local" class="local-card" hidden>
+        <div class="local-card-header">
+          <span class="badge-on-device">100% On-Device</span>
+          <h2 id="local-title" class="local-title">Nothing was sent</h2>
+        </div>
+        <p id="local-lede" class="local-lede"></p>
+        <div class="local-facts" id="local-facts"></div>
+        <div class="local-why" id="local-why" hidden></div>
       </div>
 
       <div id="content" hidden>
         <div class="frames">
-          <figure>
+          <figure class="frame-card">
             <figcaption>
-              <span><strong>Before the gate</strong> — the real screen</span>
-              <span class="tag">in memory only</span>
+              <span><strong>Before the gate</strong> (Raw Screen)</span>
+              <span class="badge-tag">in-memory only</span>
             </figcaption>
-            <div class="shot"><img id="before" alt="the screen as captured" /></div>
+            <div class="shot-container"><img id="before" alt="screen as captured" /></div>
           </figure>
 
-          <figure>
+          <figure class="frame-card">
             <figcaption>
-              <span><strong>After the gate</strong> — the exact bytes POSTed</span>
-              <span class="tag" id="sent-tag"></span>
+              <span><strong>After the gate</strong> (POSTed wire payload)</span>
+              <span class="badge-tag" id="sent-tag"></span>
             </figcaption>
-            <div class="shot">
-              <img id="after" alt="the image that was sent to the planner" />
+            <div class="shot-container">
+              <img id="after" alt="image sent to planner" />
               <svg id="overlay" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
             </div>
           </figure>
         </div>
 
-        <div class="wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>class</th>
-                <th>origin</th>
-                <th>operation</th>
-                <th>detector</th>
-                <th>placeholder</th>
-                <th class="num">x</th>
-                <th class="num">y</th>
-                <th class="num">w</th>
-                <th class="num">h</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
+        <div class="table-card">
+          <div class="table-header-row">
+            <span>Redaction Manifest Findings</span>
+          </div>
+          <div class="wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>class</th>
+                  <th>origin</th>
+                  <th>operation</th>
+                  <th>detector</th>
+                  <th>placeholder</th>
+                  <th class="num">x</th>
+                  <th class="num">y</th>
+                  <th class="num">w</th>
+                  <th class="num">h</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
         </div>
 
-        <p class="note" id="summary"></p>
-        <p class="note">
-          Hover a row to see exactly which pixels it accounts for. The frame on the left is held
-          in this page's memory for as long as it is open, is never written to storage and is
-          never encoded — which is also why there is no button here to save it.
+        <p class="note-text" id="summary"></p>
+        <p class="note-text">
+          Hover a row to highlight pixels. Unredacted frames exist only in transient memory during inspection and never leave this device.
         </p>
       </div>
     </main>

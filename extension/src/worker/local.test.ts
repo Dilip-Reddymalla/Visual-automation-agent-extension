@@ -37,7 +37,7 @@ describe('breaking a tie', () => {
     expect(await pickCandidate('fill my work email', CANDIDATES, deps())).toEqual({
       ok: true,
       value: 5,
-      model: 'qwen3:0.6b',
+      model: 'qwen2.5:1.5b',
     });
   });
 
@@ -65,7 +65,7 @@ describe('declining', () => {
     // invented -- and acting on that types into whatever element holds that index.
     expect(
       await pickCandidate('x', CANDIDATES, deps({ fetch: async () => reply({ index: 9 }) })),
-    ).toEqual({ ok: false, why: 'bad-answer', model: 'qwen3:0.6b' });
+    ).toEqual({ ok: false, why: 'bad-answer', model: 'qwen2.5:1.5b' });
   });
 
   it('gives up when nothing is listening', async () => {
@@ -79,7 +79,7 @@ describe('declining', () => {
     expect(await pickCandidate('x', CANDIDATES, dead)).toEqual({
       ok: false,
       why: 'unreachable',
-      model: 'qwen3:0.6b',
+      model: 'qwen2.5:1.5b',
     });
   });
 
@@ -90,7 +90,7 @@ describe('declining', () => {
     expect(await pickCandidate('x', CANDIDATES, missing)).toEqual({
       ok: false,
       why: 'no-model',
-      model: 'qwen3:0.6b',
+      model: 'qwen2.5:1.5b',
     });
   });
 
@@ -107,7 +107,7 @@ describe('declining', () => {
     expect(await pickCandidate('x', CANDIDATES, prose)).toEqual({
       ok: false,
       why: 'unreachable',
-      model: 'qwen3:0.6b',
+      model: 'qwen2.5:1.5b',
     });
   });
 
@@ -126,7 +126,7 @@ describe('declining', () => {
     expect(await pickCandidate('x', CANDIDATES, slow)).toEqual({
       ok: false,
       why: 'timeout',
-      model: 'qwen3:0.6b',
+      model: 'qwen2.5:1.5b',
     });
   });
 
@@ -156,7 +156,7 @@ describe('the 403 nobody was seeing', () => {
     expect(await pickCandidate('x', CANDIDATES, refused)).toEqual({
       ok: false,
       why: 'forbidden',
-      model: 'qwen3:0.6b',
+      model: 'qwen2.5:1.5b',
     });
     expect(describeLocalFailure('forbidden')).toContain('OLLAMA_ORIGINS');
   });
@@ -171,5 +171,29 @@ describe('the 403 nobody was seeing', () => {
     ] as const) {
       expect(describeLocalFailure(why).length).toBeGreaterThan(20);
     }
+  });
+});
+
+describe('normalizing a goal', () => {
+  it('returns rewritten standard clauses from the local model', async () => {
+    const mock = {
+      fetch: async () => reply({ normalized: 'fill first name with dilip, fill last name with reddymalla' }),
+    };
+    const outcome = await (await import('./local')).normalizeGoal('my first name is dilip and surname reddymalla', CANDIDATES, mock);
+    expect(outcome).toEqual({
+      ok: true,
+      value: 'fill first name with dilip, fill last name with reddymalla',
+      model: 'qwen2.5:1.5b',
+    });
+  });
+
+  it('handles unreachable or malformed responses gracefully', async () => {
+    const dead: LocalDeps = {
+      fetch: async () => {
+        throw new TypeError('Failed to fetch');
+      },
+    };
+    const outcome = await (await import('./local')).normalizeGoal('my first name is dilip', CANDIDATES, dead);
+    expect(outcome.ok).toBe(false);
   });
 });

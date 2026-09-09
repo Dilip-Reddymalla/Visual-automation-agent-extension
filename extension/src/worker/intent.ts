@@ -149,8 +149,12 @@ const ALIASES: ReadonlyArray<readonly string[]> = [
   ['message', 'comments', 'comment', 'reason', 'details'],
   ['password', 'passcode', 'pin'],
   ['video', 'video player', 'player', 'media', 'movie', 'clip', 'audio', 'stream'],
-  ['search', 'search box', 'search query', 'query', 'lookup'],
+  ['search', 'search box', 'search bar', 'search query', 'query', 'lookup', 'search input'],
   ['cart', 'shopping cart', 'basket', 'bag', 'add to cart', 'buy now'],
+  ['from', 'origin', 'departure', 'source', 'leaving from', 'fly from', 'from city', 'source city', 'departure city'],
+  ['to', 'destination', 'arrival', 'going to', 'fly to', 'to city', 'destination city', 'arrival city'],
+  ['date', 'departure date', 'travel date', 'journey date', 'flight date', 'date of journey', 'date of travel', 'dd mm yyyy', 'dd/mm/yyyy', 'when'],
+  ['all checkboxes', 'all checkbox', 'all the checkboxes', 'all the checkbox', 'all boxes', 'every checkbox', 'every checkboxes', 'checkboxes'],
   ['submit', 'send', 'save and continue', 'continue', 'apply', 'sign in', 'log in'],
 ];
 
@@ -164,7 +168,25 @@ const ALIASES: ReadonlyArray<readonly string[]> = [
  * placeholder, so the address was persisted to session storage in the clear. The sweep in
  * router.test.ts caught it.
  */
-const ACTION_ALIASES: ReadonlySet<string> = new Set(ALIASES[ALIASES.length - 1] ?? []);
+const BUTTON_ALIASES: readonly string[] = [
+  'submit',
+  'send',
+  'save and continue',
+  'continue',
+  'apply',
+  'sign in',
+  'log in',
+  'all checkboxes',
+  'all checkbox',
+  'all the checkboxes',
+  'all the checkbox',
+  'all boxes',
+  'every checkbox',
+  'every checkboxes',
+  'checkboxes',
+];
+
+const ACTION_ALIASES: ReadonlySet<string> = new Set(BUTTON_ALIASES);
 
 /** Lower case, no punctuation, single spaces. Applied to both sides of every match. */
 export function normalise(text: string): string {
@@ -174,6 +196,24 @@ export function normalise(text: string): string {
     .replace(/[^a-z0-9@ ]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+/** Check if the target refers to all checkboxes on the page. */
+export function isAllCheckboxes(target: string): boolean {
+  const norm = normalise(target);
+  return (
+    norm === 'all' ||
+    norm === 'all the' ||
+    norm === 'all checkbox' ||
+    norm === 'all checkboxes' ||
+    norm === 'all the checkbox' ||
+    norm === 'all the checkboxes' ||
+    norm === 'all boxes' ||
+    norm === 'all the boxes' ||
+    norm === 'every checkbox' ||
+    norm === 'every checkboxes' ||
+    norm === 'checkboxes'
+  );
 }
 
 /**
@@ -228,7 +268,7 @@ const READING_WORDS: ReadonlySet<string> = new Set([
   'scroll', 'see', 'look',
   // Extract and report.
   'show', 'find', 'read', 'list', 'count', 'tell', 'display', 'summarise', 'summarize',
-  'describe', 'compare', 'check', 'inspect', 'extract', 'report',
+  'describe', 'compare', 'inspect', 'extract', 'report',
   // Ask a question, and rank.
   'what', 'whats', 'which', 'who', 'whose', 'whom', 'where', 'when', 'why', 'how',
   'most', 'least', 'best', 'worst', 'highest', 'lowest', 'largest', 'smallest',
@@ -265,11 +305,15 @@ export function isReadingTask(goal: string): boolean {
  * matched around, so the scorer downstream compares field names to field names.
  */
 const TARGET_NOISE =
-  /^(in|into|the|a|an|my|his|her|their|its|field|box|input|textbox|button|dropdown|of)\b/;
-const TARGET_TAIL = /\b(field|box|input|textbox|button|dropdown|menu)$/;
+  /^(in|into|the|a|an|my|his|her|their|its|field|box|input|textbox|button|dropdown|checkbox|radio|option|switch|of)\b/;
+const TARGET_TAIL = /\b(field|box|input|textbox|button|dropdown|menu|checkbox|checkboxes|radio|radios|option|options|switch|switches)$/;
 
 function cleanTarget(raw: string): string {
-  let target = normalise(raw);
+  const norm = normalise(raw);
+  if (/^(all|every)\s+(?:the\s+)?(checkbox|checkboxes|box|boxes)$/i.test(norm)) {
+    return 'all checkboxes';
+  }
+  let target = norm;
   // Peel leading filler one word at a time: "in the first name" -> "first name".
   for (;;) {
     const next = target.replace(TARGET_NOISE, '').trim();
@@ -321,6 +365,12 @@ const PATTERNS: readonly Pattern[] = [
     target: 2,
     value: 1,
   },
+  // "check the flexible with date checkbox", "uncheck newsletter", "tick terms and conditions", "toggle dark mode"
+  {
+    re: /\b(?:check|uncheck|tick|untick|toggle|enable|disable)\s+(.{1,60}?)\s*$/i,
+    verb: 'click',
+    target: 1,
+  },
   // "open spotify", "go to amazon.in", "navigate to https://google.com"
   {
     re: /\b(?:open|go\s+to|navigate\s+to|visit)\s+(.{1,120}?)\s*$/i,
@@ -353,8 +403,8 @@ const PATTERNS: readonly Pattern[] = [
     verb: 'click',
     target: 2,
   },
-  // "click submit", "press the apply button"
-  { re: /\b(?:click|press|tap|push)\s+(.{1,60}?)\s*$/i, verb: 'click', target: 1 },
+  // "click submit", "press the apply button", "select flexible with date"
+  { re: /\b(?:click|press|tap|push|select|choose|pick)\s+(.{1,60}?)\s*$/i, verb: 'click', target: 1 },
   // "submit the form"
   { re: /\b(submit)\b(?:\s+the\s+form)?\s*$/i, verb: 'submit', target: 1 },
 ];
@@ -386,7 +436,8 @@ interface Span {
   end: number;
 }
 
-const SEPARATOR = /[;,\n]+|\.(?=\s|$)|\b(?:and then|then|and)\b/gi;
+const SEPARATOR =
+  /[;,\n]+|\.(?=\s|$)|\b(?:and then|then)\b|(?<!\b(?:terms|save))\s+\band\b(?!\s+(?:conditions|continue|privacy\b))|(?<=\S)\s+(?=\b(?:tick|check|uncheck|untick|toggle)\s+(?:all\s+)?(?:the\s+)?(?:checkbox|checkboxes|box|boxes)\b)|(?<=\b(?:from|origin|source)\s+\S+)\s+(?=\b(?:to|destination)\s+)|(?<=\S)\s+(?=\b(?:dd[/-]mm[/-]yyyy|ddmmyyyy)\b)/gi;
 
 function clauses(goal: string): Span[] {
   const out: Span[] = [];
@@ -435,6 +486,7 @@ const LEADING_FILLER: readonly string[] = [
   'for me',
   'please',
   'kindly',
+  'where',
   'just',
   'now',
   'pls',
@@ -638,13 +690,17 @@ export function isKnownField(target: string): boolean {
 export function fieldWithin(text: string): string | undefined {
   const haystack = ` ${normalise(text)} `;
   let best: string | undefined;
+  let bestCanonical: string | undefined;
   for (const row of ALIASES) {
     for (const alias of row) {
       if (!haystack.includes(` ${alias} `)) continue;
-      if (!best || alias.length > best.length) best = alias;
+      if (!best || alias.length > best.length) {
+        best = alias;
+        bestCanonical = row[0];
+      }
     }
   }
-  return best;
+  return bestCanonical ?? best;
 }
 
 /**
@@ -681,13 +737,33 @@ function around(clause: string, from: number, to: number): string[] {
  * the start, so `match.index` is the number of characters in front of the verb that no
  * pattern looked at -- four of them, in the sentence that started this module.
  */
+/**
+ * Whole clauses that set context for the instruction without naming a field or value.
+ * Ignored so that multi-clause sentences like "fill the form, where first name is dilip" do not fail.
+ */
+const PREAMBLE_CLAUSES: readonly string[] = [
+  'fill the form',
+  'fill in the form',
+  'fill out the form',
+  'complete the form',
+  'fill form',
+  'fill in form',
+  'fill out form',
+  'complete form',
+  'fill the details',
+  'fill in the details',
+  'fill out the details',
+];
+
 function parseClause(raw: string): ClauseParse {
   const lead = eatLeading(raw);
   const clause = lead.rest;
 
-  // A clause of pure politeness. "please." on its own is understood, and understood to
-  // mean nothing, which is different from not understood.
-  if (!clause) return { outcome: 'ignored', consumed: raw.length, residue: [] };
+  // A clause of pure politeness or preamble filler ("fill the form"). Understood to mean nothing,
+  // which is different from not understood.
+  if (!clause || PREAMBLE_CLAUSES.includes(normalise(clause))) {
+    return { outcome: 'ignored', consumed: raw.length, residue: [] };
+  }
 
   for (const pattern of PATTERNS) {
     const match = pattern.re.exec(clause);
@@ -911,7 +987,6 @@ const STOP_HEAD = new Set([
   'be',
   'by',
   'for',
-  'from',
   'in',
   'is',
   'it',
@@ -923,7 +998,6 @@ const STOP_HEAD = new Set([
   'that',
   'the',
   'then',
-  'to',
   'with',
   'you',
   'your',

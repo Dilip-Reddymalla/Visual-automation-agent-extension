@@ -262,17 +262,25 @@ export function installHandlers(): void {
         const seqBefore = mutationSeq();
         const urlBefore = window.location.href;
         const activeBefore = document.activeElement;
+        const actionIndex = 'index' in action ? action.index : undefined;
+        const targetNode = actionIndex !== undefined ? handleFor(actionIndex) : undefined;
+        const checkedBefore = (targetNode as HTMLInputElement)?.checked;
 
         const result = await execute(action, env, planSnapshotId);
 
         const seqAfter = mutationSeq();
         const urlAfter = window.location.href;
         const activeAfter = document.activeElement;
+        const checkedAfter = (targetNode as HTMLInputElement)?.checked;
 
         if (action.type === 'click' && result.outcome === 'ok') {
           if (urlBefore !== urlAfter) {
             result.note = `${result.note} (navigation)`;
-          } else if (seqAfter > seqBefore || activeBefore !== activeAfter) {
+          } else if (
+            seqAfter > seqBefore ||
+            activeBefore !== activeAfter ||
+            (checkedBefore !== undefined && checkedBefore !== checkedAfter)
+          ) {
             result.note = `${result.note} (dom-change)`;
           } else {
             result.note = `${result.note} (no-change)`;

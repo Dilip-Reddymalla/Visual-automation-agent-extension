@@ -126,6 +126,14 @@ export interface RouterDeps {
     /** Why the previous answer was refused. Set only on the one retry. */
     correction?: string,
   ): Promise<LocalOutcome<LocalAction[]>>;
+  /**
+   * Tier 1 prompt normalization: rewrite unparsed / casual goal into standard grammar
+   * so Tier 0 can resolve it deterministically on device.
+   */
+  normalizeGoal?(
+    sentence: string,
+    candidates: LocalCandidate[],
+  ): Promise<LocalOutcome<string>>;
   /** What to call the remote planner in a step note. The endpoint, usually. */
   plannerName?(): string;
   /** Where trace lines go. The eval harness reads them. */
@@ -430,6 +438,9 @@ export interface StepContext {
    * step this names where the request went instead.
    */
   answeredBy?: string;
+  /** True when the goal was rewritten into standard grammar by the local model. */
+  normalizedLocally?: boolean;
+  decisions?: Array<{ target: string; index: number; score: number; gap: number }>;
   /** What the step had to scroll to before it could act. Empty when nothing moved. */
   revealNote?: string;
   /** One per value-bearing action, from the content script's re-read after settle. */
@@ -493,12 +504,17 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
 
     if (choice.tier === 0) {
       ctx.answeredLocally = true;
+      ctx.decisions = choice.plan.decisions;
+      const isNavigating = choice.plan.actions.some((a) => a.type === 'navigate');
+      const hasRemainingWork = state.intents.length > choice.plan.actions.length;
+      const done = !(isNavigating && hasRemainingWork);
+
       ctx.plan = {
         protocolVersion: PROTOCOL_VERSION,
         stepIndex: state.stepIndex,
         rationale: 'resolved on the device',
         actions: choice.plan.actions,
-        done: true,
+        done,
       };
       ctx.tierNote = choice.plan.decisions
         .map((d) => `${d.target} -> [${d.index}] score ${d.score} gap ${d.gap}`)
@@ -521,9 +537,13 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
       // declared failure. A sentence read wrongly is worse than one not read at all: the
       // first produces a plan nobody checks against the sentence.
       //
-      // Only for `below-floor`. A `tie` means the resolver found several real candidates
-      // and needs one chosen, which is exactly what `pickCandidate` is for and is not a
-      // question about the sentence at all.
+      // First try normalizing the prompt against the page fields: handles multi-field
+      // inputs (e.g. Card Expiration Date 10 2030 -> Month 10, Year 2030) and casual phrasing.
+      if (deps.normalizeGoal) {
+        const normalized = await normalizeAndRetryTier0(deps, state, ctx);
+        if (normalized) return;
+      }
+
       if (reason === 'below-floor' && deps.readGoal) {
         const answered = await readLocalPlan(deps, state, ctx);
         if (answered) return;
@@ -557,6 +577,12 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
           if (ctx.trace) ctx.trace.tier = { tier: 1, reason, candidates: candidates.length };
           return;
         }
+      }
+
+      // If tie-break declined or was unavailable, give the local reader a chance before Tier 2
+      if (deps.readGoal) {
+        const answered = await readLocalPlan(deps, state, ctx);
+        if (answered) return;
       }
 
       // Unavailable, timed out, or an answer we could not use. Not a failure -- Tier 2
@@ -618,9 +644,15 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
       // carries no value to invent. That is exactly the false success this fixes: the step
       // must reach Tier 2, whose planner scrolls, re-perceives and finishes with the answer.
       const reading = isReadingTask(state.goal);
-      if (choice.reason !== 'negation' && !reading && deps.readGoal) {
-        const answered = await readLocalPlan(deps, state, ctx);
-        if (answered) return;
+      if (choice.reason !== 'negation' && !reading) {
+        if (deps.normalizeGoal) {
+          const normalized = await normalizeAndRetryTier0(deps, state, ctx);
+          if (normalized) return;
+        }
+        if (deps.readGoal) {
+          const answered = await readLocalPlan(deps, state, ctx);
+          if (answered) return;
+        }
       }
       if (reading) {
         ctx.tierNote = joinNote(ctx.tierNote, 'reading task — the local reader cannot read a page, escalating');
@@ -892,7 +924,6 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
     ctx.fulfilments = actions.flatMap((action, at): Fulfilment[] => {
       const execResult = ctx.results?.[at];
       const outcome = execResult?.outcome;
-      const note = execResult?.note ?? '';
 
       if (action.type === 'type') {
         return [
@@ -917,17 +948,26 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
       }
 
       if (action.type === 'click') {
-        const noStateChange = outcome === 'failed' || note.includes('(no-change)');
         return [
           {
             target: targetForIndex(state, ctx, action.index),
             verb: 'click' as const,
-            reason: noStateChange ? ('not-done' as const) : ('not-applicable' as const),
+            reason: outcome === 'failed' ? ('not-done' as const) : ('not-applicable' as const),
           },
         ];
       }
 
-      // wait, key, navigate, scroll, ask, finish: not work on a named field, and nothing
+      if (action.type === 'navigate') {
+        return [
+          {
+            target: targetForIndex(state, ctx, -1),
+            verb: 'navigate' as const,
+            reason: outcome === 'failed' ? ('not-done' as const) : ('not-applicable' as const),
+          },
+        ];
+      }
+
+      // wait, key, scroll, ask, finish: not work on a named field, and nothing
       // the user's sentence asked for by name.
       return [];
     });
@@ -937,6 +977,67 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
     }
   },
 };
+
+/**
+ * Ask the local model to rewrite / normalize the sentence into standard grammar clauses,
+ * then parse and retry Tier 0 resolution.
+ */
+async function normalizeAndRetryTier0(
+  deps: RouterDeps,
+  state: AgentState,
+  ctx: StepContext,
+): Promise<boolean> {
+  if (!deps.normalizeGoal) return false;
+
+  const elements = ctx.elements ?? [];
+  const candidates = shortlistFor(elements);
+
+  const outcome = await deps
+    .normalizeGoal(state.goal, candidates)
+    .catch(
+      () => ({ ok: false, why: 'unreachable', model: 'local' }) as LocalOutcome<string>,
+    );
+
+  if (!outcome.ok || !outcome.value) return false;
+
+  const normalizedGoal = outcome.value;
+  const parsed = parseGoal(normalizedGoal);
+  if (parsed.intents.length === 0 || parsed.block) return false;
+
+  const choice = chooseTier(
+    { intents: parsed.intents, ...(parsed.block ? { block: parsed.block } : {}) },
+    elements,
+  );
+  if (choice.tier === 0) {
+    ctx.tier = 0;
+    ctx.answeredLocally = true;
+    ctx.normalizedLocally = true;
+    ctx.decisions = choice.plan.decisions;
+    ctx.answeredBy = outcome.model;
+    const isNavigating = choice.plan.actions.some((a) => a.type === 'navigate');
+    const hasRemainingWork = parsed.intents.length > choice.plan.actions.length;
+    const done = !(isNavigating && hasRemainingWork);
+    state.intents = parsed.intents;
+    state.residue = [];
+    await updateState(deps.store, (s) => ({ ...s, intents: parsed.intents, residue: [] }));
+    ctx.plan = {
+      protocolVersion: PROTOCOL_VERSION,
+      stepIndex: state.stepIndex,
+      rationale: `normalized prompt into "${normalizedGoal}" and resolved on device`,
+      actions: choice.plan.actions,
+      done,
+    };
+    ctx.tierNote =
+      `tier 1 normalized prompt -> tier 0: ` +
+      choice.plan.decisions
+        .map((d) => `${d.target} -> [${d.index}] score ${d.score} gap ${d.gap}`)
+        .join('; ');
+    if (ctx.trace) ctx.trace.tier = { tier: 0, decisions: choice.plan.decisions };
+    return true;
+  }
+
+  return false;
+}
 
 /**
  * Ask the local model to read the whole sentence, and check its homework.
@@ -1199,6 +1300,10 @@ function targetForIndex(
   if (index === undefined) return 'a field';
 
   // Tier 0 recorded which intent won which element, so this is exact.
+  if (ctx.decisions) {
+    const hit = ctx.decisions.find((d) => d.index === index);
+    if (hit) return hit.target;
+  }
   const decided = ctx.trace?.tier;
   if (decided?.tier === 0) {
     const hit = decided.decisions.find((d) => d.index === index);
@@ -1404,13 +1509,14 @@ export async function runStep(deps: RouterDeps, reason: string): Promise<StepOut
     const completion =
       ctx.suspend.kind === 'finish'
         ? assessCompletion({
-            intents: state.intents,
-            residue: state.residue,
+            intents: stopped.intents,
+            residue: stopped.residue,
             fulfilments: ctx.fulfilments ?? [],
             sent: ctx.sent,
-            // Tier 1's reader is given the whole sentence, so when it answered, the words
-            // the grammar could not read were read by something that could.
-            readLocally: ctx.tier === 1 && ctx.answeredLocally === true,
+            // Tier 1's reader or prompt normalizer was given the whole sentence, so when it answered,
+            // the words the grammar could not read were read by a model that could.
+            readLocally:
+              (ctx.tier === 1 || ctx.normalizedLocally === true) && ctx.answeredLocally === true,
           })
         : { complete: true, outstanding: [] };
 
@@ -1420,6 +1526,13 @@ export async function runStep(deps: RouterDeps, reason: string): Promise<StepOut
       describeCompletion(completion),
     );
     return await finish(deps, stopped, completion.complete ? 'ok' : 'incomplete', note, ctx);
+  }
+
+  if (ctx.plan?.actions.some((a) => a.type === 'navigate')) {
+    await updateState(deps.store, (s) => ({
+      ...s,
+      intents: s.intents.filter((i) => i.verb !== 'navigate'),
+    }));
   }
 
   const note = joinNote(tierNote, ctx.historyNote);

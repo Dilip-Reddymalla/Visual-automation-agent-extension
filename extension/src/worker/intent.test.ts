@@ -27,6 +27,12 @@ describe('the phrasings people use', () => {
     ['navigate to https://google.com', { verb: 'navigate', target: 'https://google.com' }],
     ['search for best mobile phone under 30k', { verb: 'fill', target: 'search', value: 'best mobile phone under 30k' }],
     ['add to cart', { verb: 'click', target: 'cart' }],
+    ['check the flexible with date checkbox', { verb: 'click', target: 'flexible with date' }],
+    ['tick terms and conditions', { verb: 'click', target: 'terms and conditions' }],
+    ['uncheck remember me', { verb: 'click', target: 'remember me' }],
+    ['select flexible with date checkbox', { verb: 'click', target: 'flexible with date' }],
+    ['check all the checkbox', { verb: 'click', target: 'all checkboxes' }],
+    ['check all checkboxes', { verb: 'click', target: 'all checkboxes' }],
   ];
 
   for (const [sentence, want] of cases) {
@@ -83,6 +89,19 @@ describe('more than one instruction', () => {
   it('splits on a comma', () => {
     const { intents } = parseGoal('set email to a@b.in, click send');
     expect(intents).toHaveLength(2);
+  });
+
+  it('parses compound flight and checkbox goals without explicit conjunctions', () => {
+    const { intents, residue, openEnded } = parseGoal(
+      'from HYD to Del DD/MM/YYYY 10/09/2026 tick all the checkboxes',
+    );
+    expect(openEnded).toBe(false);
+    expect(residue).toEqual([]);
+    expect(intents).toHaveLength(4);
+    expect(intents[0]).toMatchObject({ verb: 'fill', target: 'from', value: 'HYD' });
+    expect(intents[1]).toMatchObject({ verb: 'fill', target: 'to', value: 'Del' });
+    expect(intents[2]).toMatchObject({ verb: 'fill', target: 'date', value: '10/09/2026' });
+    expect(intents[3]).toMatchObject({ verb: 'click', target: 'all checkboxes' });
   });
 });
 

@@ -34,7 +34,7 @@ export const LOCAL_TIMEOUT_MS = 15_000;
 export const READER_TIMEOUT_MS = 45_000;
 
 export const DEFAULT_LOCAL_ENDPOINT = 'http://localhost:11434/v1/chat/completions';
-export const DEFAULT_LOCAL_MODEL = 'qwen3:0.6b';
+export const DEFAULT_LOCAL_MODEL = 'qwen2.5:1.5b';
 
 /**
  * The reader's model, which is deliberately not the tie-break's.
@@ -129,6 +129,26 @@ export interface LocalDeps {
   timeoutMs?: number;
 }
 
+async function fetchWithFallback(
+  deps: LocalDeps,
+  init: RequestInit,
+): Promise<Response> {
+  const primary = deps.endpoint ?? DEFAULT_LOCAL_ENDPOINT;
+  try {
+    return await deps.fetch(primary, init);
+  } catch (err) {
+    if (
+      deps.fetch === globalThis.fetch &&
+      !deps.endpoint &&
+      primary.includes('localhost')
+    ) {
+      const fallback = primary.replace('localhost', '127.0.0.1');
+      return await deps.fetch(fallback, init);
+    }
+    throw err;
+  }
+}
+
 /**
  * One integer, or nothing.
  *
@@ -211,10 +231,94 @@ const PLAN_SCHEMA = {
   additionalProperties: false,
 } as const;
 
+const NORMALIZE_SCHEMA = {
+  type: 'object',
+  properties: {
+    normalized: { type: 'string' },
+  },
+  required: ['normalized'],
+  additionalProperties: false,
+} as const;
+
 export interface LocalAction {
   index: number;
   action: 'type' | 'click' | 'select';
   text: string;
+}
+
+function buildNormalizePrompt(sentence: string, candidates: Candidate[]): string {
+  const list = candidates
+    .filter((c) => c.label)
+    .map((c) => `${c.label} (${c.role})`)
+    .slice(0, 20)
+    .join(', ');
+  return (
+    `A user gave an instruction on a web page:\n"${sentence}"\n\n` +
+    (list ? `Available page fields: ${list}\n\n` : '') +
+    `Convert this into clear, standard single/multi-clause format:\n` +
+    `- "fill <field name> with <exact value>"\n` +
+    `- "click <button name>"\n` +
+    `- "select <option> in <dropdown name>"\n` +
+    `Join multiple clauses with commas, e.g. "fill first name with dilip, fill last name with reddymalla".\n` +
+    `Preserve all exact values from the user sentence without inventing anything.\n` +
+    `Reply with JSON {"normalized": "..."}`
+  );
+}
+
+/**
+ * Ask the local model to rewrite / normalize an unparsed or casual user prompt into
+ * standard Tier 0 grammar clauses.
+ */
+export async function normalizeGoal(
+  sentence: string,
+  candidates: Candidate[],
+  deps: LocalDeps,
+): Promise<LocalOutcome<string>> {
+  const model = deps.model ?? DEFAULT_READER_MODEL;
+  const controller = new AbortController();
+  const expiry = setTimeout(() => controller.abort(), deps.timeoutMs ?? READER_TIMEOUT_MS);
+
+  try {
+    const reply = await fetchWithFallback(deps, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: buildNormalizePrompt(sentence, candidates) }],
+        max_tokens: 128,
+        temperature: 0,
+        reasoning_effort: 'none',
+        chat_template_kwargs: { enable_thinking: false },
+        response_format: {
+          type: 'json_schema',
+          json_schema: { name: 'normalize', schema: NORMALIZE_SCHEMA, strict: true },
+        },
+      }),
+    });
+
+    if (!reply.ok) return { ok: false, why: failureFor(reply.status), model };
+    const payload = (await reply.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const content = payload.choices?.[0]?.message?.content;
+    if (!content) return { ok: false, why: 'bad-answer', model };
+
+    const parsed = JSON.parse(content) as { normalized?: unknown };
+    if (typeof parsed.normalized !== 'string' || !parsed.normalized.trim()) {
+      return { ok: false, why: 'bad-answer', model };
+    }
+
+    return { ok: true, value: parsed.normalized.trim(), model };
+  } catch (err) {
+    return {
+      ok: false,
+      why: err instanceof Error && err.name === 'AbortError' ? 'timeout' : 'unreachable',
+      model,
+    };
+  } finally {
+    clearTimeout(expiry);
+  }
 }
 
 function buildPlanPrompt(
@@ -278,7 +382,7 @@ export async function readGoal(
   const expiry = setTimeout(() => controller.abort(), deps.timeoutMs ?? READER_TIMEOUT_MS);
 
   try {
-    const reply = await deps.fetch(deps.endpoint ?? DEFAULT_LOCAL_ENDPOINT, {
+    const reply = await fetchWithFallback(deps, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
@@ -360,7 +464,7 @@ export async function pickCandidate(
   const expiry = setTimeout(() => controller.abort(), deps.timeoutMs ?? LOCAL_TIMEOUT_MS);
 
   try {
-    const reply = await deps.fetch(deps.endpoint ?? DEFAULT_LOCAL_ENDPOINT, {
+    const reply = await fetchWithFallback(deps, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,

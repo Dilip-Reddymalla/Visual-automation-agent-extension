@@ -290,6 +290,24 @@
           "value": "leo"
         }
       ]
+    },
+    {
+      "goal": "fill the form, where first name is dilip, full name is dilip reddymalla",
+      "expect": "tier0",
+      "reason": null,
+      "why": "fill the form is a preamble (ignored); where is leading filler; clauses parse as labelled pairs.",
+      "intents": [
+        {
+          "verb": "fill",
+          "target": "first name",
+          "value": "dilip"
+        },
+        {
+          "verb": "fill",
+          "target": "full name",
+          "value": "dilip reddymalla"
+        }
+      ]
     }
   ]
 }

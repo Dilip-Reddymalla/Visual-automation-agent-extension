@@ -416,7 +416,11 @@ export async function execute(
         else media.pause();
       }
 
-      el.dispatchEvent(new view.MouseEvent('click', { bubbles: true, cancelable: true, view }));
+      if (el instanceof view.HTMLElement && typeof el.click === 'function') {
+        el.click();
+      } else {
+        el.dispatchEvent(new view.MouseEvent('click', { bubbles: true, cancelable: true, view }));
+      }
       return { outcome: 'ok', note: `clicked [${action.index}]` };
     }
 

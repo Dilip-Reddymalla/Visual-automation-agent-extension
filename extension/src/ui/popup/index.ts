@@ -143,17 +143,32 @@ async function renderLocalModel(): Promise<void> {
     // the true one.
     //
     // One token, so this costs nothing but the round trip.
-    const reply = await fetch(LOCAL_MODEL_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: DEFAULT_READER_MODEL,
-        messages: [{ role: 'user', content: 'ok' }],
-        max_tokens: 1,
-        temperature: 0,
-      }),
-      signal: AbortSignal.timeout(4000),
-    });
+    let reply: Response;
+    try {
+      reply = await fetch(LOCAL_MODEL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: DEFAULT_READER_MODEL,
+          messages: [{ role: 'user', content: 'ok' }],
+          max_tokens: 1,
+          temperature: 0,
+        }),
+        signal: AbortSignal.timeout(4000),
+      });
+    } catch {
+      reply = await fetch('http://127.0.0.1:11434/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: DEFAULT_READER_MODEL,
+          messages: [{ role: 'user', content: 'ok' }],
+          max_tokens: 1,
+          temperature: 0,
+        }),
+        signal: AbortSignal.timeout(4000),
+      });
+    }
 
     if (reply.status === 403) {
       el.localModel.dataset.where = '';
@@ -326,42 +341,41 @@ function renderLog(log: StepLogEntry[]): void {
     const li = document.createElement('li');
     li.dataset.outcome = entry.outcome ?? 'running';
 
+    const header = document.createElement('div');
+    header.className = 'step-header';
+
     const idx = document.createElement('span');
-    idx.className = 'idx';
-    idx.textContent = `#${entry.stepIndex}`;
+    idx.className = 'step-idx-badge';
+    idx.textContent = `Step #${entry.stepIndex}`;
 
     const phase = document.createElement('span');
-    phase.className = 'phase';
-    phase.textContent = entry.outcome ? `${entry.outcome} at ${entry.phase}` : entry.phase;
+    phase.className = 'step-phase';
+    const statusText = entry.outcome ? `${entry.outcome} (${entry.phase})` : entry.phase;
+    phase.textContent = statusText;
 
     const ms = document.createElement('span');
-    ms.className = 'ms';
+    ms.className = 'step-ms';
     ms.textContent = entry.ms === undefined ? '' : `${entry.ms} ms`;
 
-    li.append(idx, phase, ms);
+    header.append(idx, phase, ms);
+    li.append(header);
 
     if (entry.note) {
-      const note = document.createElement('span');
-      note.className = 'note';
+      const note = document.createElement('div');
+      note.className = 'step-note';
       note.textContent = entry.note;
       li.append(note);
     }
 
-    // The phases of the step, stacked, in the order they ran.
-    //
-    // A step is a sequence and it used to render as one flickering line: perceive replaced
-    // by capture replaced by detect, settling on whichever phase it happened to end in. On
-    // the screen this system gets demonstrated on, that is the whole story of what the
-    // agent does, shown one frame at a time and then thrown away.
     if (entry.phases && entry.phases.length > 0) {
       const stages = document.createElement('ol');
-      stages.className = 'stages';
+      stages.className = 'stages-waterfall';
       for (const stage of entry.phases) {
         const step = document.createElement('li');
         const name = document.createElement('span');
         name.textContent = stage.phase;
         const took = document.createElement('span');
-        took.className = 'ms';
+        took.className = 'step-ms';
         took.textContent = `${stage.ms} ms`;
         step.append(name, took);
         stages.append(step);

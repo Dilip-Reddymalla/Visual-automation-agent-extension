@@ -21,7 +21,7 @@ import { chromeSessionStore } from '../platform/session-store';
 import { chromeCaptureDeps, createCaptureQueue } from './capture';
 import { createFrameStore } from '../platform/frame-store';
 import { DEFAULT_ENDPOINT, postStep } from './transport';
-import { pickCandidate, readGoal } from './local';
+import { normalizeGoal, pickCandidate, readGoal } from './local';
 import { setBusTransport, type Context } from '../shared/messages';
 import { abandon } from './loop';
 import { installRoutes, wake, type RouterDeps } from './router';
@@ -123,6 +123,8 @@ export function createDeps(binding: HostBinding): RouterDeps {
     // loopback only, and is the one tier allowed to see the sentence as the user typed it.
     askLocal: (sentence, candidates) =>
       pickCandidate(sentence, candidates, { fetch: globalThis.fetch.bind(globalThis) }),
+    normalizeGoal: (sentence, candidates) =>
+      normalizeGoal(sentence, candidates, { fetch: globalThis.fetch.bind(globalThis) }),
     // The same model, the whole question. Reached only when the grammar read nothing --
     // never for a goal the grammar refused, which is a distinction `router.ts` makes and
     // this line depends on.

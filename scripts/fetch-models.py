@@ -52,7 +52,11 @@ MANIFEST = MODELS / "manifest.json"
 #: 32,000 by scripts/prune-ner-vocab.py, which is what takes it from 279 MB to 111 MB. A URL
 #: would have to point at an artefact we host, and pointing this script at a bucket nobody
 #: has provisioned would be worse than saying plainly how to rebuild it.
-SOURCES: dict[str, str] = {}
+SOURCES: dict[str, str] = {
+    "face-yunet.onnx": "https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+    "ocr-det.onnx": "https://huggingface.co/SWHL/RapidOCR/resolve/main/PP-OCRv4/ch_PP-OCRv4_det_infer.onnx",
+    "ocr-rec.onnx": "https://huggingface.co/SWHL/RapidOCR/resolve/main/PP-OCRv4/ch_PP-OCRv4_rec_infer.onnx",
+}
 
 REBUILD = {
     "ner.onnx": (

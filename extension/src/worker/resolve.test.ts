@@ -312,4 +312,20 @@ describe('a page that labels nothing', () => {
       index: 8,
     });
   });
+
+  it('checks all checkboxes when requested', () => {
+    const formWithCheckboxes: ObservedElement[] = [
+      el({ index: 18, role: 'checkbox', labelText: 'Option 1', state: { visible: true, enabled: true, focused: false, filled: false, checked: false } }),
+      el({ index: 19, role: 'checkbox', labelText: 'Option 2', state: { visible: true, enabled: true, focused: false, filled: false, checked: false } }),
+      el({ index: 20, role: 'checkbox', labelText: 'Option 3', state: { visible: true, enabled: true, focused: false, filled: false, checked: false } }),
+    ];
+    const choice = chooseTier(parseGoal('check all the checkbox'), formWithCheckboxes);
+    expect(choice.tier).toBe(0);
+    if (choice.tier !== 0) return;
+    expect(choice.plan.actions).toEqual([
+      { type: 'click', index: 18 },
+      { type: 'click', index: 19 },
+      { type: 'click', index: 20 },
+    ]);
+  });
 });

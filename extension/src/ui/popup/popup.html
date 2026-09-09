@@ -2,449 +2,649 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Redaction Gate</title>
     <style>
       :root {
-        --bg: #ffffff;
-        --fg: #12161c;
-        --muted: #5b6472;
-        --line: #e3e7ee;
-        --panel: #f4f6f9;
-        --accent: #1b6feb;
-        --ok: #17794a;
-        --bad: #b3261e;
-        --warn: #8a5a00;
+        --bg: #0d1117;
+        --bg-elevated: #161b22;
+        --bg-subtle: #21262d;
+        --fg: #f0f6fc;
+        --fg-muted: #8b949e;
+        --line: #30363d;
+        --line-subtle: #21262d;
+        --panel: #161b22;
+        --accent: #58a6ff;
+        --accent-glow: rgba(88, 166, 255, 0.15);
+        --accent-strong: #1f6feb;
+        --ok: #3fb950;
+        --ok-glow: rgba(63, 185, 80, 0.15);
+        --bad: #f85149;
+        --bad-glow: rgba(248, 81, 73, 0.15);
+        --warn: #d29922;
+        --warn-glow: rgba(210, 153, 34, 0.15);
+        --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
       }
-      @media (prefers-color-scheme: dark) {
+      @media (prefers-color-scheme: light) {
         :root {
-          --bg: #14181e;
-          --fg: #e7ebf1;
-          --muted: #98a2b3;
-          --line: #29313b;
-          --panel: #1b212a;
-          --accent: #5c9dff;
-          --ok: #5bd08d;
-          --bad: #ff8a80;
-          --warn: #e0b25f;
+          --bg: #ffffff;
+          --bg-elevated: #f6f8fa;
+          --bg-subtle: #eaeef2;
+          --fg: #1f2328;
+          --fg-muted: #656d76;
+          --line: #d0d7de;
+          --line-subtle: #eaeef2;
+          --panel: #f6f8fa;
+          --accent: #0969da;
+          --accent-glow: rgba(9, 105, 218, 0.1);
+          --accent-strong: #0550ae;
+          --ok: #1a7f37;
+          --ok-glow: rgba(26, 127, 55, 0.1);
+          --bad: #cf222e;
+          --bad-glow: rgba(207, 34, 46, 0.1);
+          --warn: #9a6700;
+          --warn-glow: rgba(154, 103, 0, 0.1);
         }
       }
 
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
       }
       body {
-        margin: 0;
-        padding: 12px;
-        /* A browser action popup sizes itself to its document, so it needs a definite
-           width or Chrome renders it a few characters wide. Framed in the side panel it
-           needs the opposite: fill whatever column the user has dragged out. The flag is
-           set by index.ts, because CSS cannot ask whether it is in a frame. */
-        width: 320px;
-        font:
-          13px/1.45 system-ui,
-          sans-serif;
+        width: 340px;
+        height: 100%;
+        max-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-family: var(--font-sans);
+        font-size: 13px;
+        line-height: 1.45;
         color: var(--fg);
         background: var(--bg);
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
       }
       body[data-framed] {
-        width: auto;
-        min-height: 100vh;
-      }
-      /* In a docked panel the step log is the thing worth reading, and there is room for
-         it. In a popup it has to stay short or the whole window grows past the screen. */
-      body[data-framed] #log {
-        max-height: none;
-      }
-      header {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 8px;
-        margin-bottom: 8px;
-      }
-      h1 {
-        margin: 0;
-        font-size: 13px;
-        letter-spacing: 0.01em;
-      }
-      #status {
-        font-size: 11px;
-        color: var(--muted);
-        font-variant-numeric: tabular-nums;
-      }
-      #status[data-status='running'] {
-        color: var(--accent);
-      }
-      #status[data-status='failed'] {
-        color: var(--bad);
-      }
-      #status[data-status='stopped'] {
-        color: var(--warn);
-      }
-
-      #goal {
         width: 100%;
-        min-height: 52px;
-        resize: vertical;
-        padding: 6px 8px;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        background: var(--bg);
-        color: var(--fg);
-        font: inherit;
-      }
-      #goal:disabled {
-        color: var(--muted);
-      }
-      #goal.error {
-        border-color: var(--bad);
+        max-height: 100%;
       }
 
-      .row {
+      /* Sticky Header */
+      header.app-header {
+        flex: 0 0 auto;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line-subtle);
+      }
+      .brand {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-top: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: -0.01em;
       }
-      button {
-        flex: 1;
-        padding: 6px 10px;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        background: var(--panel);
-        color: var(--fg);
-        font: inherit;
-        cursor: pointer;
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: default;
-      }
-      #run {
-        border-color: var(--accent);
+      .brand-icon {
+        width: 18px;
+        height: 18px;
         color: var(--accent);
       }
-      label.toggle {
-        display: flex;
+      .status-pill {
+        display: inline-flex;
         align-items: center;
         gap: 6px;
-        margin-top: 10px;
-        color: var(--muted);
-        font-size: 12px;
-        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 500;
+        background: var(--bg-subtle);
+        color: var(--fg-muted);
+        border: 1px solid var(--line);
+        text-transform: capitalize;
+      }
+      .status-pill::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--fg-muted);
+      }
+      .status-pill[data-status='running'] {
+        background: var(--accent-glow);
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .status-pill[data-status='running']::before {
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+        animation: pulse 1.5s infinite;
+      }
+      .status-pill[data-status='failed'] {
+        background: var(--bad-glow);
+        color: var(--bad);
+        border-color: var(--bad);
+      }
+      .status-pill[data-status='failed']::before {
+        background: var(--bad);
+      }
+      .status-pill[data-status='stopped'] {
+        background: var(--warn-glow);
+        color: var(--warn);
+        border-color: var(--warn);
+      }
+      .status-pill[data-status='stopped']::before {
+        background: var(--warn);
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
       }
 
-      /* The session's tab, when it is not the one in front. Amber rather than red: this
-         is orientation, not an error -- the agent is working exactly as asked, just not
-         on what you are looking at. */
+      /* Main Scroll Container */
+      .app-main {
+        flex: 1 1 auto;
+        min-height: 0;
+        padding: 12px 14px 130px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* Tab Orientation Warning */
       #tab-note {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 8px;
-        margin-bottom: 8px;
-        padding: 7px 9px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: var(--warn-glow);
         border: 1px solid var(--warn);
-        border-radius: 6px;
-        background: var(--panel);
         color: var(--warn);
-        font-size: 11px;
-        line-height: 1.4;
+        font-size: 11.5px;
       }
       #tab-note[hidden] {
         display: none;
       }
-      #tab-note-text {
-        flex: 1 1 auto;
-        overflow-wrap: anywhere;
-      }
-      #tab-note b {
-        font-weight: 600;
-      }
       #show-tab {
-        flex: 0 0 auto;
         padding: 3px 8px;
-        font-size: 11px;
-        border-color: var(--warn);
+        border-radius: 4px;
+        border: 1px solid var(--warn);
+        background: var(--bg);
         color: var(--warn);
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
       }
 
-      #coverage {
-        margin-top: 6px;
-        font-size: 11px;
-        line-height: 1.45;
-        color: var(--muted);
+      /* Privacy Guarantee Banner */
+      .counter-card {
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
       }
-      #coverage b {
+      .counter-header {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
         font-weight: 600;
-        color: var(--warn);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ok);
+      }
+      .counter-header svg {
+        width: 13px;
+        height: 13px;
+      }
+      .counter-body {
+        font-size: 12px;
+        color: var(--fg);
+        font-variant-numeric: tabular-nums;
+      }
+      .counter-body strong {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .counter-body .zero {
+        color: var(--ok);
+        font-weight: 700;
+      }
+      #self-typed {
+        font-size: 11px;
+        color: var(--fg-muted);
       }
 
-      /* Site access. The extension asks for nothing broad at install; this is where the
-         operator can widen it, see that they have, and take it back. */
-      /* Where the planner is. Amber when it is on this machine, because redaction
-         protects data from a planner somewhere else and a local one is protecting nobody
-         -- fine for development, dishonest to demonstrate without saying so. */
-      #planner {
-        margin-top: 10px;
-        padding: 6px 8px;
+      /* Collapsible Diagnostics Accordion */
+      details.diag-section {
+        border-radius: 8px;
+        background: var(--bg-elevated);
         border: 1px solid var(--line);
-        border-radius: 6px;
-        background: var(--panel);
-        color: var(--muted);
-        font-size: 11px;
-        overflow-wrap: anywhere;
+        overflow: hidden;
       }
-      #planner[data-where='local'] {
-        color: var(--warn);
-        border-color: var(--warn);
+      details.diag-section summary {
+        padding: 8px 12px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--fg-muted);
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
-      #planner[data-where='remote'] {
-        color: var(--ok);
-        border-color: var(--ok);
+      details.diag-section summary:hover {
+        color: var(--fg);
       }
-
-      #access {
-        margin-top: 6px;
-        padding: 6px 8px;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        background: var(--panel);
-        color: var(--muted);
-        font-size: 11px;
-        line-height: 1.5;
-        overflow-wrap: anywhere;
+      .diag-content {
+        padding: 8px 12px;
+        border-top: 1px solid var(--line-subtle);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 11.5px;
       }
-      #access[data-access='granted'] {
-        color: var(--ok);
-        border-color: var(--ok);
-      }
-      #access[data-access='narrow'] {
-        color: var(--warn);
-        border-color: var(--warn);
-      }
-      #grant {
-        flex: 0 0 auto;
-        font-size: 11px;
-        padding: 3px 8px;
-      }
-
-      #host {
-        margin-top: 10px;
-        padding: 6px 8px;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        background: var(--panel);
-        color: var(--muted);
-        font-size: 11px;
-        line-height: 1.5;
-        overflow-wrap: anywhere;
-      }
-      #host[data-backend='webgpu'] {
-        color: var(--ok);
-        border-color: var(--ok);
-      }
-      #host[data-backend='wasm'] {
-        color: var(--warn);
-        border-color: var(--warn);
-      }
-      #host[data-backend='failed'] {
-        color: var(--bad);
-        border-color: var(--bad);
-      }
-      #selftest {
-        flex: 0 0 auto;
-        font-size: 11px;
-        padding: 3px 8px;
-      }
-      .between h2 {
-        margin: 0;
-      }
-      .between {
+      .diag-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
-        margin-top: 12px;
+      }
+      .diag-pill {
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--fg-muted);
+      }
+      .diag-pill[data-where='local'] { color: var(--warn); border-color: var(--warn); }
+      .diag-pill[data-where='remote'] { color: var(--ok); border-color: var(--ok); }
+      .diag-pill[data-access='granted'] { color: var(--ok); border-color: var(--ok); }
+      .diag-pill[data-backend='webgpu'] { color: var(--ok); border-color: var(--ok); }
+      .diag-pill[data-backend='wasm'] { color: var(--warn); border-color: var(--warn); }
+      .diag-pill[data-backend='failed'] { color: var(--bad); border-color: var(--bad); }
+
+      .btn-xs {
+        padding: 3px 8px;
+        border-radius: 4px;
+        border: 1px solid var(--line);
+        background: var(--bg-subtle);
+        color: var(--fg);
+        font-size: 11px;
+        cursor: pointer;
+        font-family: var(--font-sans);
+      }
+      .btn-xs:hover {
+        background: var(--bg);
+        border-color: var(--accent);
       }
 
-      h2 {
-        margin: 12px 0 4px;
+      /* Toggle row */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--fg-muted);
+      }
+      .toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+
+      /* Step Feed */
+      .steps-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .section-title {
         font-size: 11px;
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--muted);
+        letter-spacing: 0.05em;
+        color: var(--fg-muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       #log {
-        margin: 0;
-        padding: 0;
         list-style: none;
-        max-height: 180px;
-        overflow-y: auto;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        background: var(--panel);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
       }
       #log:empty::after {
-        content: 'no steps yet';
+        content: 'No tasks executed yet. Type a command below.';
         display: block;
-        padding: 8px;
-        color: var(--muted);
+        padding: 24px 12px;
+        text-align: center;
+        color: var(--fg-muted);
         font-size: 12px;
+        background: var(--bg-elevated);
+        border-radius: 8px;
+        border: 1px dashed var(--line);
       }
       #log li {
-        display: grid;
-        grid-template-columns: 2.2em 1fr auto;
-        gap: 6px;
-        padding: 5px 8px;
-        border-bottom: 1px solid var(--line);
-        font-variant-numeric: tabular-nums;
-      }
-      #log li:last-child {
-        border-bottom: 0;
-      }
-      #log .idx {
-        color: var(--muted);
-      }
-      #log .ms {
-        color: var(--muted);
-        font-size: 11px;
-      }
-      #log li[data-outcome='ok'] .phase {
-        color: var(--ok);
-      }
-      #log li[data-outcome='failed'] .phase {
-        color: var(--bad);
-      }
-      #log li[data-outcome='interrupted'] .phase,
-      #log li[data-outcome='stopped'] .phase {
-        color: var(--warn);
-      }
-      #log .note {
-        grid-column: 2 / -1;
-        color: var(--muted);
-        font-size: 11px;
-        overflow-wrap: anywhere;
-      }
-      /* The phases of one step, stacked in the order they ran. A step is a sequence, and
-         the row above can only ever show the one it is in right now. */
-      #log .stages {
-        grid-column: 2 / -1;
-        margin: 6px 0 0;
-        padding: 0;
-        list-style: none;
-        border-left: 2px solid var(--line);
-      }
-      #log .stages li {
-        display: flex;
-        justify-content: space-between;
-        gap: 8px;
-        padding: 1px 0 1px 8px;
-        color: var(--muted);
-        font-size: 11px;
-      }
-      #log .stages .ms {
-        font-variant-numeric: tabular-nums;
-      }
-      /* The claim the whole project makes, kept where it cannot be missed. */
-      .counter {
-        margin: 12px 0 0;
-        padding: 9px 11px;
+        background: var(--bg-elevated);
         border: 1px solid var(--line);
-        border-radius: 6px;
-        background: var(--panel);
-        font-variant-numeric: tabular-nums;
+        border-radius: 8px;
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        transition: border-color 0.15s ease;
       }
-      .counter strong {
-        font-size: 16px;
+      #log li:hover {
+        border-color: var(--line);
       }
-      .counter .zero {
-        color: var(--accent);
+      .step-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
       }
-      /* The agent's own keystrokes, covered but not claimed. Deliberately small: it is
-         not a protection number and must not read like one. */
-      #self-typed {
-        display: block;
-        margin-top: 3px;
-        color: var(--muted);
+      .step-idx-badge {
+        font-family: var(--font-mono);
         font-size: 11px;
+        font-weight: 600;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: var(--bg-subtle);
+        color: var(--fg-muted);
       }
-      #self-typed[hidden] {
-        display: none;
+      .step-phase {
+        font-size: 12px;
+        font-weight: 500;
+        flex: 1;
       }
-      .links {
+      #log li[data-outcome='ok'] .step-phase { color: var(--ok); }
+      #log li[data-outcome='failed'] .step-phase { color: var(--bad); }
+      #log li[data-outcome='interrupted'] .step-phase,
+      #log li[data-outcome='stopped'] .step-phase { color: var(--warn); }
+      .step-ms {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--fg-muted);
+      }
+      .step-note {
+        font-size: 11.5px;
+        color: var(--fg-muted);
+        line-height: 1.4;
+        word-break: break-word;
+      }
+      .stages-waterfall {
+        list-style: none;
+        margin-top: 4px;
+        padding-top: 4px;
+        border-top: 1px solid var(--line-subtle);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .stages-waterfall li {
+        border: 0;
+        padding: 1px 0;
+        background: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 10.5px;
+        color: var(--fg-muted);
+      }
+
+      /* Evidence buttons (in popup mode) */
+      .evidence-nav {
         display: flex;
         gap: 8px;
+        margin-top: 4px;
       }
-      .links button {
+      .evidence-nav button {
         flex: 1;
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--bg-elevated);
+        color: var(--fg);
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .evidence-nav button:hover {
+        background: var(--bg-subtle);
+        border-color: var(--accent);
+      }
+
+      /* Fixed Floating Chat Input Bar at Bottom */
+      .chat-dock {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 8px 12px 12px;
+        background: var(--bg);
+        border-top: 1px solid var(--line-subtle);
+        backdrop-filter: blur(12px);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        z-index: 20;
+      }
+      .input-wrapper {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-elevated);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 8px;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+      .input-wrapper:focus-within {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-glow);
+      }
+      #goal {
+        width: 100%;
+        min-height: 48px;
+        max-height: 120px;
+        resize: none;
+        border: 0;
+        background: transparent;
+        color: var(--fg);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        line-height: 1.45;
+        outline: none;
+      }
+      #goal::placeholder {
+        color: var(--fg-muted);
+      }
+      .input-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 4px;
+      }
+      .shortcut-hint {
+        font-size: 11px;
+        color: var(--fg-muted);
+      }
+      .action-btns {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 12px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        background: var(--accent-strong);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.1s ease;
+      }
+      .btn-primary:hover:not(:disabled) {
+        opacity: 0.92;
+        transform: translateY(-0.5px);
+      }
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-stop {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--bg-subtle);
+        color: var(--bad);
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .btn-stop:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      #coverage {
+        font-size: 10.5px;
+        color: var(--fg-muted);
+        line-height: 1.35;
+      }
+      #coverage b {
+        color: var(--warn);
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>Redaction Gate</h1>
-      <span id="status" data-status="idle">idle</span>
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+        <span>Redaction Gate</span>
+      </div>
+      <span id="status" class="status-pill" data-status="idle">idle</span>
     </header>
 
-    <!-- Which tab this session belongs to, shown only when that is not the tab you are
-         looking at. The panel docks beside every tab in the window; the session belongs
-         to exactly one. -->
-    <div id="tab-note" hidden>
-      <span id="tab-note-text"></span>
-      <button id="show-tab" type="button">Show it</button>
-    </div>
+    <!-- App Body -->
+    <main class="app-main">
+      <!-- Cross Tab Note -->
+      <div id="tab-note" hidden>
+        <span id="tab-note-text"></span>
+        <button id="show-tab" type="button">Focus Tab</button>
+      </div>
 
-    <textarea id="goal" placeholder="What should the agent do on this tab?"></textarea>
+      <!-- Zero-Knowledge Guarantee Counter -->
+      <div class="counter-card">
+        <div class="counter-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          Zero-Knowledge Privacy
+        </div>
+        <p id="counter" class="counter-body">
+          Protected this session: <strong id="redacted">0</strong> &middot; Transmitted: <strong class="zero">0</strong>
+          <span id="self-typed" hidden></span>
+        </p>
+      </div>
 
-    <div id="coverage"></div>
+      <!-- Quick Toggle & Evidence (Standalone Popup Mode) -->
+      <div class="toggle-row">
+        <label class="toggle-label">
+          <input id="overlay" type="checkbox" /> Live on-page overlay
+        </label>
+      </div>
 
-    <div class="row">
-      <button id="run" type="button">Run</button>
-      <button id="stop" type="button" disabled>Stop</button>
-    </div>
+      <div class="evidence-nav" id="evidence-box">
+        <button id="open-panel" type="button">What was sent</button>
+        <button id="open-hud" type="button">Resources</button>
+      </div>
 
-    <label class="toggle">
-      <input id="overlay" type="checkbox" /> Show redaction overlay
-    </label>
+      <!-- Collapsible System Diagnostics -->
+      <details class="diag-section">
+        <summary>
+          <span>System Diagnostics</span>
+          <span>&#9662;</span>
+        </summary>
+        <div class="diag-content">
+          <div class="diag-row">
+            <span>Planner</span>
+            <span id="planner" class="diag-pill">unknown</span>
+          </div>
+          <div class="diag-row">
+            <span>Local SLM</span>
+            <span id="local-model" class="diag-pill">unknown</span>
+          </div>
+          <div class="diag-row">
+            <span>Site Access</span>
+            <span id="access" class="diag-pill">checking&hellip;</span>
+            <button id="grant" class="btn-xs" type="button">Allow</button>
+          </div>
+          <div class="diag-row">
+            <span>Inference Host</span>
+            <span id="host" class="diag-pill">not started</span>
+            <button id="selftest" class="btn-xs" type="button">Check</button>
+          </div>
+        </div>
+      </details>
 
-    <!-- Permanently visible, and true. The right-hand number is not a running total that
-         happens to be zero: nothing in the system can raise it, because a raw value has
-         no path to the wire. -->
-    <p id="counter" class="counter">
-      Values protected this session: <strong id="redacted">0</strong> &middot; Values
-      transmitted: <strong class="zero">0</strong>
-      <span id="self-typed" hidden></span>
-    </p>
+      <!-- Execution Step Stream -->
+      <div class="steps-container">
+        <div class="section-title">
+          <span>Execution Stream</span>
+        </div>
+        <ol id="log"></ol>
+      </div>
+    </main>
 
-    <div class="between">
-      <h2>Evidence</h2>
-      <span></span>
-    </div>
-    <div class="links">
-      <button id="open-panel" type="button">What was sent</button>
-      <button id="open-hud" type="button">Resources</button>
-    </div>
-
-    <div id="planner">planner: unknown</div>
-    <!-- The rung between the device and the planner. It was invisible, and it was
-         switched off: ollama answers a chrome-extension:// origin with 403 unless
-         OLLAMA_ORIGINS says otherwise, so tier 1 had never run and nothing said so. -->
-    <div id="local-model">local model: unknown</div>
-
-    <div class="between">
-      <h2>Site access</h2>
-      <button id="grant" type="button">Allow</button>
-    </div>
-    <div id="access">checking&hellip;</div>
-
-    <div class="between">
-      <h2>Inference host</h2>
-      <button id="selftest" type="button">Check</button>
-    </div>
-    <div id="host">not started</div>
-
-    <h2>Steps</h2>
-    <ol id="log"></ol>
+    <!-- Bottom Input Dock -->
+    <footer class="chat-dock">
+      <div class="input-wrapper">
+        <textarea id="goal" placeholder="Ask agent to act on this page (e.g. check all checkboxes, search...)" rows="2"></textarea>
+        <div class="input-actions">
+          <span class="shortcut-hint">&#x2318;+Enter to run</span>
+          <div class="action-btns">
+            <button id="stop" class="btn-stop" type="button" disabled>Stop</button>
+            <button id="run" class="btn-primary" type="button">Run</button>
+          </div>
+        </div>
+      </div>
+      <div id="coverage"></div>
+    </footer>
 
     <script src="popup.js"></script>
   </body>

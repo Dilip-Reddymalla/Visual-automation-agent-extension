@@ -3,101 +3,175 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Redaction Gate — resources</title>
+    <title>Redaction Gate — Resources & Telemetry</title>
     <style>
       :root {
-        color-scheme: light dark;
-        --ink: #10141a;
-        --muted: #4a5462;
-        --line: #c9d1dc;
-        --bg: #ffffff;
-        --panel: #f2f5f9;
-        --accent: #0b5fd0;
-        --warn: #a8360f;
-        --ok: #146c2e;
+        --bg: #0d1117;
+        --bg-elevated: #161b22;
+        --bg-subtle: #21262d;
+        --fg: #f0f6fc;
+        --fg-muted: #8b949e;
+        --line: #30363d;
+        --line-subtle: #21262d;
+        --panel: #161b22;
+        --accent: #58a6ff;
+        --accent-glow: rgba(88, 166, 255, 0.15);
+        --ok: #3fb950;
+        --ok-glow: rgba(63, 185, 80, 0.15);
+        --warn: #d29922;
+        --warn-glow: rgba(210, 153, 34, 0.15);
+        --bad: #f85149;
+        --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
       }
-      @media (prefers-color-scheme: dark) {
+      @media (prefers-color-scheme: light) {
         :root {
-          --ink: #f2f5f9;
-          --muted: #aab4c2;
-          --line: #3a434f;
-          --bg: #0f1319;
-          --panel: #171c24;
-          --accent: #6aa9ff;
-          --warn: #ff9b7a;
-          --ok: #6ede8a;
+          --bg: #ffffff;
+          --bg-elevated: #f6f8fa;
+          --bg-subtle: #eaeef2;
+          --fg: #1f2328;
+          --fg-muted: #656d76;
+          --line: #d0d7de;
+          --line-subtle: #eaeef2;
+          --panel: #f6f8fa;
+          --accent: #0969da;
+          --accent-glow: rgba(9, 105, 218, 0.1);
+          --ok: #1a7f37;
+          --ok-glow: rgba(26, 127, 55, 0.1);
+          --warn: #9a6700;
+          --warn-glow: rgba(154, 103, 0, 0.1);
+          --bad: #cf222e;
         }
       }
+
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html, body {
+        height: 100%;
+        width: 100%;
       }
       body {
-        margin: 0;
-        font:
-          15px/1.5 system-ui,
-          sans-serif;
-        color: var(--ink);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--fg);
         background: var(--bg);
+        height: 100%;
+        overflow-y: auto;
         overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
       }
       main {
-        padding: 18px 20px 40px;
+        padding: 16px 16px 40px;
         max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
-      h1 {
-        font-size: 18px;
-        margin: 0 0 4px;
+
+      .hud-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--line-subtle);
       }
-      h2 {
+      .brand-title {
         font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .brand-title svg {
+        width: 16px;
+        height: 16px;
+        color: var(--accent);
+      }
+      .cadence-badge {
+        font-size: 11px;
+        color: var(--fg-muted);
+        font-family: var(--font-mono);
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 768px) {
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .telemetry-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--bg-elevated);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .card-header {
+        padding: 8px 12px;
+        background: var(--bg-subtle);
+        border-bottom: 1px solid var(--line-subtle);
+        font-size: 11.5px;
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--muted);
-        margin: 26px 0 6px;
-      }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        font-size: 14px;
+        letter-spacing: 0.04em;
+        color: var(--fg-muted);
       }
       .wrap {
         overflow-x: auto;
       }
-      th,
-      td {
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 12px;
+      }
+      th, td {
         text-align: left;
-        padding: 5px 10px;
-        border-bottom: 1px solid var(--line);
+        padding: 6px 12px;
+        border-bottom: 1px solid var(--line-subtle);
         white-space: nowrap;
       }
       th {
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: var(--muted);
+        color: var(--fg-muted);
+        background: var(--bg-subtle);
       }
       td.num {
         text-align: right;
         font-variant-numeric: tabular-nums;
-        font-family: ui-monospace, monospace;
+        font-family: var(--font-mono);
       }
       .na {
-        color: var(--muted);
+        color: var(--fg-muted);
       }
       .yes {
         color: var(--ok);
+        font-weight: 600;
       }
       .no {
         color: var(--warn);
+        font-weight: 600;
       }
-      /* The waterfall. One row per stage, bar width proportional to the slowest stage,
-         so the shape is readable across the room rather than the numbers. */
       .bar {
         display: block;
-        height: 12px;
+        height: 10px;
         border-radius: 3px;
         background: var(--accent);
         min-width: 2px;
+        transition: width 0.2s ease;
       }
       .bar.late {
         background: var(--warn);
@@ -105,33 +179,50 @@
       td.track {
         width: 45%;
       }
-      p.note {
-        color: var(--muted);
-        font-size: 13px;
-        margin: 8px 0 0;
+      .note-text {
+        font-size: 11.5px;
+        color: var(--fg-muted);
+        line-height: 1.4;
+        padding: 6px 12px 10px;
       }
     </style>
   </head>
   <body>
     <main>
-      <h1>Resources</h1>
-      <p class="note" id="cadence"></p>
+      <div class="hud-header">
+        <div class="brand-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+          Resource & Performance Telemetry
+        </div>
+        <span class="cadence-badge" id="cadence"></span>
+      </div>
 
-      <h2>Inference host</h2>
-      <div class="wrap"><table id="host"></table></div>
+      <div class="card-grid">
+        <div class="telemetry-card">
+          <div class="card-header">Inference Host Hardware</div>
+          <div class="wrap"><table id="host"></table></div>
+        </div>
 
-      <h2>Memory</h2>
-      <div class="wrap"><table id="memory"></table></div>
+        <div class="telemetry-card">
+          <div class="card-header">Memory & Model Residency</div>
+          <div class="wrap"><table id="memory"></table></div>
+        </div>
+      </div>
 
-      <h2>Latency, this step</h2>
-      <div class="wrap"><table id="waterfall"></table></div>
+      <div class="telemetry-card">
+        <div class="card-header">Latency Breakdown (This Step)</div>
+        <div class="wrap"><table id="waterfall"></table></div>
+      </div>
 
-      <h2>Latency, accumulating</h2>
-      <div class="wrap"><table id="percentiles"></table></div>
-      <p class="note">
-        p50 and p95 over every step this session, from the worker's own trace and the host's
-        ring buffer. Nothing here starts a second timer.
-      </p>
+      <div class="telemetry-card">
+        <div class="card-header">Latency Percentiles (Accumulating)</div>
+        <div class="wrap"><table id="percentiles"></table></div>
+        <p class="note-text">
+          p50 and p95 measured across every step this session directly from worker traces and host buffers.
+        </p>
+      </div>
     </main>
 
     <script src="hud.js"></script>

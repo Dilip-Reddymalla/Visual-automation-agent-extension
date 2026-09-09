@@ -208,6 +208,14 @@ function contentAnswers(
     if (onExecute) return onExecute(payload);
     return { results: payload.actions.map(() => ({ outcome: 'ok' as const })) };
   });
+
+  handle('VERIFY_FILLED', ({ checks }) => ({
+    results: checks.map((check) => ({
+      index: check.index,
+      fulfilled: true,
+      reason: 'match' as const,
+    })),
+  }));
 }
 
 /** A page that moves again on every capture. */
@@ -1157,5 +1165,53 @@ describe('the local reader', () => {
     // And the log names why the rung was skipped.
     const note = state.log[state.log.length - 1]?.note ?? '';
     expect(note).toContain('reading task');
+  });
+
+  it('normalizes an unparsed casual goal and executes via tier 0 without sending', async () => {
+    resetBus();
+    setBusTransport(loopback(), 'worker');
+    collectEvents();
+    contentAnswers();
+    let normalizedCalled = false;
+    installRoutes({
+      ...deps(),
+      normalizeGoal: async () => {
+        normalizedCalled = true;
+        return {
+          ok: true,
+          value: 'fill full name with leo',
+          model: 'test-model',
+        };
+      },
+    });
+
+    await send('RUN_TASK', { goal: 'kindly put leo at the very top of the form', tabId: 7 });
+    const state = await settled();
+
+    expect(normalizedCalled).toBe(true);
+    expect(posted.length).toBe(0);
+    const last = state.log[state.log.length - 1];
+    expect(last?.outcome).toBe('ok');
+    expect(last?.note).toContain('tier 0');
+    expect(last?.note).toContain('normalized prompt');
+  });
+
+  it('navigates on step 0 and leaves loop running when more intents remain', async () => {
+    resetBus();
+    setBusTransport(loopback(), 'worker');
+    collectEvents();
+    contentAnswers();
+    installRoutes(deps());
+
+    await send('RUN_TASK', { goal: 'open amazon.in and search for mobiles', tabId: 7 });
+    const state = await settled();
+
+    expect(posted.length).toBe(0);
+    // Step 0 executed navigate
+    expect(executed.length).toBeGreaterThan(0);
+    expect(executed[0]?.actions[0]?.type).toBe('navigate');
+    // Status stays running so the next page can perceive and search
+    expect(state.status).toBe('running');
+    expect(state.intents).toEqual([{ verb: 'fill', target: 'search', value: 'mobiles' }]);
   });
 });

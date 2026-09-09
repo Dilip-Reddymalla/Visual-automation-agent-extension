@@ -20,7 +20,7 @@
 
 import type { Action } from '../shared/contract';
 import type { ObservedElement } from '../shared/observed';
-import { describeBlock, type GoalBlock, type Intent } from './intent';
+import { describeBlock, isAllCheckboxes, normalise, type GoalBlock, type Intent } from './intent';
 import { resolveTarget, type Candidate, type Resolution } from './resolve';
 
 export type Tier = 0 | 1 | 2;
@@ -99,13 +99,17 @@ function formatNavigateUrl(raw: string): string {
 
 export function actionFor(intent: Intent, index: number): Action | null {
   switch (intent.verb) {
-    case 'fill':
+    case 'fill': {
+      const isSearch = ['search', 'search box', 'search bar', 'search query', 'query', 'lookup', 'search input'].includes(
+        normalise(intent.target),
+      );
       return {
         type: 'type',
         index,
         text: intent.valueRef ?? intent.value ?? '',
-        submit: false,
+        submit: isSearch,
       };
+    }
     case 'select':
       return intent.value ? { type: 'select', index, option: intent.value } : null;
     case 'click':
@@ -173,6 +177,33 @@ export function chooseTier(goal: TierGoal, elements: ObservedElement[]): TierCho
         break;
       }
     }
+
+    if (isAllCheckboxes(intent.target)) {
+      const checkboxElements = elements.filter(
+        (el) =>
+          el.index !== undefined &&
+          (el.role === 'checkbox' || el.role === 'switch' || el.inputType === 'checkbox'),
+      );
+      if (checkboxElements.length > 0) {
+        const isUncheck = /\buncheck\b/i.test(intent.target);
+        const toToggle = checkboxElements.filter((el) =>
+          isUncheck ? el.state.checked === true : el.state.checked !== true,
+        );
+        const batch = (toToggle.length > 0 ? toToggle : checkboxElements).slice(0, MAX_ACTIONS);
+        for (const cb of batch) {
+          if (cb.index === undefined) continue;
+          actions.push({ type: 'click', index: cb.index });
+          decisions.push({
+            target: intent.target,
+            index: cb.index,
+            score: 10,
+            gap: 10,
+          });
+        }
+        continue;
+      }
+    }
+
     let resolution: Resolution = resolveTarget(intent, elements);
 
     // Let the page settle a sentence the grammar could not.
