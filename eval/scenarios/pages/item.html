@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Local Market — item</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #17202a; }
+      h1 { font-size: 22px; margin: 0 0 4px; }
+      .price { font-size: 24px; margin: 0 0 4px; }
+      .meta { color: #5b6b7d; margin: 0 0 20px; }
+      button { padding: 12px 20px; font: inherit; border: 1px solid #2f6feb; background: #2f6feb; color: #fff; border-radius: 6px; cursor: pointer; }
+      a { color: #17418f; }
+    </style>
+  </head>
+  <body>
+    <p><a href="shop.html" id="back">Back to the market</a></p>
+
+    <h1 id="title">Item</h1>
+    <p class="price" id="price">—</p>
+    <p class="meta" id="meta"></p>
+
+    <button id="add" type="button">Add to cart</button>
+
+    <script>
+      // Four fixed items, keyed by the id in the query string. No fetch, no randomness:
+      // a scenario is only deterministic if the page it runs against is.
+      const CATALOGUE = {
+        '1': { title: 'Aster 5 phone', price: '₹18,499', meta: '4.1 stars · 210 reviews' },
+        '2': { title: 'Borea Lite phone', price: '₹24,990', meta: '4.4 stars · 980 reviews' },
+        '3': { title: 'Cirrus Pro phone', price: '₹41,200', meta: '4.6 stars · 1,204 reviews' },
+        '4': { title: 'Delta Max phone', price: '₹29,750', meta: '4.2 stars · 431 reviews' },
+        '5': { title: 'Ember kettle', price: '₹2,150', meta: '4.0 stars · 88 reviews' },
+        '6': { title: 'Fennel kettle', price: '₹1,299', meta: '3.9 stars · 64 reviews' },
+      };
+      const id = new URLSearchParams(location.search).get('id') || '1';
+      const item = CATALOGUE[id] || CATALOGUE['1'];
+      document.title = 'Local Market — ' + item.title;
+      document.getElementById('title').textContent = item.title;
+      document.getElementById('price').textContent = item.price;
+      document.getElementById('meta').textContent = item.meta;
+
+      document.getElementById('add').addEventListener('click', () => {
+        // A navigation, so the run has a real page transition to verify against rather
+        // than a toast that disappears before the next step looks.
+        location.href = 'cart.html?id=' + encodeURIComponent(id);
+      });
+    </script>
+  </body>
+</html>

@@ -16,9 +16,23 @@
  * -- see router.test.ts.
  */
 
-import { PHASES, type StepEvent, type StepOutcome, type StepPhase } from '../shared/agent';
-import { handle, notify, send } from '../shared/messages';
-import { tokenDrift, type CaptureGeometry, type FrameRef } from '../shared/frames';
+import {
+  MAX_STALLED_STEPS,
+  MAX_STEP_RETRIES,
+  MAX_STEPS,
+  PHASES,
+  type LoopStatus,
+  type StepEvent,
+  type StepOutcome,
+  type StepPhase,
+} from '../shared/agent';
+import { BusTimeout, handle, notify, send } from '../shared/messages';
+import {
+  geometryMatches,
+  tokenDrift,
+  type CaptureGeometry,
+  type FrameRef,
+} from '../shared/frames';
 import type { ObservedElement } from '../shared/observed';
 import type { KeyValueStore } from '../shared/store';
 import {
@@ -36,6 +50,7 @@ import {
   endStep,
   enterPhase,
   exhaust,
+  halt,
   recordPhase,
   requestStop,
   resumeIfInterrupted,
@@ -49,6 +64,24 @@ import { isReadingTask, parseGoal, type Intent } from './intent';
 import type { GoalBlock } from './intent';
 import { actionFor as localAction, chooseTier, type Tier, type TierChoice } from './tiers';
 import { assessCompletion, describeCompletion, type Fulfilment } from './complete';
+import {
+  activeSubgoal,
+  adoptPlan,
+  advanceProgress,
+  isVerified,
+  markComplete,
+  progressFulfilments,
+  planFinished,
+  verifiedWork,
+} from './progress';
+import { advancePlan } from './criteria';
+import { decompose, describeDecomposition, extractConstraints } from './decompose';
+import {
+  describeEvaluation,
+  evaluate,
+  findCandidates,
+  preferenceIn,
+} from './candidates';
 import { describeReveal, locate, REVEAL_ATTEMPTS } from './reveal';
 import { describeRejection, verifyPlan } from './verify-plan';
 import { describeLocalFailure, type LocalAction, type LocalOutcome } from './local';
@@ -125,6 +158,8 @@ export interface RouterDeps {
     candidates: LocalCandidate[],
     /** Why the previous answer was refused. Set only on the one retry. */
     correction?: string,
+    /** Work the ledger has already verified, so the model is not asked to redo it. */
+    done?: readonly string[],
   ): Promise<LocalOutcome<LocalAction[]>>;
   /**
    * Tier 1 prompt normalization: rewrite unparsed / casual goal into standard grammar
@@ -222,6 +257,14 @@ export function installRoutes(deps: RouterDeps): void {
     // not something the loop depends on.
     const tabOrigin = await deps.tabOrigin(tabId).catch(() => '');
 
+    // Decomposed from the *tokenised* sentence, not the raw one.
+    //
+    // A subgoal's `intent` is persisted, sent to the planner and printed in the step
+    // note, so it goes through the same door as `goal` itself. Re-parsing costs one more
+    // pass of a grammar over a short string and buys the guarantee that nothing the
+    // allocator removed can reappear inside a plan.
+    const decomposition = decompose(parseGoal(safeGoal));
+
     const state = await updateState(deps.store, (s) =>
       startTask(s, {
         sessionId,
@@ -234,12 +277,19 @@ export function installRoutes(deps: RouterDeps): void {
         residue: parsed.residue.map(maskResidue),
         coverage: parsed.coverage,
         block: maskBlock(parsed.block),
+        plan: decomposition.subgoals,
         tabId,
         tabOrigin,
         now: deps.now(),
       }),
     );
-    await emit(deps, state, { kind: 'status', status: 'running', note: safeGoal });
+    await emit(deps, state, {
+      kind: 'status',
+      status: 'running',
+      // The plan by its leg ids, so an operator watching the panel sees what the agent
+      // thinks it has been asked to do before it does any of it.
+      note: joinNote(safeGoal, describeDecomposition(decomposition)),
+    });
     // Do not await: the reply goes back now, the step runs behind it.
     void runStep(deps, 'user');
     return { sessionId, stepIndex: state.stepIndex };
@@ -373,6 +423,13 @@ export interface StepContext {
   frame?: FrameRef;
   /** Frames thrown away because the page moved. Reported by M11. */
   discards: number;
+  /**
+   * Frames kept although the page was still mutating, because nothing had *moved*.
+   *
+   * Counted separately from `discards` because it means the opposite thing: a discard is
+   * the guard working, and this is the guard being relaxed. See captureBoundToPage.
+   */
+  contentDrifts: number;
 
   // ── M7: what the phases hand each other ──────────────────────────────────
   findings?: Finding[];
@@ -443,8 +500,40 @@ export interface StepContext {
   decisions?: Array<{ target: string; index: number; score: number; gap: number }>;
   /** What the step had to scroll to before it could act. Empty when nothing moved. */
   revealNote?: string;
+  /** Which leg of the plan this step is working on. Empty when there is no plan. */
+  subgoal?: string;
+  /**
+   * The rung of the recovery ladder this step is carrying out.
+   *
+   * Set only when the previous attempt at this leg did not work and the ladder decided
+   * that whatever chose the target last time should not choose it again. Read below, where
+   * it makes the step skip Tier 0. See recover.ts.
+   */
+  recovery?: import('./recover').Recovery;
+  /** What the plan did this step: which leg finished, which started, which failed. */
+  planNote?: string;
+  /**
+   * What the current leg's `action-verified` criterion is looking for, if it has one.
+   *
+   * Carried so that the ledger and the criteria can speak the same language. A leg says
+   * "this is done when the ledger has verified work named X"; the ledger names work by
+   * whatever `targetForIndex` could work out, which on a step the planner answered is
+   * `field [7]`. Those never match, so a leg that had in fact been carried out sat at
+   * `continue` until its budget ran out and the run replanned around work it had already
+   * done. The hint comes out of the user's own goal, which is already on the record.
+   */
+  subgoalHint?: string;
   /** One per value-bearing action, from the content script's re-read after settle. */
   fulfilments?: Fulfilment[];
+  /**
+   * The completion check passed on this step, so the ledger may be sealed.
+   *
+   * On the context rather than a `finish` parameter because it is decided in one place --
+   * the suspend branch, which is the only code allowed to conclude a task is done -- and
+   * read in one place, and a fifth positional argument to `finish` would be read by
+   * nobody.
+   */
+  completed?: boolean;
   trace?: StepTrace;
 }
 
@@ -472,6 +561,77 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
     ctx.origin = snapshot.origin;
     ctx.title = snapshot.title;
 
+    // The plan moves here, against the walk this step took anyway.
+    //
+    // The leg that was current is judged first -- did the page do what the last step's
+    // actions were supposed to make it do -- and only then is the next leg chosen and
+    // charged. Doing it at the *start* of a step rather than at the end of the previous
+    // one costs nothing extra and asks the question after the DOM has settled rather than
+    // during the click. See criteria.ts.
+    if (state.progress.plan.length > 0) {
+      const observation = {
+        snapshotId: snapshot.snapshotId,
+        origin: snapshot.origin,
+        elements: snapshot.elements,
+      };
+      let planNote = '';
+      let stepped: import('./criteria').PlanStep | undefined;
+      const advanced = await updateState(deps.store, (current) => {
+        stepped = advancePlan(current.progress, {
+          observation,
+          stepIndex: current.stepIndex,
+          // `retries` is reset by any step that ends `ok`, so zero-with-history is the
+          // cheapest true statement of "the last step went through".
+          lastStepOk: current.progress.retries === 0 && current.progress.observed > 0,
+          // The ladder may not spend a step asking for a plan the run has no room to
+          // carry out: past the budget, the only honest rung left is to stop.
+          stepsLeft: MAX_STEPS - current.stepIndex,
+        });
+        planNote = stepped.note;
+        return { ...current, progress: stepped.progress };
+      });
+      const current = activeSubgoal(advanced.progress);
+      ctx.subgoal = current?.id;
+      ctx.subgoalHint = current?.criteria.find((c) => c.check === 'action-verified')?.hint;
+      ctx.planNote = planNote;
+      ctx.recovery = stepped?.recovery;
+      if (ctx.trace) ctx.trace.subgoal = ctx.subgoal;
+
+      // Every leg is terminal: stop here, before a tier is asked what to do next.
+      //
+      // `planFinished` existed and nothing read it, and the cost was visible on the live
+      // amazon.in run. The plan completed at the top of step 2 -- the search had been
+      // typed and answered a step earlier -- and the step carried on regardless, handed
+      // the page to tier 1, and executed the four clicks it came back with. The run ended
+      // with a `finish` note saying the plan had nothing left to do, on a page four clicks
+      // away from the results the task had asked for.
+      //
+      // Answered as a device-made plan rather than by setting `ctx.suspend` directly, so
+      // it travels the same path as every other terminator: `execute` records the no-op,
+      // the completion check still runs in `settle`, and the step log still says which
+      // tier answered. Nothing is sent -- there is nothing to plan.
+      if (planFinished(advanced.progress)) {
+        ctx.tier = 0;
+        ctx.answeredLocally = true;
+        ctx.plan = {
+          protocolVersion: PROTOCOL_VERSION,
+          stepIndex: state.stepIndex,
+          rationale: 'the plan made on this device is finished',
+          actions: [
+            {
+              type: 'finish',
+              status: 'success',
+              summary: 'every leg of the plan finished',
+            },
+          ],
+          plan: [],
+          done: true,
+        };
+        if (ctx.trace) ctx.trace.tier = { tier: 0, decisions: [] };
+        return;
+      }
+    }
+
     // The panel names the site this session is working on, and a session outlives
     // navigations -- page A submits and becomes page B. Refreshing the label here keeps
     // it describing where the agent actually is rather than where it started.
@@ -487,8 +647,47 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
     // detection pass, the gate and the network call -- not as an optimisation but because
     // none of them have anything to contribute: nothing is being sent, so there is nothing
     // to redact.
-    const goal = { intents: state.intents, ...(state.block ? { block: state.block } : {}) };
+    // A leg that is about choosing between things on the page is a different question
+    // from "which control did the user mean", and `resolve.ts` cannot answer it: the user
+    // named an arithmetic condition, not an element. See candidates.ts.
+    if (state.progress.plan.find((s) => s.id === ctx.subgoal)?.kind === 'select') {
+      if (chooseCandidate(state, ctx)) return;
+    }
+
+    // Intents the page has already confirmed are not offered to Tier 0 again.
+    //
+    // Tier 0 is a pure function of the sentence and the element list, so on a multi-step
+    // run it re-derives the same action every step: the grammar has no memory, and the
+    // ledger does. Before plans existed this never showed, because a Tier 0 answer ended
+    // the session; now a run keeps going, and without this it spends every remaining step
+    // re-typing a field it filled on step one -- which is not just waste, it is the
+    // "previously verified actions must not be blindly repeated" rule being broken by the
+    // cheapest tier in the system.
+    //
+    // The ledger is keyed by verb and target, and `targetForIndex` names a Tier 0
+    // fulfilment by the intent that won it, so the two line up exactly.
+    const outstanding = state.intents.filter(
+      (intent) => !isVerified(state.progress, intent.verb, intent.target),
+    );
+    if (outstanding.length < state.intents.length) {
+      ctx.tierNote = joinNote(
+        ctx.tierNote,
+        `${state.intents.length - outstanding.length} already done`,
+      );
+    }
+
+    const goal = { intents: outstanding, ...(state.block ? { block: state.block } : {}) };
     let choice = chooseTier(goal, ctx.elements);
+
+    // The recovery ladder overrules the tier choice, and only in one direction.
+    //
+    // Tier 0 answered this leg last step and the page did not do what that answer was for.
+    // Asking the same grammar the same question about the same page gets the same answer,
+    // so the cheapest rung that can differ is the next one up. Never the other way round:
+    // recovery may spend more, never less. See recover.ts.
+    if (ctx.recovery && choice.tier === 0) {
+      choice = { tier: 2, reason: 'recovery', detail: ctx.planNote ?? 'the last attempt did not work' };
+    }
 
     // The field may simply be somewhere else on the page.
     //
@@ -514,6 +713,9 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
         stepIndex: state.stepIndex,
         rationale: 'resolved on the device',
         actions: choice.plan.actions,
+        // A Tier 0 answer proposes no decomposition: the grammar resolved a field, which
+        // is a step, not a view about what the task is made of.
+        plan: [],
         done,
       };
       ctx.tierNote = choice.plan.decisions
@@ -567,6 +769,7 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
             stepIndex: state.stepIndex,
             rationale: 'resolved by the local model',
             actions: [action],
+            plan: [],
             done: true,
           };
           // Tier 1 succeeded, so nothing after this needs to run: same short circuit as
@@ -841,7 +1044,21 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
       ctx.suspend = { kind: 'ask', note: terminator.question };
     } else if (terminator?.type === 'finish') {
       ctx.suspend = { kind: 'finish', note: `${terminator.status}: ${terminator.summary}` };
-    } else if (ctx.plan.done) {
+    } else if (ctx.plan.done && (ctx.sent || !ctx.subgoal)) {
+      // `done` from the device is a claim about the *sentence*, not about the task.
+      //
+      // Tier 0 resolves the intents it parsed and sets `done` because it has nothing left
+      // to resolve -- which was the whole truth until decompositions existed. It is not
+      // any more: "go to the portal, fill full name, submit" gives Tier 0 one field it can
+      // place, and a plan with three legs still to run. Honouring `done` there ended the
+      // session after one step, on a task the agent had barely started, with the note "the
+      // plan made on this device had nothing left to do".
+      //
+      // So a locally made `done` is honoured only when no leg is in flight. A planner's
+      // `done` still is, because the planner is shown the plan and its statuses
+      // (contract.ts) and is answering about the task rather than about a clause. An
+      // explicit `finish` action is honoured either way -- that is a terminator, not a
+      // flag.
       // `done` is the other way a plan can say it is over, and it was being ignored.
       //
       // The stub always pairs it with a `finish` action, so nothing noticed until a real
@@ -880,7 +1097,19 @@ const RUNNERS: Record<StepPhase, PhaseRunner> = {
    * mid-task field the planner intends to revisit into a reported failure.
    */
   settle: async (deps, state, ctx) => {
-    if (!ctx.suspend || ctx.suspend.kind !== 'finish') return;
+    // Every step, not only the one whose plan said `finish`.
+    //
+    // This guard used to be `if (!ctx.suspend || ctx.suspend.kind !== 'finish') return`,
+    // which meant a multi-step run verified exactly one step: the last. A run that filled
+    // the first name on step 1 and the last name on step 3 reached the completion check
+    // holding step 3's verdicts alone, and reported that the first name was never acted
+    // on. Progress that is only ever measured at the end is not progress, it is a guess
+    // about the end.
+    //
+    // The cost is one VERIFY_FILLED per step that typed or selected something. That is a
+    // content-script round trip -- no model, no capture, no network -- and it is the only
+    // thing in the loop that can tell "the executor did not throw" from "the page holds
+    // the value".
     if (!ctx.plan || !ctx.snapshotId) return;
 
     const actions = ctx.plan.actions;
@@ -1025,6 +1254,7 @@ async function normalizeAndRetryTier0(
       stepIndex: state.stepIndex,
       rationale: `normalized prompt into "${normalizedGoal}" and resolved on device`,
       actions: choice.plan.actions,
+      plan: [],
       done,
     };
     ctx.tierNote =
@@ -1067,7 +1297,7 @@ async function readLocalPlan(
   // use the correction, it re-rolls -- and one re-roll turned a correct answer into an
   // invented surname. The model that needs a second chance is the model that cannot use one.
   const outcome = await deps
-    .readGoal(state.goal, candidates)
+    .readGoal(state.goal, candidates, undefined, verifiedWork(state.progress))
     .catch(
       () => ({ ok: false, why: 'unreachable', model: 'local' }) as LocalOutcome<LocalAction[]>,
     );
@@ -1105,6 +1335,7 @@ async function readLocalPlan(
     stepIndex: state.stepIndex,
     rationale: 'read on this device by the local model',
     actions: checked.actions,
+    plan: [],
     done: true,
   };
 
@@ -1312,7 +1543,14 @@ function targetForIndex(
 
   // Tier 1 resolved a single intent, so there is only one name it could be.
   const only = state.intents.length === 1 ? state.intents[0] : undefined;
-  return only ? only.target : `field [${index}]`;
+  if (only) return only.target;
+
+  // Nothing named this action, but the plan knows what it was *for*. Naming the work
+  // after the leg is what lets an `action-verified` criterion recognise it afterwards --
+  // otherwise the ledger says `field [7]`, the criterion is looking for "the cart", and a
+  // leg that had been carried out correctly never finishes.
+  if (ctx.subgoalHint) return ctx.subgoalHint;
+  return `field [${index}]`;
 }
 
 /** A page that moved between the measurement and the photograph. */
@@ -1363,8 +1601,38 @@ export async function captureBoundToPage(
       return;
     }
 
-    ctx.discards += 1;
     const drift = tokenDrift(geometry.token, check.current);
+
+    // The page will not hold still, but did anything actually *move*?
+    //
+    // Only asked on the last attempt, so a page that settles keeps the strict guarantee
+    // and pays nothing for this. On a page that never settles it is the difference
+    // between working and not: measured on live government portals, indianrail.gov.in
+    // drifted `mutationSeq 8 -> 48` and incometax.gov.in `7 -> 35` between measuring and
+    // photographing, with every geometric field identical. A rotating banner bumps that
+    // counter thirty times a second and moves nothing, and the strict check discarded
+    // every frame for ever -- so the agent could not see either site at all.
+    //
+    // Accepting here does not weaken invariant 2. Every box is still where it was
+    // measured, because nothing that positions a box changed. What it risks is a *stale*
+    // box -- text that changed after measurement and was therefore never detected -- and
+    // that is a missed finding, not paint landing on the wrong thing.
+    //
+    // Counted, and named in the step note. A concession nobody can see is a concession
+    // that becomes a habit.
+    if (attempt === MAX_GEOMETRY_ATTEMPTS && geometryMatches(geometry.token, check.current)) {
+      ctx.contentDrifts += 1;
+      ctx.geometry = geometry;
+      ctx.frame = frame;
+      await emit(deps, state, {
+        kind: 'phase',
+        phase: 'capture',
+        note: `frame kept: the page mutated but did not move (${drift.join(', ')})`,
+      });
+      return;
+    }
+
+    ctx.discards += 1;
     await emit(deps, state, {
       kind: 'phase',
       phase: 'capture',
@@ -1406,7 +1674,32 @@ export async function runStep(deps: RouterDeps, reason: string): Promise<StepOut
     return 'stopped';
   }
 
-  const ctx: StepContext = { discards: 0, sent: false };
+  // Two terminators beside the step budget, and they end runs MAX_STEPS would only end
+  // twenty steps later, having paid for a screenshot, a detection pass and a POST each
+  // time.
+  //
+  // `retries` is consecutive failed steps: `endStep` deliberately does not advance
+  // `stepIndex` on a failure, so a step that throws is retried rather than skipped --
+  // right, and without a ceiling it means a genuinely broken page burns the whole budget
+  // re-running the phase that threw.
+  //
+  // `stalled` is consecutive steps that verified nothing new. Those steps *succeed*: the
+  // plan is carried out, nothing throws, and the ledger is identical afterwards. That is
+  // the cheapest possible non-progress running the most expensive possible way.
+  const giveUp = stuckReason(state);
+  if (giveUp) {
+    const halted = await updateState(deps.store, (s) => halt(s, { ...giveUp, now: deps.now() }));
+    await emit(deps, halted, {
+      kind: 'step-end',
+      outcome: giveUp.outcome,
+      status: halted.status,
+      note: giveUp.note,
+    });
+    void deps.releaseHost();
+    return giveUp.outcome;
+  }
+
+  const ctx: StepContext = { discards: 0, contentDrifts: 0, sent: false };
   ctx.trace = startStep(state.sessionId ?? '', state.stepIndex, deps.now());
   // The overlay draws index badges onto the page, so when it is on it is *in* the frame
   // the planner is shown. Recorded per step because a Tier 2 answer that changed because
@@ -1471,12 +1764,24 @@ export async function runStep(deps: RouterDeps, reason: string): Promise<StepOut
       // the tiers made was thrown away and the note said only that the planner was down.
       const why = joinNote(
         describeTier(ctx),
+        ctx.planNote,
         ctx.revealNote,
         ctx.tierNote,
         ctx.escalation,
         message,
       );
-      return await finish(deps, await loadState(deps.store), 'failed', why, ctx);
+      // A frame the page invalidated, or a planner that did not answer, is a reason to
+      // take the step again rather than to end a task the run may be most of the way
+      // through. Anything else is not: a phase that threw for its own reasons will throw
+      // again, at the same cost.
+      const retryable =
+        err instanceof GeometryDrift ||
+        err instanceof TransportError ||
+        // A reply that did not come in time. The commonest cause is the offscreen
+        // document loading a model on its first real step, which the next step does not
+        // have to pay for again.
+        err instanceof BusTimeout;
+      return await finish(deps, await loadState(deps.store), 'failed', why, ctx, retryable);
     }
     const spent = deps.now() - startedAt;
     // Kept, not just announced. The event reaches an open panel; the log is what a panel
@@ -1493,7 +1798,7 @@ export async function runStep(deps: RouterDeps, reason: string): Promise<StepOut
   // Neither is a failure -- the step did what it was told.
   // The tier leads every note, including a terminating one. "tier 0 | first name -> [1]
   // score 18 gap 10" says what happened, what it cost and how sure it was, in one line.
-  const tierNote = joinNote(describeTier(ctx), ctx.revealNote, ctx.tierNote);
+  const tierNote = joinNote(describeTier(ctx), ctx.planNote, ctx.revealNote, ctx.tierNote);
 
   if (ctx.suspend) {
     const stopped = await updateState(deps.store, (current) =>
@@ -1506,12 +1811,23 @@ export async function runStep(deps: RouterDeps, reason: string): Promise<StepOut
     // that describes what is *true of the page*, and it is allowed to overrule the plan.
     // A planner saying "done" is a planner's opinion about its own work; the field being
     // empty is not an opinion.
+    // The ledger with this step's verdicts folded in, computed rather than written:
+    // `finish` performs the same fold under `updateState`, and doing it twice would count
+    // this step's attempts twice. `advanceProgress` is pure, so the two agree.
+    const ledger = advanceProgress(stopped.progress, {
+      stepIndex: stopped.stepIndex,
+      outcome: 'ok',
+      verdicts: ctx.fulfilments ?? [],
+      now: deps.now(),
+    });
+
     const completion =
       ctx.suspend.kind === 'finish'
         ? assessCompletion({
             intents: stopped.intents,
             residue: stopped.residue,
-            fulfilments: ctx.fulfilments ?? [],
+            // The whole run's verified work, not the last step's. See progress.ts.
+            fulfilments: progressFulfilments(ledger),
             sent: ctx.sent,
             // Tier 1's reader or prompt normalizer was given the whole sentence, so when it answered,
             // the words the grammar could not read were read by a model that could.
@@ -1519,6 +1835,8 @@ export async function runStep(deps: RouterDeps, reason: string): Promise<StepOut
               (ctx.tier === 1 || ctx.normalizedLocally === true) && ctx.answeredLocally === true,
           })
         : { complete: true, outstanding: [] };
+
+    if (completion.complete) ctx.completed = true;
 
     const note = joinNote(
       tierNote,
@@ -1591,6 +1909,7 @@ function writeTrace(
   trace.outcome = outcome;
   trace.elements = ctx.elements?.length;
   trace.framesDiscarded = ctx.discards;
+  trace.framesContentDrifted = ctx.contentDrifts;
   trace.sent = ctx.sent;
   if (ctx.answeredBy) trace.answeredBy = ctx.answeredBy;
 
@@ -1644,6 +1963,7 @@ async function finish(
   outcome: StepOutcome,
   note?: string,
   ctx?: StepContext,
+  retryable = false,
 ): Promise<StepOutcome> {
   writeTrace(deps, ctx, outcome);
 
@@ -1675,10 +1995,38 @@ async function finish(
         outcome,
         now: deps.now(),
         note,
+        retryable,
       },
     );
-    // A count, not content: how many frames the page invalidated under us. M11 reports it.
-    return ctx ? { ...ended, framesDiscarded: ended.framesDiscarded + ctx.discards } : ended;
+    if (!ctx) return ended;
+
+    // A planner that returned a decomposition replaces the one the device derived --
+    // keeping the progress of every leg whose id it reused. That is the replanning path:
+    // the model that can see the page gets to say the plan was wrong, in the same
+    // vocabulary, without undoing the legs the page already confirmed. See progress.ts.
+    const replanned =
+      ctx.plan && ctx.plan.plan.length > 0
+        ? adoptPlan(current.progress, ctx.plan.plan, state.stepIndex)
+        : current.progress;
+
+    // Fold this step's verdicts into the run's ledger, under the same read-modify-write
+    // as the rest of the step's state so a handler waking the worker cannot interleave.
+    // `state.stepIndex`, not `ended.stepIndex`: endStep has already advanced the latter
+    // past the step these verdicts belong to.
+    const advanced = advanceProgress(replanned, {
+      stepIndex: state.stepIndex,
+      outcome,
+      verdicts: ctx.fulfilments ?? [],
+      now: deps.now(),
+    });
+
+    return {
+      ...ended,
+      // A count, not content: how many frames the page invalidated under us. M11 reports it.
+      framesDiscarded: ended.framesDiscarded + ctx.discards,
+      framesContentDrifted: ended.framesContentDrifted + ctx.contentDrifts,
+      progress: ctx.completed ? markComplete(advanced) : advanced,
+    };
   });
   await emit(deps, next, { kind: 'step-end', outcome, note, status: next.status });
   // The session is over one way or another; nothing should stay loaded on its behalf.
@@ -1689,6 +2037,15 @@ async function finish(
   // up a few milliseconds early. Fire and forget, exactly as PERCEIVE does.
   if (next.status === 'running' && next.pendingPerceive) {
     void runStep(deps, 'deferred');
+    return outcome;
+  }
+
+  // A transient failure that left the session running is its own event: the page did not
+  // send one, because nothing on the page went wrong. Taking the step again immediately
+  // is not a timer (invariant 7) and it is not unbounded -- `stuckReason` at the top of
+  // `runStep` ends the run once the failures stop being occasional.
+  if (next.status === 'running' && outcome === 'failed' && retryable) {
+    void runStep(deps, 'retry');
   }
   return outcome;
 }
@@ -1870,6 +2227,9 @@ export function buildRequest(state: AgentState, ctx: StepContext): StepRequest {
     elements,
     manifest: ctx.manifest as import('../shared/contract').Manifest,
     history: historyFrom(state),
+    // What the device thinks the task is made of, so a planner asked to replan can see
+    // which legs have already been tried and how they failed. See contract.ts.
+    plan: state.progress.plan,
   };
 }
 
@@ -1892,4 +2252,91 @@ function requireSession(state: AgentState): string {
 function requireTab(state: AgentState): number {
   if (state.tabId === null) throw new Error('router: session has no tab');
   return state.tabId;
+}
+
+/**
+ * Is this run going in circles, and if so what should be said about it?
+ *
+ * Returns the ending, or undefined to carry on. Kept as a pure function beside `runStep`
+ * so the thresholds are read in one place rather than inlined into the loop.
+ */
+function stuckReason(
+  state: AgentState,
+): { status: LoopStatus; outcome: StepOutcome; note: string } | undefined {
+  if (state.progress.retries >= MAX_STEP_RETRIES) {
+    return {
+      status: 'failed',
+      outcome: 'failed',
+      note: `stopped after ${MAX_STEP_RETRIES} steps in a row that failed`,
+    };
+  }
+  if (state.progress.stalled >= MAX_STALLED_STEPS) {
+    return {
+      // Not `failed`: every one of those steps ran cleanly. The run did not finish, which
+      // is exactly what `incomplete` was added to be able to say.
+      status: 'incomplete',
+      outcome: 'incomplete',
+      note: `stopped after ${MAX_STALLED_STEPS} steps that verified nothing new`,
+    };
+  }
+  return undefined;
+}
+
+/**
+ * Answer a `select` leg on the device, when the page printed enough to answer it.
+ *
+ * Returns true when the step is settled here -- a click on the candidate the goal's own
+ * words support -- and false to carry on down the tier ladder.
+ *
+ * This is Tier 0's argument applied to a different question. "Find the cheapest one under
+ * 30,000" is arithmetic over numbers already on screen; doing it here means no screenshot,
+ * no gate, no POST, and the numbers on a results page never leave the machine. What makes
+ * it safe is that it refuses easily: three of the five verdicts are refusals, and each of
+ * them falls through to a model that can see the picture rather than guessing.
+ */
+function chooseCandidate(state: AgentState, ctx: StepContext): boolean {
+  const evaluation = evaluate({
+    candidates: findCandidates(ctx.elements ?? []),
+    // Re-derived from the goal rather than persisted: the goal is on the record already,
+    // and a second copy of the same limits is a second thing that can go stale.
+    constraints: extractConstraints(state.goal),
+    preference: preferenceIn(state.goal),
+  });
+
+  // Counts and enum names. The candidates' own text is not written anywhere.
+  ctx.tierNote = joinNote(ctx.tierNote, describeEvaluation(evaluation));
+
+  const best = evaluation.best;
+  if (evaluation.verdict !== 'choose' || !best) {
+    // A refusal is a reason to escalate, not a reason to stop. The note says which of the
+    // three refusals it was, so an operator can tell "the page did not say" from "nothing
+    // qualified".
+    ctx.escalation = joinNote(ctx.escalation, `candidates: ${evaluation.verdict}`);
+    return false;
+  }
+
+  ctx.tier = 0;
+  ctx.answeredLocally = true;
+  // Named after the leg, not after the stage. `select-1` completes when the ledger holds
+  // verified work matching its criterion's hint, and a decision called "the candidate the
+  // goal describes" matches no hint anyone wrote.
+  ctx.decisions = [
+    {
+      target: ctx.subgoalHint || ctx.subgoal || 'the candidate the goal describes',
+      index: best.index,
+      score: 10,
+      gap: 10,
+    },
+  ];
+  ctx.plan = {
+    protocolVersion: PROTOCOL_VERSION,
+    stepIndex: state.stepIndex,
+    rationale: 'chose a candidate from the numbers on the page',
+    actions: [{ type: 'click', index: best.index }],
+    plan: [],
+    // The plan's legs decide when the task is over, not this one step.
+    done: false,
+  };
+  if (ctx.trace) ctx.trace.tier = { tier: 0, decisions: ctx.decisions };
+  return true;
 }

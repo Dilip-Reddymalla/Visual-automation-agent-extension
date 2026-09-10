@@ -12,6 +12,7 @@
 import { LOG_LIMIT, type LoopPhase, type LoopStatus, type StepLogEntry } from '../shared/agent';
 import type { KeyValueStore } from '../shared/store';
 import type { GoalBlock, Intent } from './intent';
+import { emptyProgress, type TaskProgress } from './progress';
 
 export const STATE_KEY = 'agent-state';
 
@@ -128,6 +129,27 @@ export interface AgentState {
    * rather than quietly absorbing it.
    */
   framesDiscarded: number;
+  /**
+   * Frames kept on a page that never stopped mutating but never moved.
+   *
+   * A rotating banner bumps the mutation counter continuously; the strict geometry check
+   * discarded every frame on such a page for ever, which made whole government portals
+   * invisible to the agent. Counted here for the same reason `framesDiscarded` is: it is
+   * a measurement, not something to keep quiet about.
+   */
+  framesContentDrifted: number;
+  /**
+   * What the task has achieved so far, folded forward across steps.
+   *
+   * `stepIndex` counts steps; this says which of the things the user asked for the page
+   * has actually confirmed. Kept here rather than in a second store because everything
+   * that must outlive an MV3 kill is one record under one key, and progress is the part
+   * of a multi-step run that is most expensive to rediscover: without it a resume knows
+   * where it was and not what it had done. See progress.ts.
+   *
+   * Field names, verbs, verdict enums and counts. No value ever.
+   */
+  progress: TaskProgress;
   startedAt: number;
   updatedAt: number;
   log: StepLogEntry[];
@@ -153,20 +175,30 @@ export const IDLE_STATE: AgentState = {
   pendingPerceive: false,
   overlay: false,
   framesDiscarded: 0,
+  framesContentDrifted: 0,
+  progress: emptyProgress(),
   startedAt: 0,
   updatedAt: 0,
   log: [],
 };
 
 export function freshState(): AgentState {
-  return { ...IDLE_STATE, log: [] };
+  return { ...IDLE_STATE, progress: emptyProgress(), log: [] };
 }
 
 export async function loadState(store: KeyValueStore): Promise<AgentState> {
   const stored = await store.get<AgentState>(STATE_KEY);
   if (!stored) return freshState();
   // Tolerate a record written by an older build rather than losing the session.
-  return { ...freshState(), ...stored, log: stored.log ?? [] };
+  return {
+    ...freshState(),
+    ...stored,
+    log: stored.log ?? [],
+    // A record written before progress existed resumes with an empty ledger rather than
+    // an undefined one. Losing the ledger costs a re-verification; losing the session
+    // costs the run.
+    progress: stored.progress ?? emptyProgress(),
+  };
 }
 
 export async function saveState(store: KeyValueStore, state: AgentState): Promise<void> {

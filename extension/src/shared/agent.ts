@@ -119,3 +119,36 @@ export const MAX_STEPS = 30;
  * a genuine MV3 kill waits longer, which is the cheaper of the two mistakes.
  */
 export const STALE_STEP_MS = 90_000;
+
+/**
+ * How many steps may act on one target before the loop stops trying.
+ *
+ * MAX_STEPS bounds the run; this bounds the *repetition inside* it, which is a different
+ * failure. A planner that cannot see why its click missed will re-plan the same click,
+ * and thirty steps of that is thirty screenshots and thirty POSTs spent on one button.
+ * Three attempts is enough for a page that was still settling on the first and had moved
+ * on the second; a fourth is the loop telling itself something it has already been told.
+ */
+export const MAX_TARGET_ATTEMPTS = 3;
+
+/**
+ * Consecutive steps that verify nothing new before the run is called stuck.
+ *
+ * Distinct from a failing step: these steps *succeed*. The plan is carried out, nothing
+ * throws, and the ledger is the same afterwards as before -- scrolling a list that does
+ * not scroll, clicking a control that does nothing. Without this the only terminator is
+ * MAX_STEPS, so the cheapest possible non-progress runs the most expensive possible way.
+ *
+ * Four, not one: a step that only observes, or that scrolls to reveal a field it will act
+ * on next step, legitimately verifies nothing.
+ */
+export const MAX_STALLED_STEPS = 4;
+
+/**
+ * Consecutive failed steps before the run gives up.
+ *
+ * `endStep` already refuses to advance `stepIndex` on a failure, so a failing step is
+ * retried rather than skipped -- which is right, and which without a ceiling means a
+ * genuinely broken page burns the whole step budget re-running the phase that threw.
+ */
+export const MAX_STEP_RETRIES = 3;

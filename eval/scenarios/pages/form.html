@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Grants portal — application</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #17202a; }
+      h1 { font-size: 20px; margin: 0 0 16px; }
+      label { display: block; margin: 12px 0 4px; font-weight: 600; }
+      input, select { width: 320px; padding: 9px 10px; font: inherit; border: 1px solid #b6c0cc; border-radius: 6px; }
+      button { margin-top: 20px; padding: 11px 18px; font: inherit; border: 1px solid #2f6feb; background: #2f6feb; color: #fff; border-radius: 6px; cursor: pointer; }
+      #done { margin-top: 20px; font-weight: 600; color: #14532d; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <h1>Grant application</h1>
+
+    <form id="form" autocomplete="off">
+      <label for="first">First name</label>
+      <input id="first" name="first_name" type="text" autocomplete="given-name" />
+
+      <label for="last">Last name</label>
+      <input id="last" name="last_name" type="text" autocomplete="family-name" />
+
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" autocomplete="email" />
+
+      <label for="district">District</label>
+      <select id="district" name="district">
+        <option value="">Choose a district</option>
+        <option value="north">North</option>
+        <option value="south">South</option>
+      </select>
+
+      <button id="submit" type="submit">Save and continue</button>
+    </form>
+
+    <p id="done" role="status" hidden>Application submitted.</p>
+
+    <script>
+      // Submit in place. The status line is present in the DOM before it is shown, which
+      // is the case perception deliberately keeps (a hidden status has not been said
+      // yet), and it is the thing a `text-present` criterion has to get right.
+      document.getElementById('form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        document.getElementById('done').hidden = false;
+      });
+    </script>
+  </body>
+</html>

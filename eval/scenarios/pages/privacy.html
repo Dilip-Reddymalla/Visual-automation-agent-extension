@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>KYC portal — profile</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #17202a; }
+      h1 { font-size: 20px; margin: 0 0 16px; }
+      dl { display: grid; grid-template-columns: 190px 1fr; gap: 6px 16px; max-width: 620px; margin: 0 0 22px; }
+      dt { font-weight: 600; color: #3f4d5c; }
+      label { display: block; margin: 12px 0 4px; font-weight: 600; }
+      input { width: 320px; padding: 9px 10px; font: inherit; border: 1px solid #b6c0cc; border-radius: 6px; }
+      button { margin-top: 18px; padding: 11px 18px; font: inherit; border: 1px solid #2f6feb; background: #2f6feb; color: #fff; border-radius: 6px; cursor: pointer; }
+      figure { margin: 20px 0 0; }
+      figcaption { color: #5b6b7d; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <h1>Profile</h1>
+
+    <!--
+      Everything the gate is supposed to remove, on one page, in the two forms it has to
+      handle: printed text the DOM hands over, and a field whose value the DOM will not.
+      The values are synthetic and checksum-valid, which is the point -- a regex without a
+      checksum would match a twelve-digit invoice number too (CLAUDE.md, the mistakes).
+    -->
+    <dl>
+      <dt>Name</dt>
+      <dd id="name">Asha Menon</dd>
+
+      <dt>Aadhaar number</dt>
+      <dd id="aadhaar">2345 6789 0122</dd>
+
+      <dt>PAN</dt>
+      <dd id="pan">ABCDE1234F</dd>
+
+      <dt>Email</dt>
+      <dd id="email">asha.menon@example.in</dd>
+
+      <dt>Mobile</dt>
+      <dd id="phone">+91 98765 43210</dd>
+
+      <dt>Address</dt>
+      <dd id="address">14 Rose Lane, Bengaluru 560001</dd>
+    </dl>
+
+    <label for="pwd">Portal password</label>
+    <input id="pwd" name="password" type="password" autocomplete="current-password" value="hunter2-not-real" />
+
+    <label for="card">Card number</label>
+    <input id="card" name="cc" type="text" inputmode="numeric" autocomplete="cc-number" value="4111 1111 1111 1111" />
+
+    <button id="save" type="button">Save profile</button>
+
+    <figure>
+      <!--
+        A 1x1 data URI stands in for a photograph. L3's face detector will not find a face
+        in it, and it is not meant to: what this exercises is that an unnamed image is
+        treated as pixels the DOM cannot describe, which is the admission rule the fast
+        path turns on.
+      -->
+      <img
+        id="photo"
+        width="160"
+        height="160"
+        src="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+      />
+      <figcaption>Photograph on file</figcaption>
+    </figure>
+  </body>
+</html>

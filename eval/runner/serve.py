@@ -24,6 +24,18 @@ class _QuietHandler(SimpleHTTPRequestHandler):
     def log_message(self, *_args) -> None:
         return
 
+    def handle_one_request(self) -> None:
+        """Closing the browser resets sockets. That is not an error worth printing.
+
+        Chrome keeps keep-alive connections open and drops them all when it exits, so the
+        end of every run used to print a screenful of ConnectionResetError tracebacks
+        after the results -- which is exactly where a real failure would have been.
+        """
+        try:
+            super().handle_one_request()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            self.close_connection = True
+
     def end_headers(self) -> None:
         # A cached page is a page whose layout might be a previous build's. The labels
         # were measured against this build.

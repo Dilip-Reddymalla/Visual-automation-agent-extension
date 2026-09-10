@@ -223,6 +223,158 @@ export const ManifestSchema = z.strictObject({
   receipt: ReceiptSchema,
 });
 
+// -- Subgoals: the shape of a multi-step task ---------------------------------
+
+/**
+ * What one leg of a multi-step task is *for*.
+ *
+ * Deliberately about page mechanics rather than about any domain. "Search for mobiles
+ * under 30,000" is not a kind; `search` then `filter` then `inspect` then `select` then
+ * `interact` is, and the same five work on a flight booking, a council form and a library
+ * catalogue. A vocabulary that names shops would have to name hospitals next.
+ */
+export const SUBGOAL_KINDS = [
+  /** Reach a place: a site, a section, a URL. */
+  'navigate',
+  /** Put a query into the page's own search. */
+  'search',
+  /** Narrow what the page is showing. */
+  'filter',
+  /** Read what is on offer without changing anything. The only read-only kind. */
+  'inspect',
+  /** Commit to one of the things `inspect` found. */
+  'select',
+  /** Act on the selected thing: fill it, expand it, toggle it. */
+  'interact',
+  /** Hand the page a completed unit of work. */
+  'submit',
+  /** A checkpoint: observe that what the goal asked for is now true. */
+  'confirm',
+] as const;
+
+export const SubgoalKindSchema = z.enum(SUBGOAL_KINDS);
+
+/**
+ * How the device will know a subgoal finished -- by looking, not by being told.
+ *
+ * A planner claiming success is a planner's opinion of its own work; `complete.ts` exists
+ * because that opinion was wrong while a field sat empty. So a subgoal carries what would
+ * have to become observably true, and the loop checks it against the next observation.
+ *
+ * `hint` is a label, a role name or a placeholdered fragment -- the kind of thing already
+ * on the wire in the element list. Never a value: this round-trips through the planner and
+ * lands in the step log.
+ */
+export const CriterionSchema = z.strictObject({
+  check: z.enum([
+    /** The document the agent is looking at is a different one. */
+    'url-changed',
+    /** Something matching `hint` is now in the element list. */
+    'element-present',
+    /** Something matching `hint` has left the element list. */
+    'element-gone',
+    /** A field matching `hint` reports state.filled. */
+    'field-filled',
+    /** Text matching `hint` is on the page. */
+    'text-present',
+    /** The verification ledger holds a verified entry for `hint`. */
+    'action-verified',
+  ]),
+  hint: z.string().max(120).default(''),
+});
+
+/**
+ * Why a subgoal could not be finished, in words that carry no page content.
+ *
+ * The recovery ladder in the loop is a function of this value, which is why it is an enum
+ * and not a sentence: "retry, re-observe, re-resolve, replan, escalate" has to be decidable
+ * without reading prose. It is also echoed back to the planner, so it must be safe to send.
+ */
+export const SUBGOAL_FAILURES = [
+  /** The element the subgoal was resolved against is no longer there. */
+  'target-missing',
+  /** The action was carried out and nothing observable changed. */
+  'no-effect',
+  /** The page navigated or was replaced while the subgoal was in flight. */
+  'page-changed',
+  /** Something was acted on and the criteria say it was the wrong thing. */
+  'wrong-target',
+  /** More than one candidate fits, and nothing on the page separates them. */
+  'ambiguous',
+  /** Finishing this needs something the agent may not do unaided. */
+  'blocked',
+  /** The subgoal used up its step budget. */
+  'budget-spent',
+] as const;
+
+export const SubgoalFailureSchema = z.enum(SUBGOAL_FAILURES);
+
+/**
+ * One leg of the task, as proposed.
+ *
+ * This is the *plan*, not the progress: no status, no attempt count, nothing that only
+ * the device can know. A planner may return a list of these; the device may derive one
+ * itself (see worker/decompose.ts). Either way what comes back is a proposal, and the
+ * loop's own observations decide what becomes of it.
+ *
+ * `intent` is the operator-facing sentence and goes through the same door as `goal`: it
+ * may hold placeholders and must hold no values.
+ */
+export const SubgoalSchema = z.strictObject({
+  /** Stable for the life of the task, so progress survives a replan and a resume. */
+  id: z.string().min(1).max(40),
+  kind: SubgoalKindSchema,
+  intent: z.string().min(1).max(200),
+  /** Subgoals that must be done first. Order without a rigid sequence. */
+  after: z.array(z.string().min(1).max(40)).max(8).default([]),
+  criteria: z.array(CriterionSchema).max(4).default([]),
+  /**
+   * Steps this subgoal may consume before the loop gives up on it.
+   *
+   * Per-subgoal rather than one global number because the legs are not alike: a
+   * `navigate` that has not arrived after two steps is not going to, and an `inspect`
+   * over a long list legitimately takes several.
+   */
+  budget: z.number().int().min(1).max(10).default(3),
+});
+
+/** Where a subgoal stands. Only the device assigns these. */
+export const SUBGOAL_STATUSES = [
+  /** Waiting on something in `after`. */
+  'blocked',
+  /** Its dependencies are done; it is eligible to be the current subgoal. */
+  'ready',
+  /** The current subgoal. At most one is active at a time. */
+  'active',
+  /** Its criteria were observed to hold. */
+  'done',
+  /** Its budget is spent or it failed unrecoverably. */
+  'failed',
+  /** A replan dropped it, or the page made it unnecessary. */
+  'skipped',
+] as const;
+
+export const SubgoalStatusSchema = z.enum(SUBGOAL_STATUSES);
+
+/**
+ * A subgoal plus what the device has observed about it. The runtime shape.
+ *
+ * Sent in the step request so a planner asked to replan can see what has already been
+ * tried and how it failed, rather than proposing the same leg a fourth time. Everything
+ * added here is a count, an enum or a step index.
+ */
+export const SubgoalStateSchema = SubgoalSchema.extend({
+  status: SubgoalStatusSchema,
+  /** Steps that have run against this subgoal. Checked against `budget`. */
+  attempts: z.number().int().nonnegative().default(0),
+  failure: SubgoalFailureSchema.optional(),
+  /** The step at which `status` last changed. */
+  stepIndex: z.number().int().nonnegative().optional(),
+});
+
+/** A whole decomposition may not be longer than this. See worker/decompose.ts. */
+export const MAX_SUBGOALS = 12;
+
 // ── Capture ───────────────────────────────────────────────────────────────────
 
 /**
@@ -271,6 +423,18 @@ export const StepRequestSchema = z.strictObject({
   elements: z.array(ElementSchema),
   manifest: ManifestSchema,
   history: z.array(HistoryEntrySchema).default([]),
+  /**
+   * How the device has broken this task up, and how far it has got.
+   *
+   * Empty for a single-step task and for a device that has not decomposed anything, which
+   * is why it defaults rather than being required: a planner that ignores it sees exactly
+   * the payload it saw before this field existed.
+   *
+   * Sent because replanning without it is guessing. A planner told only "the last step
+   * failed" will propose the leg that just failed; told "select has been attempted twice
+   * and reports ambiguous", it can propose the filter that would separate the candidates.
+   */
+  plan: z.array(SubgoalStateSchema).max(MAX_SUBGOALS).default([]),
 });
 
 // ── Step response: server -> device ───────────────────────────────────────────
@@ -313,6 +477,19 @@ export const StepResponseSchema = z.strictObject({
   rationale: z.string().default(''),
   /** Short batches keep the loop honest; anything longer is a plan, not a step. */
   actions: z.array(ActionSchema).min(1).max(4),
+  /**
+   * A proposed decomposition of the *remaining* work, replacing whatever the device held.
+   *
+   * Optional, and the loop runs without it: the device decomposes goals it can read
+   * (worker/decompose.ts) and a planner that returns nothing here leaves that plan alone.
+   * What it buys is replanning -- when the page turns out not to work the way the
+   * decomposition assumed, the model that can see the page gets to say so in the same
+   * vocabulary rather than only by emitting a different click.
+   *
+   * Still one step at a time: this says what the task is made of, `actions` says what to
+   * do now, and nothing here is executed.
+   */
+  plan: z.array(SubgoalSchema).max(MAX_SUBGOALS).default([]),
   done: z.boolean().default(false),
 });
 
@@ -330,6 +507,12 @@ export type Receipt = z.infer<typeof ReceiptSchema>;
 export type Manifest = z.infer<typeof ManifestSchema>;
 export type Capture = z.infer<typeof CaptureSchema>;
 export type HistoryEntry = z.infer<typeof HistoryEntrySchema>;
+export type SubgoalKind = z.infer<typeof SubgoalKindSchema>;
+export type Criterion = z.infer<typeof CriterionSchema>;
+export type SubgoalFailure = z.infer<typeof SubgoalFailureSchema>;
+export type SubgoalStatus = z.infer<typeof SubgoalStatusSchema>;
+export type Subgoal = z.infer<typeof SubgoalSchema>;
+export type SubgoalState = z.infer<typeof SubgoalStateSchema>;
 export type StepRequest = z.infer<typeof StepRequestSchema>;
 export type Action = z.infer<typeof ActionSchema>;
 export type ActionType = Action['type'];

@@ -14,6 +14,7 @@
  */
 
 import { containment, type Box, type Viewport } from '../shared/coords';
+import type { ElementRole } from '../shared/contract';
 import type { ObservedElement, TextRun } from '../shared/observed';
 import {
   accessibleName,
@@ -124,14 +125,25 @@ interface Candidate {
    * clickable, and handing the planner a number it cannot act on invites it to try.
    */
   textOnly?: boolean;
+  /**
+   * The control this candidate is standing in for, when it is a `<label for=...>` whose
+   * own control cannot be clicked. See the proxy pass in `perceive`.
+   */
+  standsFor?: DomEl;
 }
 
 export function perceive(env: PerceiveEnv): PerceiveResult {
   // 1. Traverse.
   const nodes = walk(env.doc, { measure: env.measure, ...env.walkOptions });
 
+  // Where every element ended up, so the proxy pass below can ask about a control that
+  // the main loop has already skipped for being off-screen.
+  const measured = new Map<DomEl, RawNode>();
+  for (const node of nodes) measured.set(node.el, node);
+
   // 2 and 3. Filter for visibility, score interactivity.
   const scored: Candidate[] = [];
+  const proxies: Array<{ node: RawNode; style: StyleLike }> = [];
   for (const node of nodes) {
     // Never perceive our own overlay. The next walk has to find what the last one
     // found, and an overlay that showed up in its own snapshot would not be a mirror.
@@ -166,6 +178,13 @@ export function perceive(env: PerceiveEnv): PerceiveResult {
         ? env.style(node.el.parentElement).cursor
         : undefined;
     const verdict = scoreInteractivity(node.el, style, node.box, parentCursor);
+
+    // A refused label is not always a duplicate. Decided after the loop, because the
+    // answer depends on a *different* element -- see the proxy pass.
+    if (verdict.reason === 'label-proxy') {
+      proxies.push({ node, style });
+      continue;
+    }
 
     // The fourth admission class: pixels the DOM cannot describe.
     //
@@ -240,6 +259,48 @@ export function perceive(env: PerceiveEnv): PerceiveResult {
       occluded: 0,
       // Not on screen yet: there is nothing to hit-test against.
       exemptFromHitTest: keepHidden,
+    });
+  }
+
+  // 3b. Labels standing in for controls that cannot be clicked.
+  //
+  // `<label for=x>` normally earns nothing: clicking it fires x as well, so indexing both
+  // gives the agent two ways to toggle one checkbox and a fair chance of doing it twice.
+  // That reasoning assumes x can be clicked.
+  //
+  // Very often it cannot. The "css-checkbox" pattern -- the real input parked at
+  // `left: -9900px` with the label styled to look like the box -- is how irctc.co.in ships
+  // every one of its search options ("Flexible With Date", the concession boxes), and it is
+  // everywhere on Indian government portals. The input is off-viewport, so the main loop
+  // drops it; the label is a proxy, so the main loop drops that too; and the page's
+  // checkboxes are then invisible to the agent, which cannot tick a box it was never told
+  // about.
+  //
+  // So: when the control is not reachable, the label is not a duplicate of it, it is the
+  // only way in. It is admitted with the *control's* role and state -- what the operator
+  // needs to know is whether the box is ticked, not that a label exists.
+  for (const proxy of proxies) {
+    const control = controlFor(proxy.node.el);
+    if (!control) continue;
+
+    const node = measured.get(control);
+    const reachable =
+      node !== undefined &&
+      isVisible(node, env.style(control)) &&
+      intersectsViewport(node.box, env.viewport);
+    if (reachable) continue;
+
+    if (!intersectsViewport(proxy.node.box, env.viewport)) continue;
+
+    scored.push({
+      node: proxy.node,
+      style: proxy.style,
+      role: roleOf(control),
+      // The label's own text is what a person reads next to the box.
+      name: accessibleName(proxy.node.el) || accessibleName(control),
+      reason: 'label-stands-in',
+      occluded: 0,
+      standsFor: control,
     });
   }
 
@@ -388,19 +449,91 @@ function strip(observed: ObservedElement): ObservedElement {
  * that other one. Without this a card with a heading, a link and an image renders as
  * four entries; the list triples in size and the planner has four ways to say one thing.
  */
+/**
+ * The roles an agent can actually operate.
+ *
+ * Everything else -- a heading, a block of prose, an image, a `<div>` that happened to be
+ * admitted -- is something to read, not something to act on. The distinction decides which
+ * of two nested candidates survives a collapse.
+ */
+const CONTROL_ROLES: ReadonlySet<ElementRole> = new Set<ElementRole>([
+  'button',
+  'link',
+  'textbox',
+  'searchbox',
+  'combobox',
+  'listbox',
+  'option',
+  'checkbox',
+  'radio',
+  'slider',
+  'spinbutton',
+  'switch',
+  'tab',
+  'menuitem',
+  'file',
+]);
+
+function isControl(candidate: Candidate): boolean {
+  return CONTROL_ROLES.has(candidate.role);
+}
+
 export function collapseContained(candidates: Candidate[]): Candidate[] {
-  return candidates.filter((inner) => {
-    return !candidates.some((outer) => {
-      if (outer === inner) return false;
-      if (outer.node.el === inner.node.el) return false;
-      // Only collapse into a genuine ancestor: two overlapping siblings are two things.
-      if (!outer.node.el.contains(inner.node.el)) return false;
-      if (containment(inner.node.box, outer.node.box) < CONTAINMENT_COLLAPSE) return false;
-      // A distinct accessible name earns its own entry, however nested it is.
-      const distinct = inner.name !== '' && inner.name !== outer.name;
-      return !distinct;
-    });
-  });
+  return candidates.filter(
+    (candidate) => !candidates.some((other) => supersedes(other, candidate)),
+  );
+}
+
+/**
+ * Two candidates, one inside the other, describing the same thing: which one survives?
+ *
+ * The old answer was always "the outer one", and on a real page that threw away the
+ * control. Amazon's search box is `<div class="nav-search-field"><label
+ * for="twotabsearchtextbox">Search Amazon.in</label><input id="twotabsearchtextbox"
+ * role="searchbox"></div>`. The `<div>` is admitted (its class says `search`), its name
+ * resolves through the label text to "Search Amazon.in", the `<input>`'s name resolves
+ * through `label[for]` to the same string -- so the names matched, the input collapsed
+ * into the div, and what reached the planner was one element of role `other`.
+ *
+ * Which is not a cosmetic loss. A `fill` intent resolves against role: a page whose only
+ * search field is reported as a `<div>` cannot be typed into at all, and the agent's next
+ * best move is to click something that looks related. Asked to search amazon.in for
+ * mobiles, it clicked the "Mobiles" link in the nav bar and reported success.
+ *
+ * So: when a container and a control inside it carry the *same* name, the control wins
+ * and the container is dropped. Nothing is lost -- the name is identical, that is the
+ * precondition -- and the survivor is the one that can be operated.
+ *
+ * The old rule still applies everywhere else, including the case it was written for: a
+ * `<label>` wrapping a checkbox is itself given the checkbox's role by `roleOf`, so it is
+ * a control too and the outer one still wins.
+ */
+function supersedes(keeper: Candidate, victim: Candidate): boolean {
+  if (keeper === victim) return false;
+  if (keeper.node.el === victim.node.el) return false;
+
+  // Only collapse across a genuine ancestor link: two overlapping siblings are two things.
+  const keeperIsOuter = keeper.node.el.contains(victim.node.el);
+  const victimIsOuter = victim.node.el.contains(keeper.node.el);
+  if (!keeperIsOuter && !victimIsOuter) return false;
+
+  const inner = keeperIsOuter ? victim : keeper;
+  const outer = keeperIsOuter ? keeper : victim;
+  if (containment(inner.node.box, outer.node.box) < CONTAINMENT_COLLAPSE) return false;
+
+  // A distinct accessible name earns its own entry, however nested it is.
+  if (inner.name !== '' && inner.name !== outer.name) return false;
+
+  // Same name, and only one of them can be operated.
+  if (inner.name !== '' && isControl(inner) && !isControl(outer)) return keeper === inner;
+  return keeper === outer;
+}
+
+/** The control a `<label for=...>` forwards its activation to, if the page has one. */
+function controlFor(label: DomEl): DomEl | null {
+  const id = label.getAttribute('for');
+  if (!id) return null;
+  return label.ownerDocument?.getElementById(id) ?? null;
 }
 
 /** Top to bottom, then left to right, with a tolerance so one row stays one row. */
@@ -486,11 +619,16 @@ function observeElement(
   env: PerceiveEnv,
 ): ObservedElement {
   const el = candidate.node.el;
-  const input = el as HTMLInputElement;
+  // What this entry is *about*. The same element, except for a label standing in for a
+  // control that cannot be clicked: there the box, the name and the text are the label's,
+  // and everything that describes the field -- whether it is ticked, what it is called on
+  // the wire, what the detectors sniff -- belongs to the control behind it.
+  const subject = candidate.standsFor ?? el;
+  const input = subject as HTMLInputElement;
   const observed: ObservedElement = {
     role: candidate.role,
     box: candidate.node.box,
-    state: stateOf(el, candidate.style),
+    state: stateOf(subject, candidate.style),
     occluded: candidate.occluded,
     isNew,
     tag: el.tagName.toLowerCase(),
@@ -512,41 +650,41 @@ function observeElement(
   if (env.typedByAgent?.(el)) observed.agentTyped = true;
 
   // The attributes L0 sniffs. Recorded raw, and never projected onto the wire.
-  copyAttr(el, 'type', observed, 'inputType');
-  copyAttr(el, 'autocomplete', observed, 'autocomplete');
-  copyAttr(el, 'inputmode', observed, 'inputMode');
-  copyAttr(el, 'name', observed, 'nameAttr');
-  copyAttr(el, 'id', observed, 'idAttr');
-  copyAttr(el, 'placeholder', observed, 'placeholder');
-  copyAttr(el, 'aria-label', observed, 'ariaLabel');
-  copyAttr(el, 'pattern', observed, 'pattern');
+  copyAttr(subject, 'type', observed, 'inputType');
+  copyAttr(subject, 'autocomplete', observed, 'autocomplete');
+  copyAttr(subject, 'inputmode', observed, 'inputMode');
+  copyAttr(subject, 'name', observed, 'nameAttr');
+  copyAttr(subject, 'id', observed, 'idAttr');
+  copyAttr(subject, 'placeholder', observed, 'placeholder');
+  copyAttr(subject, 'aria-label', observed, 'ariaLabel');
+  copyAttr(subject, 'pattern', observed, 'pattern');
   copyAttr(el, 'href', observed, 'href');
   copyAttr(el, 'alt', observed, 'alt');
 
-  const label = associatedLabelText(el);
+  const label = associatedLabelText(subject);
   if (label) observed.labelText = label;
 
   // Only when the page declared nothing. A caption inferred from layout is a fallback for
   // a broken form, not a second opinion on a working one.
   if (!label && !observed.ariaLabel) {
-    const nearby = nearbyLabelText(el);
+    const nearby = nearbyLabelText(subject);
     if (nearby) observed.nearbyText = nearby;
   }
 
-  const describedBy = resolveIdRefs(el, 'aria-describedby');
+  const describedBy = resolveIdRefs(subject, 'aria-describedby');
   if (describedBy) observed.ariaDescribedByText = describedBy;
 
   if (candidate.style.textSecurity && candidate.style.textSecurity !== 'none') {
     observed.textSecurity = candidate.style.textSecurity;
   }
 
-  const maxLength = el.getAttribute('maxlength');
+  const maxLength = subject.getAttribute('maxlength');
   if (maxLength !== null) {
     const parsed = Number.parseInt(maxLength, 10);
     if (Number.isFinite(parsed) && parsed >= 0) observed.maxLength = parsed;
   }
 
-  if (isValueBearing(el)) {
+  if (isValueBearing(subject)) {
     const value = input.value ?? '';
     if (value !== '') {
       observed.rawValue = value;
@@ -555,9 +693,9 @@ function observeElement(
     }
   }
 
-  if (el.tagName === 'SELECT') {
-    const select = el as unknown as HTMLSelectElement;
-    observed.optionCount = select.options?.length ?? el.querySelectorAll('option').length;
+  if (subject.tagName === 'SELECT') {
+    const select = subject as unknown as HTMLSelectElement;
+    observed.optionCount = select.options?.length ?? subject.querySelectorAll('option').length;
     const selected =
       select.selectedIndex >= 0 ? select.options?.[select.selectedIndex] : undefined;
     const text = normaliseSpace(selected?.textContent ?? '');

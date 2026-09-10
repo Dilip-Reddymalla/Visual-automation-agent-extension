@@ -60,9 +60,16 @@ const CONTEXT_WINDOW = 40;
 /**
  * A label that says the number is something else. These beat any checksum: a business
  * that prints "Invoice no." above a twelve-digit number is telling you what it is.
+ *
+ * The second half of the list is the vocabulary of an Indian government form rather
+ * than a shop's. "Enrolment No.", "Acknowledgement No.", "Application No.", "URN" --
+ * each is a long number printed beside the real identifier, and a fair share of them
+ * pass Verhoeff by chance. Measured on demo/tier-2-image-id.html, whose enrolment slip
+ * carries one directly under the Aadhaar it belongs to: without these words the slip
+ * came back with both numbers painted out, and over-redaction is a first-class failure.
  */
 const NEGATIVE_CONTEXT =
-  /\b(invoice|inv|order|ord|receipt|challan|txn|transaction|reference|ref|ticket|po|purchase\s*order|batch|sku|serial|isbn|case|docket|voucher|bill|awb|tracking|consignment)\b(?:\s*(?:no|number|num|nos|id|#)\.?)?[\s.:#-]*$/i;
+  /\b(invoice|inv|order|ord|receipt|challan|txn|transaction|reference|ref|ticket|po|purchase\s*order|batch|sku|serial|isbn|case|docket|voucher|bill|awb|tracking|consignment|enrolment|enrollment|acknowledgement|acknowledgment|ack|application|registration|urn|srn|file)\b(?:\s*(?:no|number|num|nos|id|#)\.?)?[\s.:#-]*$/i;
 
 /** Currency, decimals and thousands separators: an amount, not an identifier. */
 const MONEY_BEFORE = /(₹|rs\.?|inr|usd|\$|total|amount|balance|paid|due)\s*[-]?\s*$/i;

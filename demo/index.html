@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redaction Gate — demo pages</title>
+    <style>
+      :root { --line: #d9dee7; --ink: #14181e; --muted: #5b6472; --accent: #1b6feb; --panel: #f6f8fb; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 15px/1.6 system-ui, sans-serif; color: var(--ink); background: #fff; }
+      header { padding: 20px 24px; border-bottom: 1px solid var(--line); }
+      header h1 { margin: 0 0 4px; font-size: 20px; }
+      header p { margin: 0; color: var(--muted); }
+      main { max-width: 900px; margin: 0 auto; padding: 24px; }
+      .lead { color: var(--muted); margin: 0 0 24px; }
+      .rung { margin: 28px 0 12px; font-size: 14px; text-transform: uppercase;
+              letter-spacing: 0.06em; color: var(--muted); }
+      .card { border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+      .card h2 { margin: 0 0 2px; font-size: 17px; }
+      .card h2 a { color: var(--accent); text-decoration: none; }
+      .tier { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px;
+              font-size: 12px; font-weight: 700; background: var(--panel); color: var(--muted); }
+      .goal { margin: 10px 0 8px; padding: 10px 12px; background: #0f172a; color: #e2e8f0;
+              border-radius: 6px; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace;
+              user-select: all; }
+      .watch { color: var(--muted); font-size: 14px; margin: 0; }
+      footer { color: var(--muted); font-size: 13px; padding: 0 24px 32px; max-width: 900px; margin: 0 auto; }
+      code { background: var(--panel); padding: 1px 5px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Redaction Gate — demo pages</h1>
+      <p>SIH26171 · on-device visual perception for light-weight browser agents</p>
+    </header>
+
+    <main>
+      <p class="lead">
+        Five minutes, in order. Each page is built to force one rung of the ladder, and the
+        step line at the bottom of the panel says which rung answered and whether anything
+        left the machine.
+      </p>
+
+      <h2 class="rung">Tier 0 &mdash; the device answers</h2>
+
+      <div class="card">
+        <h2><a href="tier-0-clean-form.html">1. Pension life certificate</a><span class="tier">tier 0 &middot; nothing sent</span></h2>
+        <p class="watch">Every field labelled, every label distinct. The DOM already holds every fact the task needs.</p>
+        <div class="goal">fill full name with Asha Menon, fill mobile number with 9845012345, click submit certificate</div>
+        <p class="watch">Step line: <em>tier 0 &middot; the device &middot; nothing sent</em>, with a score and a gap per field. No screenshot is taken at all, so there is nothing that could leak. Note the log says <em>typed &laquo;PERSON_1&raquo;</em> &mdash; even the operator's own sentence is placeholdered before it is written down.</p>
+      </div>
+
+      <div class="card">
+        <h2><a href="page-c-unlabelled.html">2. Mobile number update</a><span class="tier">tier 0 &middot; nothing sent</span></h2>
+        <p class="watch">Captions that sit beside their boxes and are associated with nothing &mdash; no <code>for</code>, no <code>aria-label</code>. The caption a human reads is the label, and the device scores it that way.</p>
+        <div class="goal">fill new mobile number with 9845012345</div>
+      </div>
+
+      <h2 class="rung">Tier 1 &mdash; a local model, still nothing sent</h2>
+
+      <div class="card">
+        <h2><a href="tier-1-ambiguous.html">3. Employer verification</a><span class="tier">tier 1 &middot; tie</span></h2>
+        <p class="watch">Two sections asking for the same two things. Both candidates score identically, and a coin toss is not a decision.</p>
+        <div class="goal">fill email address with asha.menon@example.in</div>
+        <p class="watch">Step line: <em>tier 1 tie-break picked [1] for "email address" (tie)</em>. A local model read the page; the network was never touched.</p>
+      </div>
+
+      <div class="card">
+        <h2><a href="tier-1-open-ended.html">4. Water board consumer services</a><span class="tier">tier 1 &middot; open-ended</span></h2>
+        <p class="watch">Nothing on the page is a field until you have chosen what you came to do, so the sentence names no control the grammar can find.</p>
+        <div class="goal">sign up for outage alerts on this page</div>
+        <p class="watch">Step line: <em>open-ended</em>, then <em>tier 1 read the goal into 1 action</em>. The right tile opens and the form appears.</p>
+      </div>
+
+      <h2 class="rung">Tier 2 &mdash; one sealed artefact crosses the network</h2>
+
+      <div class="card">
+        <h2><a href="tier-2-pixels.html">5. Scanned challan</a><span class="tier">tier 2 &middot; sealed POST</span></h2>
+        <p class="watch">A <code>&lt;canvas&gt;</code> scan and three icon buttons. There is no text node anywhere on the challan, so the DOM has nothing to say and the pixels have to answer.</p>
+        <div class="goal">describe what this challan is asking for</div>
+        <p class="watch">Open <strong>What was sent</strong> in the popup. Five findings, every one of them <code>L3</code>: the Aadhaar (<code>ocr:verhoeff-ok</code>), the PAN, the mobile, the name and the address &mdash; painted out before the frame was encoded. The invoice number two lines below the Aadhaar passes the Aadhaar checksum and is <em>not</em> painted, because the words beside it say what it is.</p>
+      </div>
+
+      <div class="card">
+        <h2><a href="tier-2-image-id.html">6. Uploaded enrolment slip</a><span class="tier">tier 2 &middot; sealed POST</span></h2>
+        <p class="watch">The same argument with an uploaded <code>&lt;img&gt;</code> and an empty <code>alt</code>, which is how documents actually arrive. Name, date of birth, Aadhaar and address are all glyphs.</p>
+        <div class="goal">read the uploaded slip and tell me what it says</div>
+        <p class="watch">The enrolment number under the Aadhaar is a decoy: twelve digits, Verhoeff-valid, and left alone. Over-redaction on this page is about 7% of what was painted.</p>
+      </div>
+
+      <div class="card">
+        <h2><a href="tier-2-jargon.html">7. Beneficiary registration</a><span class="tier">tier 1 declines &rarr; tier 2</span></h2>
+        <p class="watch">A page written by a bank for people who work at a bank. <em>Bene. A/c No. (CBS)</em> scores below the grammar's floor, so tier 1 is asked &mdash; and its answer is rejected.</p>
+        <div class="goal">fill account number with 50100234567</div>
+        <p class="watch">Step line: <em>tier 1 refused: the local model put the same text into 4 fields, which is what it does instead of saying it does not know</em>. The ladder does not accept a bad cheap answer; it pays for a better one.</p>
+      </div>
+
+      <h2 class="rung">Placeholders across a navigation</h2>
+
+      <div class="card">
+        <h2><a href="page-a-enrolment.html">8. Scholarship enrolment &rarr; application</a><span class="tier">stable numbering</span></h2>
+        <p class="watch">A form dense with identifiers that submits into a second page, so the same person keeps the same placeholder numbers across a real document load.</p>
+        <div class="goal">fill full name with Asha Menon, fill aadhaar number with 7237 2429 6561, click verify identity</div>
+        <p class="watch"><code>demo/NAVIGATION.md</code> has the measurement of what an element index is worth after a navigation: seven of twelve indices meant something else.</p>
+      </div>
+    </main>
+
+    <footer>
+      Serve this folder over http, never <code>file://</code>:
+      <code>python -m http.server 8080 --directory demo</code>. The run sheet is
+      <code>demo/SHOWCASE.md</code>.
+    </footer>
+  </body>
+</html>

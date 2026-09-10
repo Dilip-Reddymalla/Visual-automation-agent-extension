@@ -85,7 +85,9 @@ describe('OCR pipeline', () => {
       expect(cache.hits).toBe(1);
 
       // Mutating returned box must not mutate cache
-      hit![0]!.box.x = 999;
+      const [firstHit] = hit ?? [];
+      if (!firstHit) throw new Error('expected a cached line');
+      firstHit.box.x = 999;
       expect(cache.get('hash1', 1200)?.[0]?.box.x).toBe(5);
 
       // LRU Eviction
@@ -150,7 +152,8 @@ describe('OCR pipeline', () => {
 
       const boxes = postprocessDet(probMap, W, H, 1.0, 1.0, 0.3, 0.5, 1.5);
       expect(boxes).toHaveLength(1);
-      const b = boxes[0]!;
+      const [b] = boxes;
+      if (!b) throw new Error('expected one detected box');
       expect(b.x).toBeLessThanOrEqual(16);
       expect(b.y).toBeLessThanOrEqual(20);
       expect(b.w).toBeGreaterThanOrEqual(32);
@@ -170,7 +173,7 @@ describe('OCR pipeline', () => {
       // Expect decoded: "AB C"
       const sequence = [0, 1, 1, 0, 2, 2, 7, 3];
       for (let t = 0; t < timeSteps; t++) {
-        logits[t * vocabSize + sequence[t]!] = 5.0;
+        logits[t * vocabSize + (sequence[t] ?? 0)] = 5.0;
       }
 
       const res = decodeCtc(logits, timeSteps, vocabSize, charset);
@@ -217,7 +220,7 @@ describe('OCR pipeline', () => {
           // Spell out: 1 (T), 2 (E), 3 (S), 1 (T) -> "TEST"
           const seq = [1, 2, 3, 1, 0, 0];
           for (let t = 0; t < timeSteps; t++) {
-            logits[t * vocabSize + seq[t]!] = 6.0;
+            logits[t * vocabSize + (seq[t] ?? 0)] = 6.0;
           }
 
           return {
@@ -248,6 +251,82 @@ describe('OCR pipeline', () => {
       expect(lines[0]?.text).toBe('TEST');
       expect(lines[0]?.region).toBe(5);
       expect(lines[0]?.score).toBeGreaterThan(0.9);
+    });
+  });
+
+  describe('resizeBilinear', () => {
+    it('keeps a flat image flat and lands the corner pixels exactly', () => {
+      const src: RawImageLike = {
+        width: 4,
+        height: 4,
+        data: new Uint8ClampedArray(4 * 4 * 4).fill(120),
+      };
+
+      const out = resizeBilinear(src, 8, 8);
+
+      expect(out.width).toBe(8);
+      expect(out.height).toBe(8);
+      expect(out.data).toHaveLength(8 * 8 * 4);
+      for (let i = 0; i < out.data.length; i++) {
+        expect(out.data[i]).toBe(120);
+      }
+    });
+
+    it('interpolates a horizontal ramp monotonically', () => {
+      const data = new Uint8ClampedArray(4 * 1 * 4);
+      for (let x = 0; x < 4; x++) {
+        const v = x * 60; // 0, 60, 120, 180
+        data[x * 4] = v;
+        data[x * 4 + 1] = v;
+        data[x * 4 + 2] = v;
+        data[x * 4 + 3] = 255;
+      }
+
+      const out = resizeBilinear({ width: 4, height: 1, data }, 7, 1);
+
+      expect(out.data[0]).toBe(0);
+      expect(out.data[6 * 4]).toBe(180);
+      for (let x = 1; x < 7; x++) {
+        const prev = out.data[(x - 1) * 4] ?? 0;
+        const cur = out.data[x * 4] ?? 0;
+        expect(cur).toBeGreaterThan(prev);
+      }
+    });
+  });
+
+  describe('preprocessRecCrop', () => {
+    it('normalises to [-1, 1] CHW at the fixed recognition height', () => {
+      const crop: RawImageLike = {
+        width: 60,
+        height: 24,
+        data: new Uint8ClampedArray(60 * 24 * 4).fill(255),
+      };
+
+      const pre = preprocessRecCrop(crop);
+
+      // height 24 -> 48 doubles the width too.
+      expect(pre.dims[0]).toBe(1);
+      expect(pre.dims[1]).toBe(3);
+      expect(pre.dims[2]).toBe(48);
+      expect(pre.dims[3]).toBe(120);
+      expect(pre.tensorData).toHaveLength(3 * 48 * 120);
+      // (255/255 - 0.5) / 0.5 === 1
+      expect(pre.tensorData[0]).toBeCloseTo(1, 6);
+      expect(pre.tensorData[pre.tensorData.length - 1]).toBeCloseTo(1, 6);
+    });
+
+    it('floors the width at 32 for a very narrow crop', () => {
+      const crop: RawImageLike = {
+        width: 2,
+        height: 48,
+        data: new Uint8ClampedArray(2 * 48 * 4),
+      };
+
+      const pre = preprocessRecCrop(crop);
+
+      expect(pre.dims[3]).toBe(32);
+      // A zeroed crop normalises to -1 everywhere.
+      expect(pre.tensorData[0]).toBeCloseTo(-1, 6);
     });
   });
 });

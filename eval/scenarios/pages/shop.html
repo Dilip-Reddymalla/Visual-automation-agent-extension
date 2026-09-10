@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Local Market — search</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #17202a; }
+      h1 { font-size: 20px; margin: 0 0 16px; }
+      .search { display: flex; gap: 8px; margin-bottom: 20px; }
+      input[type='search'] { flex: 1; padding: 10px 12px; font: inherit; border: 1px solid #b6c0cc; border-radius: 6px; }
+      button { padding: 10px 16px; font: inherit; border: 1px solid #2f6feb; background: #2f6feb; color: #fff; border-radius: 6px; cursor: pointer; }
+      #summary { margin: 0 0 16px; font-weight: 600; }
+      ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      li { border: 1px solid #d7dee7; border-radius: 8px; padding: 14px; }
+      li a { display: block; font-weight: 600; color: #17418f; text-decoration: none; margin-bottom: 8px; }
+      .price { font-size: 18px; }
+      .meta { color: #5b6b7d; font-size: 13px; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <h1>Local Market</h1>
+
+    <!--
+      A search that filters in place.
+
+      Deliberately not a form submit. A scenario that depends on the agent pressing Enter
+      is a scenario about one keystroke; filtering on `input` exercises the settle
+      detector, the mutation-driven step and the candidate reader, which is what the
+      run is actually for. Everything below is static markup toggled by `hidden` -- no
+      network, no timers, no randomness.
+    -->
+    <div class="search">
+      <label for="q" class="visually-hidden" style="position: absolute; left: -9999px">Search</label>
+      <input id="q" type="search" name="q" placeholder="Search the market" aria-label="Search" autocomplete="off" />
+      <button id="go" type="button">Search</button>
+    </div>
+
+    <p id="summary" role="status">Showing everything (6 items)</p>
+
+    <ul id="results">
+      <li data-kind="phones">
+        <a href="item.html?id=1" id="p1">Aster 5 phone</a>
+        <div class="price">₹18,499</div>
+        <div class="meta">4.1 stars · 210 reviews</div>
+      </li>
+      <li data-kind="phones">
+        <a href="item.html?id=2" id="p2">Borea Lite phone</a>
+        <div class="price">₹24,990</div>
+        <div class="meta">4.4 stars · 980 reviews</div>
+      </li>
+      <li data-kind="phones">
+        <a href="item.html?id=3" id="p3">Cirrus Pro phone</a>
+        <div class="price">₹41,200</div>
+        <div class="meta">4.6 stars · 1,204 reviews</div>
+      </li>
+      <li data-kind="phones">
+        <a href="item.html?id=4" id="p4">Delta Max phone</a>
+        <div class="price">₹29,750</div>
+        <div class="meta">4.2 stars · 431 reviews</div>
+      </li>
+      <li data-kind="kettles">
+        <a href="item.html?id=5" id="p5">Ember kettle</a>
+        <div class="price">₹2,150</div>
+        <div class="meta">4.0 stars · 88 reviews</div>
+      </li>
+      <li data-kind="kettles">
+        <a href="item.html?id=6" id="p6">Fennel kettle</a>
+        <div class="price">₹1,299</div>
+        <div class="meta">3.9 stars · 64 reviews</div>
+      </li>
+    </ul>
+
+    <script>
+      const q = document.getElementById('q');
+      const summary = document.getElementById('summary');
+      const items = Array.from(document.querySelectorAll('#results li'));
+
+      function apply() {
+        const term = q.value.trim().toLowerCase();
+        if (!term) {
+          items.forEach((li) => (li.hidden = false));
+          summary.textContent = 'Showing everything (6 items)';
+          return;
+        }
+        let shown = 0;
+        for (const li of items) {
+          const hay = (li.dataset.kind + ' ' + li.textContent).toLowerCase();
+          const match = hay.includes(term);
+          li.hidden = !match;
+          if (match) shown += 1;
+        }
+        summary.textContent = 'Results for ' + q.value.trim() + ' (' + shown + ' items)';
+      }
+
+      q.addEventListener('input', apply);
+      document.getElementById('go').addEventListener('click', apply);
+    </script>
+  </body>
+</html>

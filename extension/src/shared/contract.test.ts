@@ -4,9 +4,12 @@ import { resolve } from 'node:path';
 import {
   ActionSchema,
   FindingSchema,
+  MAX_SUBGOALS,
   PROTOCOL_VERSION,
   StepRequestSchema,
   StepResponseSchema,
+  SubgoalSchema,
+  SubgoalStateSchema,
 } from './contract';
 
 const hash = 'a'.repeat(64);
@@ -289,5 +292,125 @@ describe('the worked examples from the M7 prompt', () => {
   it('only types into the empty field', () => {
     const typed = SERVER_TO_DEVICE.actions.filter((a) => a.type === 'type');
     expect(typed.map((a) => a.index)).toEqual([6]);
+  });
+});
+
+/**
+ * The multi-step vocabulary.
+ *
+ * A subgoal has to survive three journeys: from a planner that proposed it, into the
+ * device's persisted state, and back to a planner asked to replan. What is checked here
+ * is that the shape holds up over all three, and that a device or server built before the
+ * field existed still validates.
+ */
+describe('subgoals', () => {
+  const subgoal = {
+    id: 'find-candidate',
+    kind: 'inspect' as const,
+    intent: 'read the listed results and their prices',
+    after: ['run-search'],
+    criteria: [{ check: 'element-present' as const, hint: 'result list' }],
+    budget: 4,
+  };
+
+  it('fills in the optional halves so the device never sees undefined', () => {
+    const parsed = SubgoalSchema.parse({ id: 'go', kind: 'navigate', intent: 'reach the site' });
+    expect(parsed.after).toEqual([]);
+    expect(parsed.criteria).toEqual([]);
+    expect(parsed.budget).toBe(3);
+  });
+
+  it('refuses a kind that names a domain rather than a page mechanic', () => {
+    // The vocabulary is about pages. A kind called `add-to-cart` would need a sibling
+    // called `book-appointment` the following week.
+    expect(() => SubgoalSchema.parse({ ...subgoal, kind: 'add-to-cart' })).toThrow();
+  });
+
+  it('refuses an unknown field, so a value cannot ride along in one', () => {
+    expect(() => SubgoalSchema.parse({ ...subgoal, value: 'Asha Menon' })).toThrow();
+  });
+
+  it('bounds the plan, the dependencies and the criteria', () => {
+    expect(() => SubgoalSchema.parse({ ...subgoal, budget: 99 })).toThrow();
+    expect(() =>
+      SubgoalSchema.parse({ ...subgoal, after: Array.from({ length: 9 }, (_, i) => `s${i}`) }),
+    ).toThrow();
+    expect(() =>
+      StepResponseSchema.parse({
+        protocolVersion: PROTOCOL_VERSION,
+        stepIndex: 0,
+        actions: [{ type: 'click', index: 1 }],
+        plan: Array.from({ length: MAX_SUBGOALS + 1 }, (_, i) => ({
+          ...subgoal,
+          id: `s${i}`,
+        })),
+      }),
+    ).toThrow();
+  });
+
+  it('carries status and attempts only on the device-side shape', () => {
+    // SubgoalState is what the request sends; a planner proposing one may not assert its
+    // own status, because status is what the device *observed*.
+    expect(() => SubgoalSchema.parse({ ...subgoal, status: 'done' })).toThrow();
+    const state = SubgoalStateSchema.parse({ ...subgoal, status: 'active' });
+    expect(state.attempts).toBe(0);
+    expect(state.failure).toBeUndefined();
+  });
+
+  it('names a failure abstractly, never in the words of the page', () => {
+    expect(() =>
+      SubgoalStateSchema.parse({ ...subgoal, status: 'failed', failure: 'the price was wrong' }),
+    ).toThrow();
+    expect(
+      SubgoalStateSchema.parse({ ...subgoal, status: 'failed', failure: 'ambiguous' }).failure,
+    ).toBe('ambiguous');
+  });
+
+  describe('compatibility', () => {
+    it('accepts a planner response that says nothing about the plan', () => {
+      // The whole reason `plan` defaults rather than being required: a server built
+      // before this field existed keeps working, and so does the stub.
+      const parsed = StepResponseSchema.parse({
+        protocolVersion: PROTOCOL_VERSION,
+        stepIndex: 3,
+        actions: [{ type: 'click', index: 1 }],
+      });
+      expect(parsed.plan).toEqual([]);
+    });
+
+    it('accepts a request from a device that has not decomposed anything', () => {
+      const parsed = StepRequestSchema.parse(request);
+      expect(parsed.plan).toEqual([]);
+    });
+
+    it('round-trips a decomposition through the request unchanged', () => {
+      const plan = [
+        { ...subgoal, status: 'done' as const, attempts: 1, stepIndex: 2 },
+        {
+          id: 'pick',
+          kind: 'select' as const,
+          intent: 'choose the candidate that fits the constraint',
+          after: ['find-candidate'],
+          criteria: [{ check: 'url-changed' as const, hint: '' }],
+          budget: 2,
+          status: 'active' as const,
+          attempts: 2,
+          failure: 'ambiguous' as const,
+        },
+      ];
+      const parsed = StepRequestSchema.parse({ ...request, plan });
+      expect(parsed.plan).toEqual(plan);
+    });
+
+    it('keeps the wire free of anything a subgoal could smuggle', () => {
+      const parsed = StepRequestSchema.parse({
+        ...request,
+        plan: [{ ...subgoal, status: 'active' as const }],
+      });
+      const wire = JSON.stringify(parsed.plan);
+      for (const raw of ['Asha Menon', '7237', 'hunter2']) {
+        expect(wire).not.toContain(raw);
+      }
+    });
   });
 });

@@ -95,6 +95,38 @@ When asked to check, read, find, or show information (e.g. "show the most liked 
 Plan one step at a time. Emit at most four actions, and stop at any action whose result \
 you cannot predict -- a click that navigates is the last action in a batch.
 
+## The plan
+
+A long task is a sequence of legs, and the device tracks them for you. When the request \
+carries a "Plan:" section, it lists what the device believes this task is made of, which \
+leg is current, how many attempts each has had and -- when one went wrong -- an abstract \
+reason why. Work on the current leg. Do not start a later one on the strength of what the \
+page looked like two steps ago.
+
+You may return a `plan` array to replace that decomposition. Do so when the page turns \
+out not to work the way the plan assumed: a filter that does not exist, a search that \
+needed a category first, a leg that is already satisfied. Otherwise omit `plan` entirely \
+and the device keeps the one it has.
+
+Each entry is:
+  id        short and stable. Reuse the id of a leg you are keeping, or its progress is
+            lost and the device will run it again. Invent ids only for new legs.
+  kind      navigate | search | filter | inspect | select | interact | submit | confirm
+  intent    one line, in the same placeholdered vocabulary as everything else
+  after     ids that must finish first
+  criteria  what the device should *observe* to call the leg done: url-changed,
+            element-present, element-gone, field-filled, text-present, action-verified,
+            each with a short hint naming a label or a role
+  budget    steps this leg may take before the device gives up on it (1-10)
+
+A failure reason on a leg is a fact about the page, not a scolding. `no-effect` means the \
+click landed and nothing changed -- try a different control, not the same one. `ambiguous` \
+means several candidates fit -- narrow before selecting. `target-missing` means what you \
+named is gone -- re-read the element list.
+
+Never encode a value in a plan. `intent` and `hint` are read by humans and stored on the \
+device; they take placeholders, never the thing behind them.
+
 Respond only with the provided JSON schema.
 """
 
@@ -447,6 +479,43 @@ def render_intents(intents: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def render_plan(plan: list[dict[str, Any]]) -> str:
+    """The device's decomposition, and what has become of each leg.
+
+    Sent so that replanning is informed rather than blind. A planner told only "the last
+    step failed" proposes the leg that just failed; told "select has been attempted twice
+    and reports ambiguous", it can propose the filter that would separate the candidates.
+
+    Statuses, counts and abstract failure reasons -- the same enums the device stores. No
+    page content passes through here that did not already pass through the element list.
+    """
+    if not plan:
+        return ""
+
+    lines = ["Plan:"]
+    for leg in plan:
+        status = leg.get("status", "?")
+        marker = {
+            "done": "x",
+            "active": ">",
+            "failed": "!",
+            "skipped": "-",
+        }.get(status, " ")
+        detail = f"{leg.get('kind', '?')}: {leg.get('intent', '')}"
+        tries = f" ({leg.get('attempts', 0)}/{leg.get('budget', 0)} attempts)"
+        why = f" -- {leg['failure']}" if leg.get("failure") else ""
+        lines.append(f"  [{marker}] {leg.get('id', '?')} {detail}{tries}{why}")
+
+    current = next((leg for leg in plan if leg.get("status") == "active"), None)
+    if current is not None:
+        lines.append(f"Current leg: {current.get('id')}. Act on this one.")
+    lines.append(
+        "Return a `plan` array only if this decomposition no longer fits the page; "
+        "keep the ids of any leg you are keeping."
+    )
+    return "\n".join(lines)
+
+
 def build_user_message(request: dict[str, Any]) -> str:
     viewport = request.get("viewport", {})
     # Empty sections are dropped rather than joined, or an open-ended task -- which has no
@@ -461,6 +530,7 @@ def build_user_message(request: dict[str, Any]) -> str:
             f" ({viewport.get('w')}x{viewport.get('h')})",
             "Elements:\n" + render_elements(request.get("elements", [])),
             render_manifest(request.get("manifest", {})),
+            render_plan(request.get("plan", [])),
             "History:\n" + render_history(request.get("history", [])),
         ]
         if part

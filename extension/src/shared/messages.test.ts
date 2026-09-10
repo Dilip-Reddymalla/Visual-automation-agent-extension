@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
+  BusTimeout,
   DEFAULT_TIMEOUT_MS,
   dispatch,
   handle,
@@ -200,5 +201,23 @@ describe('the envelope', () => {
     expect(isEnvelope({ hello: 'world' })).toBe(false);
     expect(isEnvelope(null)).toBe(false);
     expect(isEnvelope('STOP')).toBe(false);
+  });
+});
+
+describe('BusTimeout', () => {
+  it('is an Error with the label and the budget on it', () => {
+    const err = new BusTimeout('SEAL_AND_ENCODE', 30_000);
+    expect(err).toBeInstanceOf(Error);
+    expect(err.label).toBe('SEAL_AND_ENCODE');
+    expect(err.ms).toBe(30_000);
+    expect(err.message).toBe('bus: SEAL_AND_ENCODE timed out after 30000ms');
+  });
+
+  it('is distinguishable from an ordinary failure without reading its message', () => {
+    // The loop treats a timeout as worth another attempt and an ordinary throw as not.
+    // Matching on the wording worked and was one rewording away from turning every
+    // timeout into a fatal error.
+    expect(new BusTimeout('X', 1) instanceof BusTimeout).toBe(true);
+    expect(new Error('bus: X timed out after 1ms') instanceof BusTimeout).toBe(false);
   });
 });

@@ -207,6 +207,8 @@ export function resizeBilinear(
   targetHeight: number,
 ): RawImageLike {
   const dstData = new Uint8ClampedArray(targetWidth * targetHeight * 4);
+  // Hoisted so the inner loop reads one local rather than a property each pixel.
+  const srcData = src.data;
   const xRatio = src.width > 1 ? (src.width - 1) / (targetWidth - 1 || 1) : 0;
   const yRatio = src.height > 1 ? (src.height - 1) / (targetHeight - 1 || 1) : 0;
 
@@ -230,8 +232,14 @@ export function resizeBilinear(
       const idx11 = (yCeil * src.width + xCeil) * 4;
 
       for (let c = 0; c < 4; c++) {
-        const top = src.data[idx00 + c]! * (1 - xWeight) + src.data[idx01 + c]! * xWeight;
-        const bottom = src.data[idx10 + c]! * (1 - xWeight) + src.data[idx11 + c]! * xWeight;
+        // Every index here is clamped into range above, so `?? 0` never fires; it is
+        // how the buffer read satisfies noUncheckedIndexedAccess without an assertion.
+        const p00 = srcData[idx00 + c] ?? 0;
+        const p01 = srcData[idx01 + c] ?? 0;
+        const p10 = srcData[idx10 + c] ?? 0;
+        const p11 = srcData[idx11 + c] ?? 0;
+        const top = p00 * (1 - xWeight) + p01 * xWeight;
+        const bottom = p10 * (1 - xWeight) + p11 * xWeight;
         dstData[dstIdx + c] = Math.round(top * (1 - yWeight) + bottom * yWeight);
       }
     }
@@ -267,21 +275,23 @@ export function preprocessDetImage(
   const scaleX = targetW / image.width;
   const scaleY = targetH / image.height;
 
-  // Normalization parameters for DBNet (ImageNet standard)
-  const mean = [0.485, 0.456, 0.406];
-  const std = [0.229, 0.224, 0.225];
+  // Normalization parameters for DBNet (ImageNet standard). Tuples, not arrays: a
+  // fixed-length tuple indexes without noUncheckedIndexedAccess widening to undefined.
+  const mean: readonly [number, number, number] = [0.485, 0.456, 0.406];
+  const std: readonly [number, number, number] = [0.229, 0.224, 0.225];
 
   const channelSize = targetW * targetH;
   const tensorData = new Float32Array(3 * channelSize);
+  const px = resized.data;
 
   for (let i = 0; i < channelSize; i++) {
-    const r = resized.data[i * 4]! / 255.0;
-    const g = resized.data[i * 4 + 1]! / 255.0;
-    const b = resized.data[i * 4 + 2]! / 255.0;
+    const r = (px[i * 4] ?? 0) / 255.0;
+    const g = (px[i * 4 + 1] ?? 0) / 255.0;
+    const b = (px[i * 4 + 2] ?? 0) / 255.0;
 
-    tensorData[i] = (r - mean[0]!) / std[0]!;
-    tensorData[channelSize + i] = (g - mean[1]!) / std[1]!;
-    tensorData[2 * channelSize + i] = (b - mean[2]!) / std[2]!;
+    tensorData[i] = (r - mean[0]) / std[0];
+    tensorData[channelSize + i] = (g - mean[1]) / std[1];
+    tensorData[2 * channelSize + i] = (b - mean[2]) / std[2];
   }
 
   return {
@@ -314,7 +324,10 @@ export function postprocessDet(
 ): Box[] {
   const binary = new Uint8Array(detW * detH);
   for (let i = 0; i < binary.length; i++) {
-    binary[i] = probMap[i]! > thresh ? 1 : 0;
+    // A probability map shorter than detW*detH is a model/shape mismatch; treating the
+    // missing tail as below-threshold is what the previous assertion did too.
+    const p = probMap[i];
+    binary[i] = p !== undefined && p > thresh ? 1 : 0;
   }
 
   const visited = new Uint8Array(detW * detH);
@@ -344,13 +357,13 @@ export function postprocessDet(
       visited[idx] = 1;
 
       while (head < tail) {
-        const curX = queueX[head]!;
-        const curY = queueY[head]!;
+        const curX = queueX[head] ?? 0;
+        const curY = queueY[head] ?? 0;
         head++;
 
         count++;
         const curIdx = curY * detW + curX;
-        scoreSum += probMap[curIdx]!;
+        scoreSum += probMap[curIdx] ?? 0;
 
         if (curX < minX) minX = curX;
         if (curX > maxX) maxX = curX;
@@ -455,11 +468,13 @@ export function preprocessRecCrop(
   const channelSize = targetWidth * targetHeight;
   const tensorData = new Float32Array(3 * channelSize);
 
+  const px = resized.data;
+
   // Normalization for PP-OCRv4 recognition: (pixel / 255.0 - 0.5) / 0.5
   for (let i = 0; i < channelSize; i++) {
-    const r = (resized.data[i * 4]! / 255.0 - 0.5) / 0.5;
-    const g = (resized.data[i * 4 + 1]! / 255.0 - 0.5) / 0.5;
-    const b = (resized.data[i * 4 + 2]! / 255.0 - 0.5) / 0.5;
+    const r = ((px[i * 4] ?? 0) / 255.0 - 0.5) / 0.5;
+    const g = ((px[i * 4 + 1] ?? 0) / 255.0 - 0.5) / 0.5;
+    const b = ((px[i * 4 + 2] ?? 0) / 255.0 - 0.5) / 0.5;
 
     tensorData[i] = r;
     tensorData[channelSize + i] = g;
@@ -496,7 +511,10 @@ export function decodeCtc(
     const offset = t * vocabSize;
 
     for (let c = 0; c < vocabSize; c++) {
-      const val = logits[offset + c]!;
+      // Skip rather than coerce: a short logits buffer must not let index 0 win the
+      // argmax by scoring 0, which is what `?? 0` would do here.
+      const val = logits[offset + c];
+      if (val === undefined) continue;
       if (val > maxLogit) {
         maxLogit = val;
         maxIdx = c;
@@ -506,7 +524,7 @@ export function decodeCtc(
     if (maxIdx !== 0 && maxIdx !== prevIdx) {
       let char = '';
       if (maxIdx > 0 && maxIdx <= charset.length) {
-        char = charset[maxIdx - 1]!;
+        char = charset[maxIdx - 1] ?? '';
       } else if (maxIdx === charset.length + 1) {
         char = ' ';
       }
@@ -593,8 +611,9 @@ export function createOcrRunner(
 
       const logits = recOutputTensor.data as Float32Array;
       const dims = recOutputTensor.dims;
-      const timeSteps = dims.length === 3 ? dims[1]! : Math.floor(logits.length / 6625);
-      const vocabSize = dims.length === 3 ? dims[2]! : 6625;
+      const timeSteps =
+        (dims.length === 3 ? dims[1] : undefined) ?? Math.floor(logits.length / 6625);
+      const vocabSize = (dims.length === 3 ? dims[2] : undefined) ?? 6625;
 
       const decoded = decodeCtc(logits, timeSteps, vocabSize, charset);
       if (decoded.text.length > 0) {

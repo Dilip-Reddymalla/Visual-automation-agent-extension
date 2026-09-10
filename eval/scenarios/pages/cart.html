@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Local Market — cart</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #17202a; }
+      h1 { font-size: 22px; margin: 0 0 12px; }
+      .line { border: 1px solid #d7dee7; border-radius: 8px; padding: 14px; max-width: 420px; }
+      a { color: #17418f; }
+    </style>
+  </head>
+  <body>
+    <h1>Your cart</h1>
+    <p role="status" id="status">1 item in your cart</p>
+    <div class="line">
+      <div id="line-title">Item</div>
+      <div id="line-price">—</div>
+    </div>
+    <p><a href="shop.html">Keep shopping</a></p>
+
+    <script>
+      // A mock cart and nothing else: no checkout, no payment, no account. The scenario
+      // stops here on purpose (see eval/scenarios/README.md).
+      const CATALOGUE = {
+        '1': ['Aster 5 phone', '₹18,499'],
+        '2': ['Borea Lite phone', '₹24,990'],
+        '3': ['Cirrus Pro phone', '₹41,200'],
+        '4': ['Delta Max phone', '₹29,750'],
+        '5': ['Ember kettle', '₹2,150'],
+        '6': ['Fennel kettle', '₹1,299'],
+      };
+      const id = new URLSearchParams(location.search).get('id') || '1';
+      const [title, price] = CATALOGUE[id] || CATALOGUE['1'];
+      document.getElementById('line-title').textContent = title;
+      document.getElementById('line-price').textContent = price;
+    </script>
+  </body>
+</html>

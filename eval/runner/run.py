@@ -167,12 +167,23 @@ class Driver:
 
             session_id = reply["result"]["sessionId"]
 
-            # The host is only up while a session is running, so this is the one moment
-            # resident model bytes can be read at all.
-            host_stats = self.host_stats()
+            # The JS heap is read while the step is in flight, because that is when it is
+            # largest and the whole point is the peak.
             heap = _heap_snapshot(self.context, self.extension_id, self.port)
 
             trace = self._await_trace(session_id, before)
+
+            # Host stats are read *after* the step, and that is a correction rather than a
+            # preference. Read before it, as this was, the offscreen document has not
+            # loaded anything yet: every run reported backend "none", zero resident model
+            # bytes and no warm-inference timings at all -- which made `detect`, the stage
+            # that turned out to be 93% of the step, the one stage with nothing inside it.
+            #
+            # After the trace the session has not ended yet (sessions unload 60 idle
+            # seconds later), so the models are still resident and the timing ring still
+            # holds what they cost.
+            host_stats = self.host_stats()
+
             steps = self.planner.recorder.take()
 
             self.stop()
@@ -183,15 +194,29 @@ class Driver:
                                wall_ms=(time.time() - started) * 1000)
 
             if not steps:
-                # A step that ends without a POST failed before the plan phase. The trace
-                # says which phase, and that is worth keeping rather than discarding as a
-                # blank result.
+                # No POST. Two very different things look like this, and calling both a
+                # failure cost an afternoon: a step that fell over before the plan phase,
+                # and a step the *device answered on its own* -- no screenshot, no gate,
+                # nothing sent, which is the behaviour this whole project is for.
+                #
+                # Neither can be scored here, because the corpus metrics are computed from
+                # the sealed payload and a device-only step never makes one. But only one
+                # of them is a defect, and the report has to be able to say which.
                 phase = trace.get("events", [])
                 last = phase[-1]["phase"] if phase else "?"
+                local = trace.get("outcome") == "ok" and not trace.get("sent", True)
+                tier = (trace.get("tier") or {}).get("tier")
+                note = (
+                    f"answered on the device (tier {tier}); nothing was sealed, so there "
+                    "is nothing for the corpus metrics to score"
+                    if local
+                    else (
+                        f"no step reached the planner (last phase {last}: "
+                        f"{trace.get('error', 'unknown')})"
+                    )
+                )
                 return PageRun(
-                    page_id, url, False,
-                    f"no step reached the planner (last phase {last}: "
-                    f"{trace.get('error', 'unknown')})",
+                    page_id, url, False, note,
                     trace=trace, clean=clean, host_stats=host_stats, heap=heap,
                     wall_ms=(time.time() - started) * 1000,
                 )

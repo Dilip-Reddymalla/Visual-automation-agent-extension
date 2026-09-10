@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact Details — demo (tier 1)</title>
+    <style>
+      :root { --line: #d9dee7; --ink: #14181e; --muted: #5b6472; --accent: #1b6feb; --panel: #f6f8fb; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 15px/1.55 system-ui, sans-serif; color: var(--ink); background: #fff; }
+      header { padding: 12px 24px; border-bottom: 1px solid var(--line); font-weight: 650; }
+      main { max-width: 720px; margin: 0 auto; padding: 24px; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .row { margin-bottom: 16px; }
+      label { display: block; font-weight: 600; margin-bottom: 6px; }
+      input { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+      .hint { color: var(--muted); font-size: 13px; }
+      button { padding: 10px 18px; border: 0; border-radius: 6px; font: inherit; font-weight: 600; color: #fff; background: var(--accent); }
+      .note { margin-top: 28px; padding: 12px 14px; border-left: 3px solid var(--accent); background: var(--panel); color: var(--muted); font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <header>Employees' Provident Fund — contact details</header>
+
+    <main>
+      <h1>Employer verification</h1>
+      <p class="hint">
+        Two sections, and each one asks for the same two things. Every label on this page
+        is correct, unambiguous English &mdash; and there are two of each. The device can
+        read them all and still cannot tell which "email address" the operator meant.
+      </p>
+
+      <form id="form">
+        <h2>Member</h2>
+        <div class="grid">
+          <div class="row">
+            <label for="f1">Email address</label>
+            <input id="f1" name="email_address" type="email" />
+          </div>
+          <div class="row">
+            <label for="f2">Mobile number</label>
+            <input id="f2" name="mobile_number" type="tel" />
+          </div>
+        </div>
+
+        <h2>Employer</h2>
+        <div class="grid">
+          <div class="row">
+            <label for="f3">Email address</label>
+            <input id="f3" name="email_address" type="email" />
+          </div>
+          <div class="row">
+            <label for="f4">Mobile number</label>
+            <input id="f4" name="mobile_number" type="tel" />
+          </div>
+        </div>
+
+        <button type="submit">Save contact details</button>
+      </form>
+
+      <p class="note">
+        A tie is not a failure. It is the ladder refusing to guess: two candidates within
+        four points of each other are a coin toss, and a local model that can read a whole
+        page is asked to break it. Nothing leaves the machine either way &mdash; the step
+        log says <em>tier 1 &middot; nothing sent</em>.
+      </p>
+    </main>
+
+    <script>
+      document.getElementById('form').addEventListener('submit', (e) => e.preventDefault());
+    </script>
+  </body>
+</html>

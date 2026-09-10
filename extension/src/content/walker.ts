@@ -56,8 +56,23 @@ const SHOW_ELEMENT = 0x1;
 const FILTER_ACCEPT = 1;
 const FILTER_REJECT = 2;
 
-/** Nothing inside these is ever actionable, and script/style text is not page text. */
-const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE', 'META', 'LINK', 'HEAD']);
+/**
+ * Nothing inside these is ever actionable, and script/style text is not page text.
+ *
+ * Exported because the walk is not the only place that has to honour it. `textContent`
+ * does not: it concatenates every text node beneath an element, `<script>` included, so
+ * an accessible name derived from it can end up being a line of JavaScript. See
+ * `visibleText` in interactivity.ts.
+ */
+export const SKIP_TAGS = new Set([
+  'SCRIPT',
+  'STYLE',
+  'NOSCRIPT',
+  'TEMPLATE',
+  'META',
+  'LINK',
+  'HEAD',
+]);
 
 function measureWithLayout(el: DomEl): Box {
   const r = el.getBoundingClientRect();

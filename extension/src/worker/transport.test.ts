@@ -74,6 +74,7 @@ async function request(over: Partial<StepRequest> = {}): Promise<{
       elements: [],
       manifest: payload.manifest,
       history: [],
+      plan: [],
       ...over,
     },
   };

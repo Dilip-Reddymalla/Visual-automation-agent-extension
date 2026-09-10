@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Beneficiary Registration — demo (tier 1)</title>
+    <style>
+      :root { --line: #d9dee7; --ink: #14181e; --muted: #5b6472; --accent: #1b6feb; --panel: #f6f8fb; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 15px/1.55 system-ui, sans-serif; color: var(--ink); background: #fff; }
+      header { padding: 12px 24px; border-bottom: 1px solid var(--line); font-weight: 650; }
+      main { max-width: 700px; margin: 0 auto; padding: 24px; }
+      table { width: 100%; border-collapse: collapse; }
+      th { width: 44%; text-align: left; padding: 10px 12px 10px 0; font-weight: 600; vertical-align: middle; }
+      td { padding: 6px 0; }
+      input { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+      .hint { color: var(--muted); font-size: 14px; }
+      button { margin-top: 18px; padding: 10px 18px; border: 0; border-radius: 6px; font: inherit; font-weight: 600; color: #fff; background: var(--accent); }
+      .note { margin-top: 28px; padding: 12px 14px; border-left: 3px solid var(--accent); background: var(--panel); color: var(--muted); font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <header>Treasury &mdash; beneficiary registration</header>
+
+    <main>
+      <h1>Add a beneficiary</h1>
+      <p class="hint">
+        A page written by a bank, for people who work at a bank. Nothing here is called
+        what an ordinary person would call it.
+      </p>
+
+      <form id="form">
+        <table>
+          <tr>
+            <th><label for="f1">Bene. A/c No. (CBS)</label></th>
+            <td><input id="f1" name="ben_acct" type="text" inputmode="numeric" /></td>
+          </tr>
+          <tr>
+            <th><label for="f2">Re-key A/c No.</label></th>
+            <td><input id="f2" name="ben_acct_rekey" type="text" inputmode="numeric" /></td>
+          </tr>
+          <tr>
+            <th><label for="f3">RTGS/NEFT IFSC</label></th>
+            <td><input id="f3" name="ifsc" type="text" /></td>
+          </tr>
+          <tr>
+            <th><label for="f4">MICR (9)</label></th>
+            <td><input id="f4" name="micr" type="text" inputmode="numeric" /></td>
+          </tr>
+          <tr>
+            <th><label for="f5">Remitter mob. (STD+10)</label></th>
+            <td><input id="f5" name="mob" type="tel" /></td>
+          </tr>
+        </table>
+
+        <button type="submit">Register beneficiary</button>
+      </form>
+
+      <p class="note">
+        "fill account number" matches nothing on this page well enough to act on: the
+        grammar scores <em>Bene. A/c No. (CBS)</em> below its own floor and says so rather
+        than typing into the first box that looks vaguely right. The shortlist goes to the
+        local model, which has read enough bank forms to know what A/c means. Nothing is
+        sent.
+      </p>
+    </main>
+
+    <script>
+      document.getElementById('form').addEventListener('submit', (e) => e.preventDefault());
+    </script>
+  </body>
+</html>

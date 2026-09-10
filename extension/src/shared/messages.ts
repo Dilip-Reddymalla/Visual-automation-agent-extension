@@ -774,6 +774,26 @@ export async function notify<K extends MessageType>(
   }
 }
 
+
+/**
+ * A reply that never came, as a type rather than as a string.
+ *
+ * The loop has to be able to tell a message that timed out from a phase that threw for
+ * its own reasons, because they deserve different endings: an offscreen document busy
+ * loading a model answers on the next attempt, and a content script that is not there
+ * does not. Matching on the message text worked and was one rewording away from silently
+ * turning every timeout into a fatal error.
+ */
+export class BusTimeout extends Error {
+  constructor(
+    readonly label: string,
+    readonly ms: number,
+  ) {
+    super(`bus: ${label} timed out after ${ms}ms`);
+    this.name = 'BusTimeout';
+  }
+}
+
 async function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
@@ -781,7 +801,7 @@ async function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise
       p,
       new Promise<never>((_resolve, reject) => {
         timer = setTimeout(
-          () => reject(new Error(`bus: ${label} timed out after ${ms}ms`)),
+          () => reject(new BusTimeout(label, ms)),
           ms,
         );
       }),

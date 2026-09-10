@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pension Life Certificate — demo (tier 0)</title>
+    <style>
+      :root {
+        --line: #d9dee7;
+        --ink: #14181e;
+        --muted: #5b6472;
+        --accent: #1b6feb;
+        --panel: #f6f8fb;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font: 15px/1.55 system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        border-bottom: 1px solid var(--line);
+      }
+      .seal {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      main { max-width: 720px; margin: 0 auto; padding: 24px; }
+      fieldset {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        margin: 0 0 20px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+      .row { margin-bottom: 16px; }
+      label { display: block; font-weight: 600; margin-bottom: 6px; }
+      input, select {
+        width: 100%;
+        padding: 9px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font: inherit;
+      }
+      .hint { color: var(--muted); font-size: 13px; margin-top: 4px; }
+      .actions { display: flex; gap: 12px; }
+      button {
+        padding: 10px 18px;
+        border: 0;
+        border-radius: 6px;
+        font: inherit;
+        font-weight: 600;
+        color: #fff;
+        background: var(--accent);
+      }
+      button.ghost { color: var(--ink); background: var(--panel); border: 1px solid var(--line); }
+      .done {
+        display: none;
+        margin: 0 0 20px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: #e7f4ea;
+        border: 1px solid #b7dcc0;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="seal" aria-hidden="true"></div>
+      <strong>Department of Pensions</strong>
+    </header>
+
+    <main>
+      <h1>Annual life certificate</h1>
+      <p class="hint">
+        Every field on this page is labelled, and every label is different from every
+        other. That is the whole point of the page: there is nothing here a model can
+        tell the device that the device does not already know.
+      </p>
+
+      <div class="done" id="done">Life certificate submitted. Reference LC-2026-04417.</div>
+
+      <form id="form" autocomplete="on">
+        <fieldset>
+          <legend>Pensioner</legend>
+
+          <div class="row">
+            <label for="fullname">Full name</label>
+            <input id="fullname" name="full_name" type="text" autocomplete="name" />
+          </div>
+
+          <div class="row">
+            <label for="ppo">PPO number</label>
+            <input id="ppo" name="ppo_number" type="text" inputmode="numeric" />
+            <div class="hint">Printed on the top right of your pension payment order.</div>
+          </div>
+
+          <div class="row">
+            <label for="mobile">Mobile number</label>
+            <input id="mobile" name="mobile" type="tel" autocomplete="tel" />
+          </div>
+
+          <div class="row">
+            <label for="branch">Disbursing branch</label>
+            <select id="branch" name="branch">
+              <option value="">Select a branch</option>
+              <option>Bengaluru — Jayanagar</option>
+              <option>Hyderabad — Begumpet</option>
+              <option>Chennai — Adyar</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="submit">Submit certificate</button>
+          <button type="button" class="ghost" id="reset">Clear form</button>
+        </div>
+      </form>
+    </main>
+
+    <script>
+      document.getElementById('form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        document.getElementById('done').style.display = 'block';
+      });
+      document.getElementById('reset').addEventListener('click', () => {
+        document.getElementById('form').reset();
+        document.getElementById('done').style.display = 'none';
+      });
+    </script>
+  </body>
+</html>

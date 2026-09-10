@@ -173,7 +173,7 @@ async function hashBytes(data: ArrayBufferView): Promise<string> {
   let h = 0;
   const arr = new Uint8Array(data.buffer, data.byteOffset, Math.min(data.byteLength, 4096));
   for (let i = 0; i < arr.length; i++) {
-    h = (Math.imul(31, h) + arr[i]!) | 0;
+    h = (Math.imul(31, h) + (arr[i] ?? 0)) | 0;
   }
   return h.toString(16);
 }
@@ -203,7 +203,8 @@ async function runOcr(
         );
 
         for (let r = 0; r < request.regions.length; r++) {
-          const regionBox = request.regions[r]!;
+          const regionBox = request.regions[r];
+          if (!regionBox) continue;
           const imgX = Math.max(0, Math.floor(regionBox.x * decoded.scale));
           const imgY = Math.max(0, Math.floor(regionBox.y * decoded.scale));
           const imgW = Math.min(decoded.width - imgX, Math.ceil(regionBox.w * decoded.scale));

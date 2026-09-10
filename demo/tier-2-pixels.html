@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scanned Challan — demo (tier 2)</title>
+    <style>
+      :root { --line: #d9dee7; --ink: #14181e; --muted: #5b6472; --accent: #1b6feb; --panel: #f6f8fb; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 15px/1.55 system-ui, sans-serif; color: var(--ink); background: #eef1f6; }
+      header { padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--line); font-weight: 650; }
+      main { max-width: 1080px; margin: 0 auto; padding: 24px; }
+      .sheet { display: flex; gap: 20px; align-items: flex-start; }
+      .scan { background: #fff; padding: 10px; border: 1px solid var(--line); border-radius: 6px; }
+      canvas { display: block; }
+      .side { flex: 1; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 16px; }
+      .tools { display: flex; gap: 10px; margin-top: 14px; }
+      .tools button {
+        width: 44px; height: 44px; border-radius: 6px; border: 1px solid var(--line);
+        background: var(--panel); font-size: 20px; line-height: 1;
+      }
+      .hint { color: var(--muted); font-size: 13px; }
+      .verdict { margin-top: 14px; font-weight: 600; display: none; }
+    </style>
+  </head>
+  <body>
+    <header>Revenue Department &mdash; challan verification queue</header>
+
+    <main>
+      <h1>Item 4 of 12</h1>
+      <p class="hint">
+        The challan below is a scan. Everything printed on it lives in a
+        <code>&lt;canvas&gt;</code>: there is no text node, no label and no value anywhere
+        in the DOM, and the three buttons beside it are icons with no accessible name.
+        A device that reads the DOM has nothing to read. This is the page the vision
+        layers and the redaction gate exist for.
+      </p>
+
+      <div class="sheet">
+        <div class="scan"><canvas id="challan" width="560" height="360"></canvas></div>
+
+        <div class="side">
+          <strong>Reviewer actions</strong>
+          <div class="hint">Approve, reject, or send back for correction.</div>
+          <div class="tools">
+            <button id="a">&#10003;</button>
+            <button id="b">&#10007;</button>
+            <button id="c">&#8635;</button>
+          </div>
+          <div class="verdict" id="verdict"></div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Drawn rather than marked up, on purpose. Values come from
+      // eval/corpus/identifiers.json so the checksums are real: a fake Aadhaar that fails
+      // Verhoeff is correctly ignored by L1, and the demo would show nothing.
+      const ctx = document.getElementById('challan').getContext('2d');
+      ctx.fillStyle = '#fbfbf8';
+      ctx.fillRect(0, 0, 560, 360);
+      ctx.strokeStyle = '#c9cdd6';
+      ctx.strokeRect(12, 12, 536, 336);
+
+      ctx.fillStyle = '#111';
+      ctx.font = 'bold 17px Georgia, serif';
+      ctx.fillText('PROPERTY TAX CHALLAN', 30, 48);
+
+      ctx.font = '14px Georgia, serif';
+      const lines = [
+        ['Assessee', 'Asha Menon'],
+        ['Aadhaar', '7237 2429 6561'],
+        ['PAN', 'JMRPN3229K'],
+        ['Address', '14 Rose Villa, Jayanagar 4th Block, Bengaluru 560011'],
+        ['Mobile', '9845012345'],
+        ['Invoice no.', '669436125079'],
+        ['Assessment year', '2025-26'],
+        ['Amount payable', 'Rs. 12,480.00'],
+      ];
+      let y = 90;
+      for (const [key, value] of lines) {
+        ctx.fillStyle = '#5b6472';
+        ctx.fillText(key, 30, y);
+        ctx.fillStyle = '#111';
+        ctx.fillText(value, 190, y);
+        y += 30;
+      }
+
+      // A photograph box. Grey, like the corpus's: this is a region for the vision layer
+      // to reason about, not a claim that a real face detector fired on a rectangle.
+      ctx.fillStyle = '#d7d9de';
+      ctx.fillRect(430, 70, 90, 110);
+      ctx.fillStyle = '#8b8f98';
+      ctx.beginPath();
+      ctx.arc(475, 110, 22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(447, 140, 56, 40);
+      ctx.fillStyle = '#5b6472';
+      ctx.font = '11px system-ui, sans-serif';
+      ctx.fillText('PHOTO', 458, 196);
+
+      for (const id of ['a', 'b', 'c']) {
+        document.getElementById(id).addEventListener('click', () => {
+          const said = { a: 'Approved', b: 'Rejected', c: 'Sent back for correction' }[id];
+          const out = document.getElementById('verdict');
+          out.textContent = said + ' — item 4 of 12.';
+          out.style.display = 'block';
+        });
+      }
+    </script>
+  </body>
+</html>

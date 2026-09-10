@@ -83,6 +83,49 @@ export interface CaptureGeometry {
   token: GeometryToken;
 }
 
+/**
+ * The fields that decide *where a box is*.
+ *
+ * Everything except `mutationSeq`. Scroll position, visual-viewport offset and scale,
+ * device pixel ratio and document height all move boxes relative to the frame; a DOM
+ * mutation only sometimes does, and a page can produce them continuously without
+ * anything moving at all.
+ *
+ * See `geometryMatches` for why that distinction earns its keep.
+ */
+const GEOMETRIC: ReadonlyArray<keyof GeometryToken> = [
+  'scrollX',
+  'scrollY',
+  'vvOffsetX',
+  'vvOffsetY',
+  'vvScale',
+  'dpr',
+  'docHeight',
+];
+
+/**
+ * Did the page's *layout* hold still, whatever its DOM did?
+ *
+ * The looser of the two checks, and it exists because the stricter one made a whole class
+ * of site uncapturable. Measured on live government portals: indianrail.gov.in reported
+ * `mutationSeq 8 -> 48` and incometax.gov.in `mutationSeq 7 -> 35` between measuring the
+ * geometry and photographing it -- while every field in GEOMETRIC was identical. A
+ * rotating banner bumps the counter thirty times a second; nothing on the page moves; and
+ * `tokensMatch` discarded every frame, for ever, so the agent could never see either site.
+ *
+ * What the guard is *for* is redaction boxes landing next to the Aadhaar number instead of
+ * on it (CLAUDE.md invariant 2). That is a geometric failure, and this is the geometric
+ * question. A mutation that moves nothing leaves every box exactly where it was measured.
+ *
+ * What it gives up, stated: a mutation *can* move boxes without changing `docHeight` -- an
+ * insertion inside a fixed-height scrolling container. So this is not a replacement for
+ * `tokensMatch`; it is what the capture falls back to once the page has demonstrated that
+ * it will not hold still, and the fallback is counted and reported rather than silent.
+ */
+export function geometryMatches(a: GeometryToken, b: GeometryToken): boolean {
+  return GEOMETRIC.every((key) => a[key] === b[key]);
+}
+
 /** Did the page hold still between the measurement and the capture? */
 export function tokensMatch(a: GeometryToken, b: GeometryToken): boolean {
   return (

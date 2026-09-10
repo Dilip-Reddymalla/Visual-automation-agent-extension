@@ -420,3 +420,32 @@ describe('finding origin', () => {
     expect(makeFinding({ ...draft, origin: 'agent' }).origin).toBe('agent');
   });
 });
+
+/**
+ * The captions an Indian government form uses for its own reference numbers.
+ *
+ * Each of these sits beside a real identifier on the same page, and a fair share of them
+ * pass Verhoeff by chance. Painting them out costs the over-redaction metric and protects
+ * nobody.
+ */
+describe('government-form reference captions', () => {
+  const captions = [
+    'Enrolment No. ',
+    'Acknowledgement no: ',
+    'Application number ',
+    'Registration No. ',
+    'URN ',
+    'File No. ',
+  ];
+
+  it('disqualifies a value they caption', () => {
+    for (const caption of captions) {
+      expect(disqualifiedByCaption(caption, '')).toBe(true);
+    }
+  });
+
+  it('still lets the identifier they sit beside through', () => {
+    expect(disqualifiedByCaption('Aadhaar number ', '')).toBe(false);
+    expect(disqualifiedByCaption('UID ', '')).toBe(false);
+  });
+});

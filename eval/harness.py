@@ -75,7 +75,27 @@ RUNS = REPORT_DIR / "runs"
 
 #: What the driver is told to do. Deliberately the same on every page: the plan is not
 #: what is being measured, and a goal that varied would make the traces incomparable.
-GOAL = "Review this page and fill in whatever the form needs"
+#:
+#: It also has to be a goal that *reaches the gate*, and that is a real constraint rather
+#: than a detail. This harness scores perception and redaction from the sealed payload, so
+#: a step the device answers by itself produces nothing to score -- correctly, because
+#: nothing was sent and there was nothing to redact.
+#:
+#: The previous goal, "Review this page and fill in whatever the form needs", parses to no
+#: intents and reaches Tier 2 as `open-ended` -- and Tier 2 asks the local reader before it
+#: pays for a screenshot (router.ts). On a machine where that reader answers, the step ends
+#: device-only and the page reports as a failure; on a machine where it times out, the same
+#: page scores normally. Measured here: one run scored 48 of 50 pages, and the next, with
+#: no source change between them, scored 4 of 25. A measurement that depends on whether a
+#: model was fast enough is not a measurement.
+#:
+#: A *reading* task escapes that by design. `isReadingTask` (worker/intent.ts) skips the
+#: local reader outright, because the reader can only type, click or select and so cannot
+#: be right about a question -- so the step goes straight to Tier 2, seals a frame, and
+#: posts. Every time, on every machine, with no model call in `perceive`.
+#:
+#: `describe` and `what` are both reading words. Either alone is enough; both is deliberate.
+GOAL = "Describe what this page is asking for"
 
 
 def load_corpus() -> dict:

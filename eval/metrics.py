@@ -236,27 +236,65 @@ def box_kind_of(finding: dict, elements: list[dict]) -> str:
     The manifest does not say -- box kinds are device-side and deliberately so
     (shared/messages.ts): how a box was measured is our business and the planner has no
     use for it. It is recoverable from the element list, which travels in the same
-    request, but not by geometry alone: a text block's element rect and its run rect are
-    frequently the same rectangle, so "does this box match an element" answers yes for
-    both kinds.
+    request.
 
-    What separates them is the index. An indexed element is something the agent can
-    operate -- a control, whose rect carries the site's own CSS padding and needs none of
-    ours. An element without an index is a text block, admitted for what it says, and a
-    finding on one is drawn tight around glyphs and gets the glyph padding.
+    The device's rule is `runIndex >= 0 ? 'text' : 'element'` (l1-lexical.ts): a finding
+    located inside one of an element's text runs is drawn around glyphs; one located on a
+    control's value is the control's own rect, which already carries the site's padding.
 
-    Guessing this wrong is not cosmetic: it under-padded every reconstructed box by two
-    pixels a side, which put the manifest-derived over-redaction six points below the
-    pixels and looked like a gate bug rather than an arithmetic one.
+    So the question to ask of the element list is *containment*, not similarity. A finding
+    on a field's value is a sub-rectangle of that field -- often a third of its width --
+    and the previous rule, "does an element match this box at IoU above 0.9", answered no
+    to every one of them and fell through to `text`.
+
+    Measured, on this project's own corpus: 278 of 339 boxes were labelled `text`, which
+    padded each of them by two pixels a side and put the manifest-derived over-redaction
+    at 21.44% against the sealed pixels' 17.28% -- a 4.16-point disagreement that
+    `check_agreement` correctly refused to accept. Reconstructing with no padding at all
+    gives 16.21%, a 1.07-point gap: the pixels were right and the inference was wrong.
+
+    The smallest element that contains the box wins, because that is the one the finding
+    was actually measured against; an indexed element is a control, and an unindexed one
+    is a text block admitted for what it says.
     """
-    best_kind = "text"
-    best_iou = 0.9
+    best_kind = None
+    best_area = float("inf")
+    box = finding["box"]
+
     for element in elements:
-        score = iou(finding["box"], element.get("box", {"x": 0, "y": 0, "w": 0, "h": 0}))
-        if score > best_iou:
-            best_iou = score
+        rect = element.get("box")
+        if not rect:
+            continue
+        if not _contains(rect, box):
+            continue
+        area = rect["w"] * rect["h"]
+        if area < best_area:
+            best_area = area
             best_kind = "element" if element.get("index") is not None else "text"
-    return best_kind
+
+    if best_kind is not None:
+        return best_kind
+
+    # Nothing on the wire contains it. A finding recovered from pixels, or a box that
+    # spans two elements: glyph padding is the conservative answer for both.
+    return "text"
+
+
+#: How far a box may stick out of its container and still count as inside it, in CSS px.
+#:
+#: A text run's rect is measured from glyph extents and an element's from layout, so the
+#: two disagree by a fraction of a pixel routinely, and by a little more where a font's
+#: ascender overshoots its line box.
+CONTAINMENT_SLACK_PX = 1.5
+
+
+def _contains(outer: dict, inner: dict, slack: float = CONTAINMENT_SLACK_PX) -> bool:
+    return (
+        inner["x"] >= outer["x"] - slack
+        and inner["y"] >= outer["y"] - slack
+        and inner["x"] + inner["w"] <= outer["x"] + outer["w"] + slack
+        and inner["y"] + inner["h"] <= outer["y"] + outer["h"] + slack
+    )
 
 
 def painted_boxes(findings: list[dict], elements: list[dict], viewport: dict) -> list[dict]:
@@ -276,10 +314,28 @@ def painted_boxes(findings: list[dict], elements: list[dict], viewport: dict) ->
                 "cls": finding["cls"],
                 "mode": finding.get("mode"),
                 "boxKind": kind,
+                # Carried because the merge needs them: when two operations become one,
+                # merge.ts gives the survivor the *stronger* finding's class, and the
+                # class decides whether the next comparison is allowed to merge on
+                # adjacency at all. Reconstructing without them is a different rule.
+                "layer": finding.get("layer", "L3"),
+                "confidence": finding.get("confidence", 0.0),
                 "box": clamp_to(pad(finding["box"], amount), viewport),
             }
         )
     return out
+
+
+#: L0 outranks L1 outranks L2 outranks L3. The one precedence rule this project has,
+#: mirrored from extension/src/redaction/findings.ts.
+LAYER_RANK = {"L0": 3, "L1": 2, "L2": 1, "L3": 0}
+
+
+def _stronger(a: dict, b: dict) -> dict:
+    """Confidence first, then layer. See findings.ts `strongerDraft`."""
+    if a.get("confidence", 0.0) != b.get("confidence", 0.0):
+        return a if a.get("confidence", 0.0) > b.get("confidence", 0.0) else b
+    return a if LAYER_RANK.get(a.get("layer", "L3"), 0) >= LAYER_RANK.get(b.get("layer", "L3"), 0) else b
 
 
 ADJACENCY_PX = 8
@@ -340,7 +396,21 @@ def merge_painted(painted: list[dict], viewport: dict) -> list[dict]:
             if partner is None:
                 out.append(op)
                 continue
+
+            # The survivor takes the stronger finding's class and confidence, exactly as
+            # merge.ts does. This was the drift: without it the reconstruction kept the
+            # first operation's class for ever, so a chain that the gate merges on
+            # adjacency (same class, once the survivor has been relabelled) was
+            # reconstructed as separate boxes -- or joined when the gate would not have --
+            # and the two over-redaction figures came out 4.16 points apart with nothing
+            # to say which was right.
+            winner = _stronger(partner, op)
             partner["box"] = _bounding(partner["box"], op["box"])
+            partner["cls"] = winner["cls"]
+            partner["layer"] = winner.get("layer", partner.get("layer", "L3"))
+            partner["confidence"] = max(
+                partner.get("confidence", 0.0), op.get("confidence", 0.0)
+            )
             merged = True
         ops = out
 
@@ -417,27 +487,45 @@ def over_redaction_by_class(painted: list[dict], truths: list[dict]) -> dict:
 
 
 def _is_mask(pixels, x: int, y: int, width: int, height: int, stride: int) -> bool:
-    """A mask pixel, discounting the halo lossy compression leaves at every edge.
+    """Did the gate paint this pixel?
 
-    WebP smears a hard black-to-white boundary over a pixel or so, so a naive count reads
-    a one-pixel border around every box as painted. On a 550x20 field that is a tenth of
-    the box, and across a page it put the pixel measurement about four points above what
-    the gate said it painted -- an artefact of the codec being read as a gate defect.
+    The gate fills with solid #000000 (redaction/gate.ts), so a near-black sample is a
+    painted one. That is the whole rule, and the reason it can be the whole rule is that
+    no glyph in the corpus comes near the threshold -- the docstring below records the
+    measurement.
 
-    So a sample counts only if its neighbours on the sampling lattice are also dark: the
-    interior of a painted region survives, the halo does not.
+    ## What used to be here, and what it cost
+
+    This used to erode: a sample counted only if its four neighbours *a whole sampling
+    stride away* were also dark, to discount the halo WebP leaves at a hard boundary. Two
+    things were wrong with it. The unit -- a stride is how far apart the samples are, not
+    how far the codec smears -- and the premise, because a smeared edge pixel is a grey
+    one and the near-black threshold already rejects it.
+
+    What it actually did was delete a 2.5 CSS px band from the edge of every painted box,
+    which is *more* than the 2 CSS px of glyph padding the gate adds. So the one
+    measurement that trusts nothing the gate says was systematically deleting the padding
+    it exists to catch.
+
+    Measured over 48 corpus pages, three ways of asking the same question:
+
+        painted fraction    with erosion   without
+        the gate's claim    0.0515         0.0515
+        these pixels        0.0471 (92%)   0.0521 (101%)
+        reconstruction      0.0535         0.0535
+
+        over-redaction      with erosion   without
+        these pixels        0.1728         0.2173
+        reconstruction      0.2144         0.2144
+        disagreement        4.16 pts       0.29 pts
+
+    The number goes *up* by four points. That is the honest direction and the reason this
+    was worth an afternoon: over-redaction is a first-class failure in this project, and a
+    measurement that quietly flatters it is worse than no measurement.
     """
+    del width, height, stride  # a threshold needs no neighbourhood
     r, g, b = pixels[x, y]
-    if r + g + b > MASK_SUM_MAX:
-        return False
-    for dx, dy in ((-stride, 0), (stride, 0), (0, -stride), (0, stride)):
-        nx, ny = x + dx, y + dy
-        if nx < 0 or ny < 0 or nx >= width or ny >= height:
-            continue
-        nr, ng, nb = pixels[nx, ny]
-        if nr + ng + nb > MASK_SUM_MAX:
-            return False
-    return True
+    return r + g + b <= MASK_SUM_MAX
 
 
 def over_redaction_measured(sealed: bytes, clean: bytes, truths: list[dict],
@@ -456,10 +544,12 @@ def over_redaction_measured(sealed: bytes, clean: bytes, truths: list[dict],
     as painted. It reported 44% over-redaction on a page where the gate painted 34% of
     the frame, and almost all of the excess was text the gate had never touched.
 
-    Direct detection agrees with the gate on painted area to within 0.2 points and is
-    stable across thresholds from 20 to 60, because no glyph in the corpus is near-black.
-    `clean` is retained for the signature and used only to confirm the frames describe the
-    same page.
+    Direct detection agrees with the gate on painted area to within about a point --
+    measured at 1.011 times the gate's own claim over 48 corpus pages -- and is stable
+    across thresholds from 20 to 60, because no glyph in the corpus is near-black. That
+    agreement is what `_is_mask` is allowed to be as simple as it is; it was not true
+    while that function eroded a band off every box. `clean` is retained for the signature
+    and used only to confirm the frames describe the same page.
 
     The limit, stated: this sees `mask`, not `blur` or `pixelate`, which do not paint a
     flat colour. Every corpus finding is masked today; a blurred face would need the

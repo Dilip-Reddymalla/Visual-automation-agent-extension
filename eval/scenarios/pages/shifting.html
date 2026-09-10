@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shifting page</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #17202a; }
+      button { padding: 11px 18px; font: inherit; border: 1px solid #2f6feb; background: #2f6feb; color: #fff; border-radius: 6px; cursor: pointer; margin-right: 8px; }
+      input { width: 320px; padding: 9px 10px; font: inherit; border: 1px solid #b6c0cc; border-radius: 6px; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <h1>Two-stage form</h1>
+
+    <!--
+      The page rearranges itself under the agent.
+
+      Stage one offers a button that replaces itself with a different control; the element
+      the previous step was resolved against is genuinely gone by the time the next step
+      looks. That is `target-missing`, and it is the one failure mode a plan built from a
+      stale observation cannot survive -- which is exactly why it is worth a fixture.
+    -->
+    <div id="stage-one">
+      <p>Start by opening the details section.</p>
+      <button id="open" type="button">Show details</button>
+    </div>
+
+    <div id="stage-two" hidden>
+      <p>Details</p>
+      <label for="ref">Reference number</label>
+      <input id="ref" name="reference" type="text" aria-label="Reference number" />
+      <button id="save" type="button">Save details</button>
+      <p id="saved" role="status" hidden>Details saved.</p>
+    </div>
+
+    <script>
+      document.getElementById('open').addEventListener('click', () => {
+        // The control the agent just used stops existing. Removed rather than hidden, so
+        // the element list genuinely loses it.
+        document.getElementById('stage-one').remove();
+        document.getElementById('stage-two').hidden = false;
+      });
+
+      document.getElementById('save').addEventListener('click', () => {
+        document.getElementById('saved').hidden = false;
+      });
+    </script>
+  </body>
+</html>

@@ -35,7 +35,21 @@ export type Tier = 0 | 1 | 2;
  * something I refused to guess at".
  */
 export type EscalationReason =
-  'open-ended' | 'tie' | 'below-floor' | 'negation' | 'residue' | 'unparsed' | 'ambiguous';
+  | 'open-ended'
+  | 'tie'
+  | 'below-floor'
+  | 'negation'
+  | 'residue'
+  | 'unparsed'
+  | 'ambiguous'
+  /**
+   * Tier 0 was skipped on purpose: its last answer did not work.
+   *
+   * The eighth reason and the only one that is not about this step's sentence or this
+   * step's page. It is about the previous step -- the recovery ladder decided that
+   * whatever picked the target last time should not pick it again (recover.ts).
+   */
+  | 'recovery';
 
 /** What Tier 0 decided, and what it measured while deciding. */
 export interface LocalPlan {

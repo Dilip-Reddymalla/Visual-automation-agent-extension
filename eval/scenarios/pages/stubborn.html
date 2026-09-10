@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Stubborn page</title>
+    <style>
+      body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #17202a; }
+      button { padding: 11px 18px; font: inherit; border: 1px solid #b6c0cc; background: #eef2f6; border-radius: 6px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <h1>Nothing here works</h1>
+
+    <!--
+      A page whose controls do nothing.
+
+      This is the `no-effect` case, and it is a page rather than a mock because that is the
+      only way to find out what the loop does about it end to end: the click really lands,
+      the executor really succeeds, the DOM really does not change, and the run has to
+      notice that on its own and stop. A run that ends `incomplete` here is the correct
+      outcome; a run that ends `success` is the failure this fixture exists to catch.
+    -->
+    <p>Press anything you like.</p>
+    <button id="a" type="button">Continue</button>
+    <button id="b" type="button">Save and continue</button>
+    <button id="c" type="button">Submit</button>
+
+    <script>
+      // Handlers that deliberately achieve nothing. Not `disabled`: a disabled control is
+      // visibly refusing, and the interesting failure is the one that looks like success.
+      for (const id of ['a', 'b', 'c']) {
+        document.getElementById(id).addEventListener('click', () => {});
+      }
+    </script>
+  </body>
+</html>

@@ -22,6 +22,8 @@ from fastapi.testclient import TestClient
 
 from app import (
     ACCEPTED_IMAGE_MIMES,
+    DEFAULT_OLLAMA_TEXT_MODEL,
+    discover_ollama_text_model,
     Session,
     build_planner,
     create_app,
@@ -42,6 +44,7 @@ from planner import (
     render_elements,
     render_history,
     render_manifest,
+    render_plan,
 )
 
 SERVER = Path(__file__).parent
@@ -77,6 +80,24 @@ def finding(**over):
     }
     base.update(over)
     return base
+
+
+class _FakeTagsResponse:
+    """Just enough of an httpx response for the Ollama tags probe."""
+
+    def __init__(self, names):
+        self._names = names
+
+    def json(self):
+        return {"models": [{"name": n} for n in self._names]}
+
+
+def _tags(names):
+    return lambda *_args, **_kwargs: _FakeTagsResponse(names)
+
+
+def _raises(*_args, **_kwargs):
+    raise RuntimeError("no daemon")
 
 
 def request_body(**over):
@@ -116,6 +137,9 @@ def request_body(**over):
             },
         },
         "history": [],
+        # How the device broke the task up, and how far it got. Empty for a single-step
+        # task; the device always sends the field. See extension/src/shared/contract.ts.
+        "plan": [],
     }
     base.update(over)
     return base
@@ -674,12 +698,18 @@ def test_ollama_routes_a_small_text_model_and_a_vision_model(monkeypatch):
     assert "qwen3:0.6b" in planner.model and "qwen3-vl:4b" in planner.model
 
 
-def test_routing_is_opt_in_and_the_default_is_a_model_that_works(monkeypatch):
+def test_routing_is_opt_in(monkeypatch):
     """
-    A default matters more than an option. Every candidate under 4B measured 0/4 on this
-    project's own recorded steps -- schema-valid plans that typed into buttons -- so the
-    default stays the model that produces usable plans, and routing is something a team
-    turns on after measuring the pair they intend to run.
+    A default matters more than an option, and this is the half of it that is a promise:
+    without OLLAMA_VISION_MODEL you get one planner, not a pair. Turning routing on is
+    something a team does after measuring the two models they intend to run.
+
+    This used to assert a model name as well, and the name it asserted had stopped being
+    the default some time before -- `app.py` probes the local daemon and falls back to
+    DEFAULT_OLLAMA_TEXT_MODEL, which MODEL-ROUTING.md measures at 8-10 s a step against
+    the 4B vision model's 61 s cold load. The assertion was also quietly reaching the
+    network, so it passed or failed depending on what the machine running it had pulled.
+    Both halves are now tested, separately, and neither needs a daemon.
     """
     monkeypatch.setenv("PLANNER", "ollama")
     monkeypatch.delenv("OLLAMA_MODEL", raising=False)
@@ -687,7 +717,31 @@ def test_routing_is_opt_in_and_the_default_is_a_model_that_works(monkeypatch):
     planner = build_planner({})
 
     assert not isinstance(planner, RoutingPlanner)
-    assert planner.model == "qwen3-vl:4b"
+
+
+def test_the_text_model_falls_back_to_the_documented_default():
+    """No daemon, no models, no network: the documented default, not an exception."""
+    assert discover_ollama_text_model(fetch=_raises) == DEFAULT_OLLAMA_TEXT_MODEL
+
+
+def test_the_text_model_prefers_what_the_machine_has_pulled():
+    """A laptop that pulled something else still runs, rather than failing every request.
+
+    The default wins when it is present; otherwise the first model the daemon lists is
+    better than one that is definitely not installed.
+    """
+    both = _tags([DEFAULT_OLLAMA_TEXT_MODEL, "llama3.2:1b"])
+    assert discover_ollama_text_model(fetch=both) == DEFAULT_OLLAMA_TEXT_MODEL
+    assert discover_ollama_text_model(fetch=_tags(["llama3.2:1b"])) == "llama3.2:1b"
+    assert discover_ollama_text_model(fetch=_tags([])) == DEFAULT_OLLAMA_TEXT_MODEL
+
+
+def test_an_explicit_model_beats_the_probe(monkeypatch):
+    monkeypatch.setenv("PLANNER", "ollama")
+    monkeypatch.setenv("OLLAMA_MODEL", "some-other-model")
+    monkeypatch.delenv("OLLAMA_VISION_MODEL", raising=False)
+    # The probe is not reached at all when the environment names a model.
+    assert build_planner({}).model == "some-other-model"
 
 
 def test_the_image_alone_decides_which_model_answers():
@@ -828,3 +882,78 @@ def test_completion_text_falls_back_when_the_backend_misfiles_the_plan():
 def test_completion_text_is_empty_when_the_model_said_nothing():
     assert completion_text({"content": "", "reasoning": ""}) == ""
     assert completion_text({}) == ""
+
+
+# ── The decomposition, as the planner sees it ─────────────────────────────────
+
+
+def test_the_plan_is_rendered_when_the_device_sent_one():
+    """A planner asked to replan needs to know what has already been tried.
+
+    Told only "the last step failed" it proposes the leg that just failed. Told "select
+    has been attempted twice and reports ambiguous", it can propose the filter that would
+    separate the candidates.
+    """
+    prompt = build_user_message(
+        request_body(
+            plan=[
+                {
+                    "id": "search-1",
+                    "kind": "search",
+                    "intent": "search for permits",
+                    "after": [],
+                    "criteria": [],
+                    "budget": 2,
+                    "status": "done",
+                    "attempts": 1,
+                },
+                {
+                    "id": "select-1",
+                    "kind": "select",
+                    "intent": "choose the one that fits",
+                    "after": ["search-1"],
+                    "criteria": [],
+                    "budget": 3,
+                    "status": "active",
+                    "attempts": 2,
+                    "failure": "ambiguous",
+                },
+            ]
+        )
+    )
+
+    assert "Plan:" in prompt
+    assert "search-1" in prompt and "select-1" in prompt
+    assert "2/3 attempts" in prompt
+    assert "ambiguous" in prompt
+    assert "Current leg: select-1" in prompt
+
+
+def test_a_device_that_decomposed_nothing_gets_the_prompt_it_always_got():
+    """The whole reason `plan` defaults rather than being required."""
+    assert "Plan:" not in build_user_message(request_body())
+
+
+def test_the_rendered_plan_carries_no_page_content():
+    """Ids, kinds, counts and the user's own words. Nothing read off the page."""
+    line = render_plan(
+        [
+            {
+                "id": "interact-1",
+                "kind": "interact",
+                "intent": "fill the email field with «EMAIL_1»",
+                "status": "active",
+                "attempts": 1,
+                "budget": 3,
+            }
+        ]
+    )
+    assert "«EMAIL_1»" in line
+    assert "asha" not in line.lower()
+
+
+def test_the_system_prompt_explains_how_to_replan():
+    """Adding a field to the schema without telling the model what it is for is a field
+    nothing ever fills in."""
+    for phrase in ("## The plan", "`plan` array", "navigate | search | filter"):
+        assert phrase in SYSTEM_PROMPT

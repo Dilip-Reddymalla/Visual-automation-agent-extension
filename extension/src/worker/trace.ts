@@ -34,6 +34,14 @@ export interface StepTrace {
 
   /** How many elements the walker produced. */
   elements?: number;
+  /**
+   * Which leg of the plan this step worked on. Absent when there is no plan.
+   *
+   * A leg id, which is a kind and a number -- `search-1`, `select-2`. Not the intent line
+   * and not a hint: the trace is the artefact most likely to be enlarged on a slide, and
+   * an id says which leg without saying anything about the page it ran against.
+   */
+  subgoal?: string;
   /** Findings by class, and by layer. Counts only. */
   findings?: {
     total: number;
@@ -144,6 +152,14 @@ export interface StepTrace {
   error?: string;
   /** Frames thrown away because the page moved (M4). */
   framesDiscarded?: number;
+  /**
+   * Frames kept although the page was still mutating, because nothing had moved.
+   *
+   * Beside `framesDiscarded` and never folded into it: a discard is the geometry guard
+   * working, and this is the guard being relaxed on a page that would otherwise be
+   * uncapturable. Two different facts, and the second one is the one worth watching.
+   */
+  framesContentDrifted?: number;
 }
 
 export function startStep(sessionId: string, stepIndex: number, now = Date.now()): StepTrace {

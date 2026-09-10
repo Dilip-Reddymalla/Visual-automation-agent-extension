@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Water Board — demo (tier 1)</title>
+    <style>
+      :root { --line: #d9dee7; --ink: #14181e; --muted: #5b6472; --accent: #1b6feb; --panel: #f6f8fb; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 15px/1.55 system-ui, sans-serif; color: var(--ink); background: #fff; }
+      header { padding: 12px 24px; border-bottom: 1px solid var(--line); font-weight: 650; }
+      main { max-width: 760px; margin: 0 auto; padding: 24px; }
+      .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 20px 0 28px; }
+      .tile { border: 1px solid var(--line); border-radius: 10px; padding: 16px; text-align: left; background: #fff; font: inherit; cursor: pointer; }
+      .tile strong { display: block; margin-bottom: 4px; }
+      .tile span { color: var(--muted); font-size: 13px; }
+      .panel { border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: none; }
+      .panel.on { display: block; }
+      label { display: block; font-weight: 600; margin: 12px 0 6px; }
+      input { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+      button.go { margin-top: 16px; padding: 10px 18px; border: 0; border-radius: 6px; font: inherit; font-weight: 600; color: #fff; background: var(--accent); }
+      .hint { color: var(--muted); font-size: 14px; }
+      .done { display: none; margin-top: 16px; font-weight: 600; color: #1b7a3d; }
+    </style>
+  </head>
+  <body>
+    <header>Metropolitan Water Board</header>
+
+    <main>
+      <h1>Consumer services</h1>
+      <p class="hint">
+        Nothing on this page is a field until you have chosen what you came to do. A
+        sentence like "sign me up for outage alerts" names no control, because the control
+        does not exist yet.
+      </p>
+
+      <div class="tiles">
+        <button class="tile" data-panel="bill"><strong>Pay water bill</strong><span>Quote your consumer number</span></button>
+        <button class="tile" data-panel="alerts"><strong>Outage alerts</strong><span>Get a text when supply is cut</span></button>
+        <button class="tile" data-panel="tanker"><strong>Book a tanker</strong><span>Private supply, chargeable</span></button>
+      </div>
+
+      <div class="panel" id="panel">
+        <strong id="panel-title"></strong>
+        <label for="consumer">Consumer number</label>
+        <input id="consumer" name="consumer_no" type="text" inputmode="numeric" />
+        <label for="mobile">Mobile number for alerts</label>
+        <input id="mobile" name="mobile" type="tel" />
+        <button class="go" type="button" id="go">Confirm</button>
+        <div class="done" id="done">Registered. You will be texted before the next shutdown.</div>
+      </div>
+
+      <p class="hint" style="margin-top:28px">
+        The grammar parses verbs and targets. "Sign me up for outage alerts" has neither in
+        the shape it expects, so the step is <em>open-ended</em> and goes straight to the
+        local model, which can read a page and pick the tile. Still nothing sent.
+      </p>
+    </main>
+
+    <script>
+      const titles = { bill: 'Pay water bill', alerts: 'Outage alerts', tanker: 'Book a tanker' };
+      for (const tile of document.querySelectorAll('.tile')) {
+        tile.addEventListener('click', () => {
+          document.getElementById('panel-title').textContent = titles[tile.dataset.panel];
+          document.getElementById('panel').classList.add('on');
+        });
+      }
+      document.getElementById('go').addEventListener('click', () => {
+        document.getElementById('done').style.display = 'block';
+      });
+    </script>
+  </body>
+</html>

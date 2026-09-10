@@ -112,12 +112,21 @@ def plan_for(step: dict) -> dict:
     }
 
 
-def _handler_for(recorder: Recorder):
+def _handler_for(recorder: Recorder, plan=None):
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
 
         def log_message(self, *_args) -> None:  # keep the harness output readable
             return
+
+        def handle_one_request(self) -> None:
+            # Chrome drops its keep-alive sockets when it exits, which used to print a
+            # screenful of ConnectionResetError tracebacks after the results -- exactly
+            # where a real failure would have been.
+            try:
+                super().handle_one_request()
+            except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+                self.close_connection = True
 
         def do_POST(self) -> None:  # noqa: N802 -- BaseHTTPRequestHandler's spelling
             if self.path != PLANNER_PATH:
@@ -143,7 +152,7 @@ def _handler_for(recorder: Recorder):
                 )
             )
 
-            payload = json.dumps(plan_for(step)).encode("utf-8")
+            payload = json.dumps((plan or plan_for)(step)).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(payload)))
@@ -176,9 +185,37 @@ def _parse_multipart(body: bytes, content_type: str) -> tuple[dict, bytes]:
 class PlannerServer:
     """A recording planner, running for the length of a harness run."""
 
-    def __init__(self, port: int = PLANNER_PORT) -> None:
+    def __init__(self, port: int = PLANNER_PORT, plan=None) -> None:
+        """`plan` decides what the recorded POST is answered with.
+
+        Defaults to `plan_for`, which finishes the task after one perception cycle --
+        right for the corpus run, which measures one cycle per page and must not start a
+        second. The scenario suite passes its own, because a multi-step scenario is
+        precisely a run that does not stop after one step.
+        """
         self.recorder = Recorder()
-        self.httpd = ThreadingHTTPServer(("127.0.0.1", port), _handler_for(self.recorder))
+        try:
+            self.httpd = ThreadingHTTPServer(
+                ("127.0.0.1", port), _handler_for(self.recorder, plan)
+            )
+        except OSError as err:
+            # The port is not configurable in the extension -- transport.ts targets it
+            # directly -- so there is nothing to fall back to, and the operating system's
+            # own wording ("a socket in a way forbidden by its access permissions") sends
+            # people looking for a firewall rule. The usual cause is an earlier run of
+            # this harness that was interrupted before it could close the socket.
+            raise SystemExit(
+                "\n".join(
+                    [
+                        f"could not bind the planner on 127.0.0.1:{port} ({err}).",
+                        "The extension posts to this port and nothing else, so it has to be free.",
+                        "The usual cause is an interrupted run still holding it. Find it with",
+                        f"  netstat -ano | findstr :{port}      (Windows)",
+                        f"  lsof -i :{port}                     (macOS/Linux)",
+                        "and stop that process.",
+                    ]
+                )
+            ) from err
         self.thread = threading.Thread(target=self.httpd.serve_forever, daemon=True)
 
     def __enter__(self) -> "PlannerServer":

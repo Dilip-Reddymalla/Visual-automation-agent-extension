@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Uploaded Enrolment Slip &mdash; demo (tier 2)</title>
+    <style>
+      :root { --line: #d9dee7; --ink: #14181e; --muted: #5b6472; --accent: #1b6feb; --panel: #f6f8fb; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 15px/1.55 system-ui, sans-serif; color: var(--ink); background: #fff; }
+      header { padding: 12px 24px; border-bottom: 1px solid var(--line); font-weight: 650; }
+      main { max-width: 860px; margin: 0 auto; padding: 24px; }
+      .upload { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: var(--panel); }
+      .upload img { display: block; max-width: 100%; border: 1px solid var(--line); background: #fff; }
+      .meta { display: flex; gap: 18px; margin-top: 10px; color: var(--muted); font-size: 13px; }
+      .hint { color: var(--muted); font-size: 14px; }
+      .row { margin: 18px 0; }
+      label { display: block; font-weight: 600; margin-bottom: 6px; }
+      input { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+      button { padding: 10px 18px; border: 0; border-radius: 6px; font: inherit; font-weight: 600; color: #fff; background: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <header>Scholarship portal &mdash; document check</header>
+
+    <main>
+      <h1>Uploaded document</h1>
+      <p class="hint">
+        The applicant uploaded a photograph of their enrolment slip. Every identifier on it
+        &mdash; the name, the date of birth, the Aadhaar, the address &mdash; is baked into
+        the image. Nothing about it is in the DOM, so nothing about it can be redacted by
+        reading the DOM.
+      </p>
+
+      <div class="upload">
+        <img
+          alt=""
+          width="620"
+          height="330"
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MjAiIGhlaWdodD0iMzMwIiB2aWV3Qm94PSIwIDAgNjIwIDMzMCI+CiAgPHJlY3Qgd2lkdGg9IjYyMCIgaGVpZ2h0PSIzMzAiIGZpbGw9IiNmZGZjZjciLz4KICA8cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI2MDAiIGhlaWdodD0iMzEwIiBmaWxsPSJub25lIiBzdHJva2U9IiNjOWI5OGEiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSI0NiIgZmlsbD0iI2U4ZGZjNCIvPgogIDx0ZXh0IHg9IjI4IiB5PSI0MSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzRhM2YyMiI+R09WRVJOTUVOVCBPRiBJTkRJQTwvdGV4dD4KICA8dGV4dCB4PSI0MzAiIHk9IjQxIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM0YTNmMjIiPkVucm9sbWVudCBzbGlwPC90ZXh0PgoKICA8cmVjdCB4PSIzMCIgeT0iODAiIHdpZHRoPSIxMTAiIGhlaWdodD0iMTMwIiBmaWxsPSIjZDdkOWRlIi8+CiAgPGNpcmNsZSBjeD0iODUiIGN5PSIxMjUiIHI9IjI2IiBmaWxsPSIjOGI4Zjk4Ii8+CiAgPHJlY3QgeD0iNTUiIHk9IjE1OCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjOGI4Zjk4Ii8+CiAgPHRleHQgeD0iNTgiIHk9IjIyNiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZmlsbD0iIzViNjQ3MiI+UEhPVE9HUkFQSDwvdGV4dD4KCiAgPHRleHQgeD0iMTcwIiB5PSI5NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjEzIiBmaWxsPSIjNWI2NDcyIj5OYW1lPC90ZXh0PgogIDx0ZXh0IHg9IjMzMCIgeT0iOTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxNSIgZmlsbD0iIzExMSI+QXNoYSBNZW5vbjwvdGV4dD4KCiAgPHRleHQgeD0iMTcwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxMyIgZmlsbD0iIzViNjQ3MiI+RGF0ZSBvZiBiaXJ0aDwvdGV4dD4KICA8dGV4dCB4PSIzMzAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjE1IiBmaWxsPSIjMTExIj4xNy8wNC8xOTk5PC90ZXh0PgoKICA8dGV4dCB4PSIxNzAiIHk9IjE2MCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjEzIiBmaWxsPSIjNWI2NDcyIj5BYWRoYWFyPC90ZXh0PgogIDx0ZXh0IHg9IjMzMCIgeT0iMTYwIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMTExIj42OTMzIDc3NTIgOTUwNjwvdGV4dD4KCiAgPHRleHQgeD0iMTcwIiB5PSIxOTIiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxMyIgZmlsbD0iIzViNjQ3MiI+QWRkcmVzczwvdGV4dD4KICA8dGV4dCB4PSIzMzAiIHk9IjE5MiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExIj4xNCBSb3NlIFZpbGxhLCBKYXlhbmFnYXI8L3RleHQ+CiAgPHRleHQgeD0iMzMwIiB5PSIyMTIiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzExMSI+QmVuZ2FsdXJ1IDU2MDAxMTwvdGV4dD4KCiAgPHRleHQgeD0iMTcwIiB5PSIyNDQiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxMyIgZmlsbD0iIzViNjQ3MiI+RW5yb2xtZW50IG5vLjwvdGV4dD4KICA8dGV4dCB4PSIzMzAiIHk9IjI0NCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjE1IiBmaWxsPSIjMTExIj4yNDU1NDA1MTIxNDQ8L3RleHQ+CgogIDx0ZXh0IHg9IjE3MCIgeT0iMjc2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMTMiIGZpbGw9IiM1YjY0NzIiPklzc3VlZCBvbjwvdGV4dD4KICA8dGV4dCB4PSIzMzAiIHk9IjI3NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjE1IiBmaWxsPSIjMTExIj4wMi8wMi8yMDI2PC90ZXh0Pgo8L3N2Zz4="
+        />
+        <div class="meta">
+          <span>enrolment-slip.png</span><span>620 &times; 330</span><span>uploaded 2 minutes ago</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="verified-by">Verified by</label>
+        <input id="verified-by" name="verified_by" type="text" />
+      </div>
+
+      <button type="button" id="accept">Mark as verified</button>
+
+      <p class="hint" style="margin-top:28px">
+        The <code>alt</code> attribute is empty on purpose, which is how uploaded documents
+        arrive in real life. The enrolment number under the Aadhaar is a decoy: it is
+        twelve digits and it passes the Aadhaar checksum, and it must survive the pass
+        untouched because the words beside it say what it is.
+      </p>
+    </main>
+  </body>
+</html>

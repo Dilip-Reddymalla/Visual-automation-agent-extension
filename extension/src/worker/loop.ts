@@ -19,6 +19,8 @@ import {
 } from '../shared/agent';
 import { pushLog, upsertLog, type AgentState } from './state';
 import type { GoalBlock, Intent } from './intent';
+import { adoptPlan, emptyProgress } from './progress';
+import type { Subgoal } from '../shared/contract';
 
 export interface StartOptions {
   sessionId: string;
@@ -34,6 +36,13 @@ export interface StartOptions {
   coverage?: number;
   /** Why Tier 0 may not act on this goal. See intent.ts. */
   block?: GoalBlock;
+  /**
+   * How the goal was broken up, when it was worth breaking up. See decompose.ts.
+   *
+   * Empty for a single-field instruction, which is not a multi-step task and gets no
+   * plan: the loop then behaves exactly as it did before plans existed.
+   */
+  plan?: readonly Subgoal[];
   now: number;
 }
 
@@ -59,6 +68,11 @@ export function startTask(state: AgentState, options: StartOptions): AgentState 
     busy: false,
     // Whatever the previous session was owed, it was owed on another goal.
     pendingPerceive: false,
+    // As with the log: a ledger of verified work describes the goal it was collected
+    // under, and carrying it into a new one would let a new task inherit a completion
+    // it never earned. The decomposition of the *new* goal is the one thing that starts
+    // populated, because it was derived from the sentence that started this task.
+    progress: adoptPlan(emptyProgress(), options.plan ?? [], 0),
     startedAt: options.now,
     updatedAt: options.now,
     // A new task starts with a clean log; the old one belonged to a different goal.
@@ -85,20 +99,48 @@ export function budgetSpent(state: AgentState): boolean {
  * session's history already is.
  */
 export function exhaust(state: AgentState, now: number): AgentState {
+  return halt(state, {
+    status: 'stopped',
+    outcome: 'stopped',
+    note: `stopped after ${MAX_STEPS} steps without the plan finishing`,
+    now,
+  });
+}
+
+export interface HaltOptions {
+  status: LoopStatus;
+  outcome: StepOutcome;
+  note: string;
+  now: number;
+}
+
+/**
+ * End a run the loop itself decided to end, with the reason in the log.
+ *
+ * Three of these exist and they are different endings, which is why the status is a
+ * parameter rather than always `stopped`. Running out of steps is a budget; three failed
+ * steps in a row is a failure; four steps that changed nothing is a run that did not
+ * finish -- and `incomplete` is the status this project added precisely so that last one
+ * has somewhere honest to go.
+ *
+ * The note goes in the log rather than only in an event, because the log is what a panel
+ * opened afterwards reads, and "why did this stop" is the question it is opened to answer.
+ */
+export function halt(state: AgentState, options: HaltOptions): AgentState {
   return {
     ...state,
-    status: 'stopped',
+    status: options.status,
     phase: 'idle',
     busy: false,
-    updatedAt: now,
+    updatedAt: options.now,
     log: pushLog(state.log, {
       stepIndex: state.stepIndex,
-      startedAt: now,
-      endedAt: now,
+      startedAt: options.now,
+      endedAt: options.now,
       ms: 0,
-      outcome: 'stopped',
+      outcome: options.outcome,
       phase: 'idle',
-      note: `stopped after ${MAX_STEPS} steps without the plan finishing`,
+      note: options.note,
     }),
   };
 }
@@ -161,6 +203,23 @@ export interface EndStepOptions {
   outcome: StepOutcome;
   now: number;
   note?: string;
+  /**
+   * This step failed for a reason another step might not.
+   *
+   * A failed step used to end the whole session, and for a one-step task that was right:
+   * there was nothing left to salvage. On a multi-step run it is wrong, and expensively
+   * so -- a frame discarded because the page moved between measuring and photographing it
+   * is a *frame* problem, and the session it killed had already filled the form.
+   *
+   * So a transient failure leaves the session `running` and the next step retries. What
+   * stops that being an unbounded retry loop is `progress.retries`, which counts
+   * consecutive failures and ends the run at MAX_STEP_RETRIES with a note saying so.
+   *
+   * Structural failures -- no content script, no tab, a phase that threw for its own
+   * reasons -- are not marked retryable and still end the session, because retrying them
+   * produces the same error at the same cost.
+   */
+  retryable?: boolean;
 }
 
 export function endStep(state: AgentState, options: EndStepOptions): AgentState {
@@ -173,7 +232,7 @@ export function endStep(state: AgentState, options: EndStepOptions): AgentState 
     note: options.note,
   };
 
-  const status = nextStatus(state.status, options.outcome);
+  const status = nextStatus(state.status, options.outcome, options.retryable === true);
 
   return {
     ...state,
@@ -187,8 +246,15 @@ export function endStep(state: AgentState, options: EndStepOptions): AgentState 
   };
 }
 
-function nextStatus(current: LoopStatus, outcome: StepOutcome): LoopStatus {
+function nextStatus(
+  current: LoopStatus,
+  outcome: StepOutcome,
+  retryable: boolean,
+): LoopStatus {
   if (current === 'stopping') return 'stopped';
+  // A transient failure keeps the session alive so the next step can try again. See
+  // EndStepOptions.retryable, and stuckReason in router.ts for what bounds it.
+  if (outcome === 'failed' && retryable && current === 'running') return 'running';
   if (outcome === 'failed') return 'failed';
   if (outcome === 'stopped') return 'stopped';
   // An ending, and one the operator has to be able to tell from a clean finish. The step

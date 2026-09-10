@@ -1,5 +1,29 @@
 # Demo pages
 
+Start at `index.html`: it lists every page below with the goal to paste and what to watch
+for. The run sheet for a live showcase is `SHOWCASE.md`.
+
+## The tier ladder, one page per rung
+
+Each of these exists to force one rung, and each was measured with
+`python eval/live.py --url http://localhost:8080/<page> --task "<goal>"`:
+
+- `tier-0-clean-form.html` -- every field labelled and every label distinct. The grammar
+  resolves all of it: `tier 0, nothing sent`, no screenshot taken.
+- `tier-1-ambiguous.html` -- two sections asking for the same two things, so both
+  candidates score identically. A tie, broken by the local model. Nothing sent.
+- `tier-1-open-ended.html` -- nothing is a field until a tile is clicked, so the sentence
+  names no control the grammar can find. `open-ended`, answered locally.
+- `tier-2-pixels.html` -- a `<canvas>` challan: no text node anywhere on it. Five L3
+  findings, one sealed POST per step, and a Verhoeff-valid invoice number left alone
+  because the caption beside it says what it is.
+- `tier-2-image-id.html` -- the same argument for an uploaded `<img>` with an empty
+  `alt`, plus an enrolment-number decoy under the Aadhaar.
+- `tier-2-jargon.html` -- bank abbreviations that score below the grammar's floor. Tier 1
+  is asked and its answer is rejected, which is the check worth showing.
+
+## The original pair
+
 Two local pages, served over `http://localhost` so the manifests' host_permissions
 cover them:
 

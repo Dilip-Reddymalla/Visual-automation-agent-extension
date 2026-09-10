@@ -12,7 +12,7 @@
  */
 
 import type { ElementRole, ElementState } from '../shared/contract';
-import type { DomEl, RawNode } from './walker';
+import { SKIP_TAGS, type DomEl, type RawNode } from './walker';
 
 /** The subset of computed style this module needs. */
 export interface StyleLike {
@@ -299,6 +299,34 @@ function inputRole(el: HTMLInputElement): ElementRole {
 }
 
 /**
+ * The text a human actually reads inside an element.
+ *
+ * `textContent` is the obvious thing to call and it is wrong: it concatenates every text
+ * node in the subtree, including the ones the browser never renders. Measured on
+ * www.amazon.in, the container holding the search bar named itself
+ * `window.navmet.tmp=+new Date(); All Select the department...` -- an inline analytics
+ * `<script>` two levels down, handed to the planner as an accessible name and, worse,
+ * carried into the redaction detectors as page text.
+ *
+ * The walk already refuses to descend into those tags. This is the same list applied to
+ * text, which is the only other place a subtree's contents are read.
+ */
+export function visibleText(el: DomEl): string {
+  let text = '';
+  // Node.TEXT_NODE / Node.ELEMENT_NODE, written out: this module is deliberately usable
+  // against a document from another realm, where the `Node` global is not this one.
+  for (const child of el.childNodes) {
+    if (child.nodeType === 3) text += child.nodeValue ?? '';
+    else if (child.nodeType === 1) {
+      const element = child as DomEl;
+      if (SKIP_TAGS.has(element.tagName)) continue;
+      text += visibleText(element);
+    }
+  }
+  return text;
+}
+
+/**
  * Accessible name, in the order the ARIA spec resolves it: aria-labelledby, aria-label,
  * the associated label, placeholder, title, then text content. The alt text of an image
  * button counts; the value of a text field does not.
@@ -333,16 +361,16 @@ export function accessibleName(el: DomEl): string {
   }
 
   if (el.tagName === 'VIDEO') {
-    const text = normaliseSpace(el.textContent ?? '').slice(0, 120);
+    const text = normaliseSpace(visibleText(el)).slice(0, 120);
     return text || 'video player';
   }
 
   if (el.tagName === 'AUDIO') {
-    const text = normaliseSpace(el.textContent ?? '').slice(0, 120);
+    const text = normaliseSpace(visibleText(el)).slice(0, 120);
     return text || 'audio player';
   }
 
-  return normaliseSpace(el.textContent ?? '').slice(0, 120);
+  return normaliseSpace(visibleText(el)).slice(0, 120);
 }
 
 export function associatedLabelText(el: DomEl): string {
@@ -351,11 +379,11 @@ export function associatedLabelText(el: DomEl): string {
 
   if (el.id) {
     const explicit = doc.querySelector(`label[for="${cssEscape(el.id)}"]`);
-    if (explicit) return normaliseSpace(explicit.textContent ?? '');
+    if (explicit) return normaliseSpace(visibleText(explicit));
   }
 
   const wrapping = el.closest?.('label');
-  if (wrapping) return normaliseSpace(wrapping.textContent ?? '');
+  if (wrapping) return normaliseSpace(visibleText(wrapping));
 
   // Definition lists and table rows carry the same label -> value association a
   // <label>/<input> pair does, and on a read-only page they are the only one available.
@@ -375,7 +403,7 @@ export function associatedLabelText(el: DomEl): string {
     // walks back rather than looking only at the immediate sibling.
     let sibling = el.previousElementSibling;
     while (sibling) {
-      if (sibling.tagName === 'DT') return normaliseSpace(sibling.textContent ?? '');
+      if (sibling.tagName === 'DT') return normaliseSpace(visibleText(sibling));
       if (sibling.tagName !== 'DD') break;
       sibling = sibling.previousElementSibling;
     }
@@ -388,7 +416,7 @@ export function associatedLabelText(el: DomEl): string {
     const row = el.parentElement;
     if (row) {
       const rowHeader = row.querySelector(':scope > th');
-      if (rowHeader) return normaliseSpace(rowHeader.textContent ?? '');
+      if (rowHeader) return normaliseSpace(visibleText(rowHeader));
 
       const cells = [...row.children];
       const column = cells.indexOf(el);
@@ -399,13 +427,13 @@ export function associatedLabelText(el: DomEl): string {
       // because the first column is a header -- so the association is positional and the
       // first cell is the label for the second.
       if (cells.length === 2 && column === 1) {
-        return normaliseSpace(cells[0]?.textContent ?? '');
+        return normaliseSpace(cells[0] ? visibleText(cells[0]) : '');
       }
       const table = el.closest?.('table');
       const headerRow = table?.querySelector('thead tr, tr:has(> th)');
       const header = headerRow?.children[column];
       if (header && header.tagName === 'TH') {
-        return normaliseSpace(header.textContent ?? '');
+        return normaliseSpace(visibleText(header));
       }
     }
   }
@@ -473,7 +501,7 @@ function precedingCaption(from: DomEl): string {
     if (CONTROL_TAGS.has(sibling.tagName)) return '';
     if (sibling.querySelector?.('input, textarea, select, button')) return '';
 
-    const text = normaliseSpace(sibling.textContent ?? '');
+    const text = normaliseSpace(visibleText(sibling));
     if (text && text.length <= NEARBY_MAX_CHARS) return text;
     // Long text is prose, and prose above a field is not its label. Keep looking past an
     // empty spacer, but not past a paragraph.
@@ -493,7 +521,10 @@ export function resolveIdRefs(el: DomEl, attr: string): string {
   return normaliseSpace(
     refs
       .split(/\s+/)
-      .map((id) => doc.getElementById(id)?.textContent ?? '')
+      .map((id) => {
+      const target = doc.getElementById(id);
+      return target ? visibleText(target) : '';
+    })
       .join(' '),
   );
 }

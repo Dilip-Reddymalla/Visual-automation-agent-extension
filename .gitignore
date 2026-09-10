@@ -23,6 +23,10 @@ server/models/
 eval/report/*.json
 eval/report/*.html
 eval/report/runs*/
+# Same reasoning for the scenario suite and the live-site runs: screenshots and per-run
+# JSON are evidence of one run on one machine, not source.
+eval/report/scenarios/
+eval/report/live/
 eval/report/build/
 __pycache__/
 *.pyc

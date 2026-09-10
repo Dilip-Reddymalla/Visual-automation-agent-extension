@@ -325,12 +325,33 @@ function buildPlanPrompt(
   sentence: string,
   candidates: Candidate[],
   correction?: string,
+  done: readonly string[] = [],
 ): string {
   const list = candidates
     .map((c) => `${c.index}: ${c.label || '(no label)'} (${c.role})`)
     .join('\n');
+
+  // What the run has already verified.
+  //
+  // The grammar has no memory; the ledger does. On a multi-step run this model is asked
+  // the same question about the same sentence every step, and with nothing to say
+  // otherwise it gives the same answer every step. Measured on irctc.co.in: the origin and
+  // the destination were re-typed on three consecutive steps, and a checkbox ticked on one
+  // step was clicked again on the next, which unticked it -- so the run ended with the
+  // form in a worse state than the step before.
+  //
+  // Tier 0 has had this since plans existed (`outstanding` in router.ts). This is the same
+  // fact, in the only form a model can read.
+  const already =
+    done.length > 0
+      ? `Already done on this page. Do not do these again:\n${done
+          .map((line) => `- ${line}`)
+          .join('\n')}\n\n`
+      : '';
+
   return (
     `A user is looking at a web page and said:\n"${sentence}"\n\n` +
+    already +
     `These are the fields and buttons on the page:\n${list}\n\n` +
     `Decide what should happen. Reply with a JSON list of actions.\n` +
     `Each action is {"index": <number from the list above>, ` +
@@ -343,7 +364,8 @@ function buildPlanPrompt(
     `- Copy the text to type from the user's sentence word for word. Do not invent ` +
     `names, emails, numbers or any other value.\n` +
     `- If the sentence does not name a value for a field, do not fill that field.\n` +
-    `- If the sentence does not say what to do, reply with an empty list.` +
+    `- If the sentence does not say what to do, reply with an empty list.\n` +
+    `- Do not repeat anything listed as already done.` +
     (correction
       ? `\n\nYour previous answer was rejected: ${correction}\n` +
         `Try again. Every value must appear in the user's sentence above.`
@@ -374,6 +396,8 @@ export async function readGoal(
    * it costs one call.
    */
   correction?: string,
+  /** Work the ledger has already verified, in the user's own words. See buildPlanPrompt. */
+  done: readonly string[] = [],
 ): Promise<LocalOutcome<LocalAction[]>> {
   const model = deps.model ?? DEFAULT_READER_MODEL;
   if (candidates.length === 0) return { ok: false, why: 'bad-answer', model };
@@ -389,7 +413,7 @@ export async function readGoal(
       body: JSON.stringify({
         model,
         messages: [
-          { role: 'user', content: buildPlanPrompt(sentence, candidates, correction) },
+          { role: 'user', content: buildPlanPrompt(sentence, candidates, correction, done) },
         ],
         // Four actions of a few tokens each, plus the JSON around them.
         max_tokens: 256,

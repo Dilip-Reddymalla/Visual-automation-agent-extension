@@ -55,6 +55,14 @@ const WEIGHTS = {
   text: 2,
 } as const;
 
+/**
+ * The shortest alias a bare substring match is allowed to count for.
+ *
+ * Three characters, the same length `criteria.ts` uses for the same reason: below it a
+ * substring says nothing about what a field is called.
+ */
+const SUBSTRING_MIN_ALIAS = 3;
+
 /** Below this, a match is noise. A target that matches nothing lands here. */
 export const SCORE_FLOOR = 6;
 
@@ -67,7 +75,21 @@ export const SCORE_FLOOR = 6;
  */
 export const CLEAR_MARGIN = 4;
 
-/** An exact match is worth its full weight; a containment, half. */
+/**
+ * Three strengths of match, and the middle one earns its keep on real pages.
+ *
+ * An exact match is worth the full weight. A *word* match -- the alias standing alone in
+ * the label -- is worth three quarters. Any other containment is worth half.
+ *
+ * The middle rung exists because a field's declared name is often a whole sentence.
+ * irctc.co.in labels its origin box `aria-label="Enter From station. Input is Mandatory."`,
+ * and "fill from with NEW DELHI" scored it 4 against a floor of 6: a substring, indistinct
+ * from the "to" inside "sta**tio**n". So the only station picker on the page was below the
+ * floor, and a form tier 0 holds every fact about went to a 1.5B model instead.
+ *
+ * A word match is a much stronger claim than a substring and it costs one regex. It is
+ * still short of an exact match, because a sentence containing a word is not a name.
+ */
 function scoreField(value: string | undefined, aliases: string[], weight: number): number {
   if (!value) return 0;
   const haystack = normalise(value);
@@ -76,11 +98,32 @@ function scoreField(value: string | undefined, aliases: string[], weight: number
   let best = 0;
   for (const alias of aliases) {
     if (haystack === alias) best = Math.max(best, weight);
-    else if (haystack.includes(alias) || alias.includes(haystack)) {
+    else if (containsWord(haystack, alias)) best = Math.max(best, weight * 0.75);
+    // A substring hit on a very short alias is noise, not evidence: "to" is inside
+    // "station" twice, "id" is inside "video", and on the IRCTC search that noise scored
+    // the *origin* box for the word "to". Short aliases must land on a word boundary.
+    else if (alias.length > SUBSTRING_MIN_ALIAS && (haystack.includes(alias) || alias.includes(haystack))) {
       best = Math.max(best, weight / 2);
     }
   }
   return best;
+}
+
+/** Does the alias appear in the text as a word of its own, rather than inside one? */
+function containsWord(haystack: string, alias: string): boolean {
+  if (!alias) return false;
+  let from = haystack.indexOf(alias);
+  while (from !== -1) {
+    const before = from === 0 ? '' : haystack[from - 1];
+    const after = haystack[from + alias.length] ?? '';
+    if (!isWordChar(before) && !isWordChar(after)) return true;
+    from = haystack.indexOf(alias, from + 1);
+  }
+  return false;
+}
+
+function isWordChar(ch: string | undefined): boolean {
+  return ch !== undefined && ch !== '' && /[a-z0-9]/.test(ch);
 }
 
 /** Roles a `fill` can target. A click on a textbox is not what the user asked for. */
@@ -100,6 +143,8 @@ export interface Candidate {
   /** For the shortlist Tier 1 is given, and for the log. */
   label: string;
   role: string;
+  /** One of this element's declared names *is* what the user said, not merely contains it. */
+  exact?: boolean;
 }
 
 export type Resolution =
@@ -141,6 +186,19 @@ export function resolveTarget(intent: Intent, elements: ObservedElement[]): Reso
     if (el.index === undefined) continue;
     if (!roles.has(el.role)) continue;
 
+    const named = [
+      el.autocomplete,
+      el.labelText,
+      el.ariaLabel ?? el.name,
+      el.placeholder,
+      el.nameAttr,
+      el.idAttr,
+      el.nearbyText,
+    ];
+    const exact = named.some(
+      (value) => value !== undefined && aliases.includes(normalise(value)),
+    );
+
     const score =
       scoreField(el.autocomplete, aliases, WEIGHTS.autocomplete) +
       scoreField(el.labelText, aliases, WEIGHTS.label) +
@@ -151,8 +209,15 @@ export function resolveTarget(intent: Intent, elements: ObservedElement[]): Reso
       scoreField(el.nearbyText, aliases, WEIGHTS.nearby) +
       scoreField(el.textRuns.map((run) => run.text).join(' '), aliases, WEIGHTS.text);
 
-    if (score > 0)
-      candidates.push({ index: el.index, score, label: labelOf(el), role: el.role });
+    if (score > 0) {
+      candidates.push({
+        index: el.index,
+        score,
+        label: labelOf(el),
+        role: el.role,
+        ...(exact ? { exact: true } : {}),
+      });
+    }
   }
 
   candidates.sort((a, b) => b.score - a.score || a.index - b.index);
@@ -163,7 +228,16 @@ export function resolveTarget(intent: Intent, elements: ObservedElement[]): Reso
   }
 
   const gap = first.score - (candidates[1]?.score ?? 0);
-  if (gap < CLEAR_MARGIN) {
+
+  // A near miss is not a tie when one of the two is called what the user called it.
+  //
+  // The margin exists for two candidates that are equally good, which is a coin toss
+  // dressed up as a decision. "Subject" beside "Subject of your enquiry" is not that: one
+  // field *is* named subject and the other mentions it. Without this the word-match rung
+  // (see scoreField) turns every such pair into an escalation, which buys a model call to
+  // be told what the page already said.
+  const decisive = first.exact === true && candidates[1]?.exact !== true;
+  if (gap < CLEAR_MARGIN && !decisive) {
     return { kind: 'ambiguous', candidates: candidates.slice(0, 5), reason: 'tie' };
   }
 

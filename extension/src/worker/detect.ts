@@ -18,12 +18,12 @@
  */
 
 import { detectStructural } from '../redaction/l0-structural';
-import { detectLexical } from '../redaction/l1-lexical';
+import { detectLexical, disqualifiedByCaption } from '../redaction/l1-lexical';
 import { makeFinding, strongerDraft, type FindingDraft } from '../redaction/findings';
 import { send, type OcrLine } from '../shared/messages';
 import type { Finding, Origin, Viewport } from '../shared/contract';
 import type { ObservedElement } from '../shared/observed';
-import { iou } from '../shared/coords';
+import { iou, type Box } from '../shared/coords';
 import type { FrameRef } from '../shared/frames';
 import { MIN_OCR_SIDE, opaqueRegions } from '../offscreen/tasks/ocr';
 import { detectEntities, type NerRunner, type Operating } from '../offscreen/tasks/ner';
@@ -512,18 +512,80 @@ export function buildOcrElements(lines: OcrLine[]): ObservedElement[] {
  * text block, which is exactly what a run of baked-in text is.
  */
 function decorateOcr(drafts: FindingDraft[], lines: OcrLine[]): FindingDraft[] {
-  return drafts.map((draft) => {
+  const captions = captionsFor(lines);
+
+  return drafts.flatMap((draft) => {
     const line = draft.elementIndex !== undefined ? lines[draft.elementIndex] : undefined;
+
+    // The caption is beside the value, not inside it.
+    //
+    // L1 rejects "Invoice no. 669436125079" because the words before the digits say what
+    // they are, and that rule is the single highest-precision signal there is: without it
+    // the corpus's hard-negative survival drops from 0.87 to 0.62. On the OCR path the
+    // rule was silently unavailable, because a scan does not hand you a sentence -- it
+    // hands you boxes, and "Invoice no." is a *different box* from the digits it labels.
+    //
+    // Measured on demo/tier-2-pixels.html, whose challan carries a Verhoeff-valid invoice
+    // number two lines under a real Aadhaar: both were painted out, and the page went to
+    // the planner with a number redacted that nobody's privacy depended on. Over-redaction
+    // is a first-class failure (CLAUDE.md), and this is the cheapest kind -- the evidence
+    // was on screen, 30 px to the left.
+    const caption = draft.elementIndex !== undefined ? captions[draft.elementIndex] : undefined;
+    if (caption && disqualifiedByCaption(`${caption} `, '', draft.cls)) return [];
+
     const score = line?.score ?? 0;
-    return {
-      ...draft,
-      layer: 'L3' as const,
-      boxKind: 'text' as const,
-      reason: `ocr:${draft.reason}`,
-      confidence: score > 0 ? (draft.confidence + score) / 2 : draft.confidence,
-      elementIndex: undefined,
-    };
+    return [
+      {
+        ...draft,
+        layer: 'L3' as const,
+        boxKind: 'text' as const,
+        reason: `ocr:${draft.reason}`,
+        confidence: score > 0 ? (draft.confidence + score) / 2 : draft.confidence,
+        elementIndex: undefined,
+      },
+    ];
   });
+}
+
+/**
+ * For each OCR line, the text of the line that reads as its caption: the nearest one on
+ * the same baseline, ending to its left.
+ *
+ * Geometry rather than reading order, because reading order is what a detector guesses and
+ * a row is what a form *is*. "Same baseline" is a majority overlap of the two boxes'
+ * vertical extents, which survives the couple of pixels a detector wobbles by; "to its
+ * left" allows a gap of up to ten line heights, which is the width of the empty column
+ * between a label and its value on a printed form -- measured at five on the demo challan
+ * -- while staying well short of the next column across the page. Only the *nearest* such
+ * neighbour is considered, so a wide gap can only be read as a caption when there is
+ * genuinely nothing between the two.
+ */
+const CAPTION_GAP_LINES = 10;
+
+export function captionsFor(lines: OcrLine[]): Array<string | undefined> {
+  return lines.map((line) => {
+    let best: OcrLine | undefined;
+    let bestGap = Number.POSITIVE_INFINITY;
+
+    for (const other of lines) {
+      if (other === line) continue;
+      if (!sameRow(line.box, other.box)) continue;
+
+      const gap = line.box.x - (other.box.x + other.box.w);
+      if (gap < 0 || gap > line.box.h * CAPTION_GAP_LINES) continue;
+      if (gap < bestGap) {
+        best = other;
+        bestGap = gap;
+      }
+    }
+
+    return best?.text;
+  });
+}
+
+function sameRow(a: Box, b: Box): boolean {
+  const overlap = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+  return overlap > Math.min(a.h, b.h) / 2;
 }
 
 /**

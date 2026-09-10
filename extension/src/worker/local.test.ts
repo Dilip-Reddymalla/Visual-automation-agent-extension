@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { describeLocalFailure, pickCandidate, type LocalDeps } from './local';
+import { describeLocalFailure, pickCandidate, readGoal, type LocalDeps } from './local';
 import type { Candidate } from './resolve';
 
 const CANDIDATES: Candidate[] = [
@@ -195,5 +195,46 @@ describe('normalizing a goal', () => {
     };
     const outcome = await (await import('./local')).normalizeGoal('my first name is dilip', CANDIDATES, dead);
     expect(outcome.ok).toBe(false);
+  });
+});
+
+describe('what the reader is told is already done', () => {
+  const FIELDS: Candidate[] = [
+    { index: 1, score: 8, label: 'From station', role: 'searchbox' },
+    { index: 2, score: 8, label: 'Flexible With Date', role: 'checkbox' },
+  ];
+
+  async function promptFor(done: string[]): Promise<string> {
+    let body = '';
+    await readGoal(
+      'fill from with NEW DELHI, click flexible with date',
+      FIELDS,
+      {
+        fetch: async (_url, init) => {
+          body = String((init as RequestInit).body);
+          return reply([]);
+        },
+      },
+      undefined,
+      done,
+    );
+    return body;
+  }
+
+  /**
+   * The irctc.co.in defect: the same sentence, the same page, the same answer every step.
+   * The origin was re-typed three steps running and a ticked checkbox was clicked again,
+   * which unticked it.
+   */
+  it('lists the verified work and forbids repeating it', async () => {
+    const body = await promptFor(['filled "from"', 'clicked "flexible with date"']);
+    expect(body).toContain('Already done on this page');
+    expect(body).toContain('filled ');
+    expect(body).toContain('flexible with date');
+    expect(body).toContain('Do not repeat anything listed as already done');
+  });
+
+  it('says nothing at all when nothing has been verified', async () => {
+    expect(await promptFor([])).not.toContain('Already done');
   });
 });

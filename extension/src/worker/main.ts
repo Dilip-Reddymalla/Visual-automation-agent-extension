@@ -128,8 +128,14 @@ export function createDeps(binding: HostBinding): RouterDeps {
     // The same model, the whole question. Reached only when the grammar read nothing --
     // never for a goal the grammar refused, which is a distinction `router.ts` makes and
     // this line depends on.
-    readGoal: (sentence, candidates, correction) =>
-      readGoal(sentence, candidates, { fetch: globalThis.fetch.bind(globalThis) }, correction),
+    readGoal: (sentence, candidates, correction, done) =>
+      readGoal(
+        sentence,
+        candidates,
+        { fetch: globalThis.fetch.bind(globalThis) },
+        correction,
+        done,
+      ),
     // What a step note calls the far end. The host only -- the path is a constant and
     // repeating it in every log line buys nothing.
     plannerName: () => {

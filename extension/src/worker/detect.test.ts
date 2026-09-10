@@ -415,3 +415,61 @@ describe('OCR text through L1 and L2', () => {
     expect(JSON.stringify(finding)).not.toContain('7237');
   });
 });
+
+/**
+ * A caption that is a different OCR box from the value it labels.
+ *
+ * The printed-form case: "Invoice no." at x=30, the digits at x=190, on one row. L1's
+ * caption rule -- the highest-precision signal in the whole detector -- never saw them
+ * together, so a Verhoeff-valid invoice number on a scan was redacted as an Aadhaar.
+ */
+describe('a caption beside a value on a scan', () => {
+  const row = (text: string, x: number, y: number, w: number): OcrLine => ({
+    text,
+    box: { x, y, w, h: 14 },
+    score: 0.9,
+  });
+
+  const runner: NerRunner = async () => [];
+
+  it('suppresses a value its neighbour says is not personal', async () => {
+    const { drafts } = await ocrFindings(
+      [row('Invoice no.', 30, 100, 90), row('669436125079', 190, 100, 110)],
+      { w: 1024, h: 768 },
+      'highRecall',
+      runner,
+    );
+    expect(drafts).toEqual([]);
+  });
+
+  it('leaves a value whose neighbour says what it really is', async () => {
+    const { drafts } = await ocrFindings(
+      [row('Aadhaar', 30, 100, 70), row('7237 2429 6561', 190, 100, 120)],
+      { w: 1024, h: 768 },
+      'highRecall',
+      runner,
+    );
+    expect(drafts.map((d) => d.cls)).toEqual(['AADHAAR']);
+  });
+
+  it('does not take a caption from another row', async () => {
+    const { drafts } = await ocrFindings(
+      [row('Invoice no.', 30, 60, 90), row('7237 2429 6561', 190, 100, 120)],
+      { w: 1024, h: 768 },
+      'highRecall',
+      runner,
+    );
+    expect(drafts.map((d) => d.cls)).toEqual(['AADHAAR']);
+  });
+
+  it('does not reach across a column of white space', async () => {
+    // Ten line heights is the widest gap a label may sit at. 280 px is another column.
+    const { drafts } = await ocrFindings(
+      [row('Invoice no.', 30, 100, 90), row('7237 2429 6561', 400, 100, 120)],
+      { w: 1024, h: 768 },
+      'highRecall',
+      runner,
+    );
+    expect(drafts.map((d) => d.cls)).toEqual(['AADHAAR']);
+  });
+});

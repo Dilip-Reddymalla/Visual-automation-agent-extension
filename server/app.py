@@ -141,6 +141,46 @@ class Session:
 # ── The app ───────────────────────────────────────────────────────────────────
 
 
+#: The Ollama text model used when nothing else says otherwise.
+#:
+#: Named rather than repeated so that changing it is one edit and one review. The
+#: measurements behind the choice are in MODEL-ROUTING.md; do not change it on a hunch.
+DEFAULT_OLLAMA_TEXT_MODEL = "qwen2.5:1.5b"
+
+#: Where a local Ollama lists what it has pulled.
+OLLAMA_TAGS_URL = "http://localhost:11434/api/tags"
+
+
+def discover_ollama_text_model(fetch=None) -> str:
+    """Which text model this machine actually has, falling back to the default.
+
+    Asking the daemon means a laptop that has pulled something else still runs, instead
+    of failing every request against a model that is not there. It is a *probe*, so it is
+    allowed to fail: no daemon, no network, no models -- all of them mean the documented
+    default.
+
+    `fetch` is injected rather than reached for so a test can decide what the machine
+    looks like. Without it this test could only assert what the machine running it
+    happened to have pulled, which is how the assertion it replaces came to be wrong on
+    every laptop but one. httpx is imported here rather than at module scope for the same
+    reason `build_planner` does it: importing this module must not require it.
+    """
+    if fetch is None:
+        import httpx
+
+        fetch = httpx.get
+
+    try:
+        tags = fetch(OLLAMA_TAGS_URL, timeout=1.0).json()
+        models = [m.get("name", "") for m in tags.get("models", [])]
+    except Exception:
+        return DEFAULT_OLLAMA_TEXT_MODEL
+
+    if any(m.startswith(DEFAULT_OLLAMA_TEXT_MODEL) for m in models):
+        return DEFAULT_OLLAMA_TEXT_MODEL
+    return models[0] if models else DEFAULT_OLLAMA_TEXT_MODEL
+
+
 def build_planner(guided_schema: dict) -> Planner:
     """
     Which planner, from the environment. Three modes, none of them degraded:
@@ -209,25 +249,20 @@ def build_planner(guided_schema: dict) -> Planner:
                 },
             )
 
-        # The default is one model, and that is a measured decision rather than caution.
-        # Routing is opt-in: set OLLAMA_VISION_MODEL to turn it on, having measured the
-        # text model you intend to pair with it. scripts/bench-planners.py is that
-        # measurement, and on this project's own recorded steps every candidate below 4B
-        # scored 0/4 -- schema-valid plans that typed into buttons. A default that ships
-        # a fast model producing well-formed nonsense is worse than a slow one.
+        # One model by default, and routing only when a team asks for it.
+        #
+        # The number that decides this is in MODEL-ROUTING.md: on a laptop with no CUDA,
+        # the text model answers an ordinary form step in 8-10 s and the 4B vision model
+        # takes 61 s to cold-load before it says anything -- past the client's own 60 s
+        # plan budget. So the default is the model that fits the budget on the hardware
+        # this is demonstrated on, and `OLLAMA_VISION_MODEL` turns on the pair.
+        #
+        # The comment that used to be here said the opposite, and had been left behind by
+        # the change that measured it. Two of the three places that named the default were
+        # string literals; naming it once is what stops the next drift being invisible.
         text_model = os.environ.get("OLLAMA_MODEL")
         if not text_model:
-            try:
-                tags = httpx.get("http://localhost:11434/api/tags", timeout=1.0).json()
-                models = [m.get("name", "") for m in tags.get("models", [])]
-                if any(m.startswith("qwen2.5:1.5b") for m in models):
-                    text_model = "qwen2.5:1.5b"
-                elif models:
-                    text_model = models[0]
-                else:
-                    text_model = "qwen2.5:1.5b"
-            except Exception:
-                text_model = "qwen2.5:1.5b"
+            text_model = discover_ollama_text_model()
         vision_model = os.environ.get("OLLAMA_VISION_MODEL", "")
         if not vision_model:
             return ollama(text_model, "ollama")

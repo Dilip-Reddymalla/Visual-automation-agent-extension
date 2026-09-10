@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import type { StepEvent } from '../shared/agent';
+import {
+  MAX_STALLED_STEPS,
+  MAX_STEP_RETRIES,
+  MAX_STEPS,
+  type StepEvent,
+} from '../shared/agent';
 import type { ObservedElement } from '../shared/observed';
 import { tokensMatch, type GeometryToken } from '../shared/frames';
 import {
@@ -12,9 +17,11 @@ import {
   type Reply,
 } from '../shared/messages';
 import { memoryStore, type KeyValueStore } from '../shared/store';
-import { installRoutes, wake, type RouterDeps } from './router';
+import { installRoutes, runStep, wake, MAX_GEOMETRY_ATTEMPTS, type RouterDeps } from './router';
 import { loadState, saveState, STATE_KEY, type AgentState } from './state';
 import { beginStep, startTask } from './loop';
+import { parseGoal } from './intent';
+import { verifiedTargets } from './progress';
 import { freshState } from './state';
 
 /**
@@ -101,6 +108,7 @@ function deps(): RouterDeps {
           stepIndex: 0,
           rationale: '',
           actions: plannedActions,
+          plan: plannedPlan,
           done: plannedDone,
         },
         requestBytes: 100,
@@ -149,11 +157,55 @@ const OBSERVED: ObservedElement[] = [
 let testVault: import('./vault').VaultStore;
 let confirmAnswer = false;
 
+/**
+ * A second field, so a test can watch two different pieces of work land in the ledger.
+ * Most tests never touch this; `observed` defaults back to OBSERVED every beforeEach.
+ */
+const TWO_FIELDS: ObservedElement[] = [
+  ...OBSERVED,
+  {
+    index: 2,
+    role: 'textbox',
+    box: { x: 10, y: 60, w: 200, h: 30 },
+    state: { visible: true, enabled: true, focused: false, filled: false },
+    occluded: 0,
+    isNew: true,
+    tag: 'input',
+    inputType: 'email',
+    nameAttr: 'email',
+    ariaLabel: 'Email',
+    rawValue: '',
+    textRuns: [],
+    key: '|input|textbox|Email|html/body/input[2]',
+    name: 'Email',
+  },
+];
+
+/** What DOM_SNAPSHOT and SURVEY report. Reset to OBSERVED before every test. */
+let observed: ObservedElement[] = OBSERVED;
+
+/**
+ * Which document the content script is reporting from.
+ *
+ * The random half of a snapshot id is minted once per document, so flipping this is what
+ * a navigation looks like from the worker's side -- and it is the only thing `url-changed`
+ * reads. See criteria.ts.
+ */
+let document2 = false;
+
+/** How many times the content script was asked to read a field back. */
+let verifyCalls: number;
+
+/** What that read-back says. A test that wants an unverified field sets this. */
+let verifyReason: import('../shared/messages').VerifyReason = 'match';
+
 /** What EXECUTE was asked to run, per call. */
 let executed: { snapshotId: string; actions: { type: string }[] }[] = [];
 
 /** What the stub planner returns. A test that cares about the plan sets this. */
 let plannedActions: import('../shared/contract').Action[] = [{ type: 'click', index: 1 }];
+/** A decomposition the stub planner proposes. Empty unless a test wants one. */
+let plannedPlan: import('../shared/contract').Subgoal[] = [];
 let plannedDone = false;
 /** What chrome.scripting.executeScript threw. The wording decides the remedy offered. */
 let contentInjectionFailure = 'Cannot access a chrome:// page';
@@ -177,17 +229,17 @@ function contentAnswers(
   handle('DOM_SNAPSHOT', () => {
     snapshotCalls += 1;
     return {
-      elements: OBSERVED,
+      elements: observed,
       viewport: { w: 1280, h: 720 },
       origin: 'http://localhost:8080',
       title: 'demo',
-      snapshotId: `snap.${snapshotCalls}`,
+      snapshotId: `${document2 ? 'docB' : 'docA'}.${snapshotCalls}`,
     };
   });
   // The whole-document sweep. Same elements as the viewport walk in this fixture: the
   // point being exercised here is the routing, not the scrolling, which reveal.test.ts
   // covers against a real jsdom layout.
-  handle('SURVEY', () => ({ elements: OBSERVED, total: OBSERVED.length }));
+  handle('SURVEY', () => ({ elements: observed, total: observed.length }));
   handle('REVEAL', () => ({ found: false }));
 
   handle('CAPTURE', () => ({
@@ -209,13 +261,16 @@ function contentAnswers(
     return { results: payload.actions.map(() => ({ outcome: 'ok' as const })) };
   });
 
-  handle('VERIFY_FILLED', ({ checks }) => ({
-    results: checks.map((check) => ({
-      index: check.index,
-      fulfilled: true,
-      reason: 'match' as const,
-    })),
-  }));
+  handle('VERIFY_FILLED', ({ checks }) => {
+    verifyCalls += 1;
+    return {
+      results: checks.map((check) => ({
+        index: check.index,
+        fulfilled: verifyReason === 'match',
+        reason: verifyReason,
+      })),
+    };
+  });
 }
 
 /** A page that moves again on every capture. */
@@ -287,9 +342,14 @@ beforeEach(() => {
   ensureContentCalls = 0;
   contentInjectionFails = false;
   executed = [];
+  observed = OBSERVED;
+  document2 = false;
+  verifyCalls = 0;
+  verifyReason = 'match';
   confirmAnswer = false;
   testVault = memoryVault();
   plannedActions = [{ type: 'click', index: 1 }];
+  plannedPlan = [];
   plannedDone = false;
   contentInjectionFailure = 'Cannot access a chrome:// page';
   posted = [];
@@ -337,7 +397,7 @@ describe('RUN_TASK', () => {
     await settled();
 
     expect(executed).toHaveLength(1);
-    expect(executed[0]?.snapshotId).toBe('snap.1');
+    expect(executed[0]?.snapshotId).toBe('docA.1');
   });
 
   it('sends one request, with the sealed bytes', async () => {
@@ -782,11 +842,21 @@ describe('binding the frame to the boxes', () => {
 
   it('fails the step rather than looping on a page that never holds still', async () => {
     contentAnswers();
-    // Every capture moves the page again: an animation, a carousel, a live ticker.
+    // Every capture moves the page again -- and *moves* is the operative word. This
+    // fixture used to bump only `mutationSeq`, on the description "an animation, a
+    // carousel, a live ticker", and that turned out to be the one case where the guard
+    // was wrong: a ticker mutates the DOM continuously and moves nothing, so every box
+    // stays exactly where it was measured. Live government portals do it thirty times a
+    // second, and the strict check made them permanently uncapturable.
+    //
+    // A page that scrolls under the capture is the real thing this test is about, and it
+    // is still a hard failure. The ticker now has its own test, and it passes.
     let seq = STILL.mutationSeq;
+    let scrolled = STILL.scrollY;
     handleAlwaysMoving(() => {
       seq += 1;
-      return { ...STILL, mutationSeq: seq };
+      scrolled += 120;
+      return { ...STILL, mutationSeq: seq, scrollY: scrolled };
     });
 
     await send('RUN_TASK', { goal: 'g', tabId: 7 });
@@ -795,7 +865,14 @@ describe('binding the frame to the boxes', () => {
     expect(state.status).toBe('failed');
     expect(state.log[0]?.note).toMatch(/page would not hold still/);
     expect(state.log[0]?.phase).toBe('capture');
-    expect(state.framesDiscarded).toBe(2);
+    // Two frames per step, and the step is retried: a page that will not hold still is a
+    // reason to look again, not a reason to abandon a task that may be nearly done. What
+    // stops it being unbounded is the consecutive-failure ceiling.
+    expect(state.framesDiscarded).toBe(2 * MAX_STEP_RETRIES);
+    expect(state.status).toBe('failed');
+    expect(state.log[state.log.length - 1]?.note).toMatch(
+      new RegExp(`${MAX_STEP_RETRIES} steps in a row that failed`),
+    );
   });
 
   it('re-perceives before the retry -- the boxes belonged to the old page', async () => {
@@ -1213,5 +1290,757 @@ describe('the local reader', () => {
     // Status stays running so the next page can perceive and search
     expect(state.status).toBe('running');
     expect(state.intents).toEqual([{ verb: 'fill', target: 'search', value: 'mobiles' }]);
+  });
+});
+
+/**
+ * The run's memory of what it has actually accomplished, at the router level.
+ *
+ * The transitions themselves are progress.test.ts's job. What is being proved here is
+ * that the loop feeds them: that `settle` verifies on every step rather than only the
+ * one whose plan said `finish`, and that the ledger reaches storage and comes back.
+ */
+describe('multi-step progress', () => {
+  it('keeps what step 1 verified when step 2 verifies something else', async () => {
+    observed = TWO_FIELDS;
+    contentAnswers();
+    offscreenAnswers();
+
+    plannedActions = [{ type: 'type', index: 1, text: 'Leo', submit: false }];
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    const afterOne = await settled();
+
+    expect(afterOne.progress.entries).toHaveLength(1);
+    expect(afterOne.progress.entries[0]?.status).toBe('verified');
+
+    plannedActions = [{ type: 'type', index: 2, text: 'a@b.test', submit: false }];
+    await send('PERCEIVE', { reason: 'settle' });
+    const afterTwo = await settled();
+
+    // The regression this whole ledger exists for: before it, step 2 reached the
+    // completion check holding step 2's verdicts alone, and the run reported that the
+    // field it had filled on step 1 was never acted on.
+    expect(afterTwo.progress.entries).toHaveLength(2);
+    expect(afterTwo.progress.entries.every((e) => e.status === 'verified')).toBe(true);
+    expect(verifiedTargets(afterTwo.progress).size).toBe(2);
+  });
+
+  it('verifies on a step whose plan did not say finish', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    plannedActions = [{ type: 'type', index: 1, text: 'Leo', submit: false }];
+
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    await settled();
+
+    // `settle` used to return early unless the plan had said `finish`, which meant a
+    // multi-step run verified exactly one step: the last.
+    expect(verifyCalls).toBe(1);
+  });
+
+  it('does not count a field the page did not confirm', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    verifyReason = 'empty';
+    plannedActions = [{ type: 'type', index: 1, text: 'Leo', submit: false }];
+
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    const state = await settled();
+
+    expect(state.progress.entries[0]?.status).toBe('unverified');
+    expect(state.progress.entries[0]?.reason).toBe('empty');
+    expect(verifiedTargets(state.progress).size).toBe(0);
+  });
+
+  it('counts attempts on the same target rather than growing the ledger', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    verifyReason = 'empty';
+    plannedActions = [{ type: 'type', index: 1, text: 'Leo', submit: false }];
+
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    await settled();
+    await send('PERCEIVE', { reason: 'settle' });
+    const state = await settled();
+
+    expect(state.progress.entries).toHaveLength(1);
+    expect(state.progress.entries[0]?.attempts).toBe(2);
+    // Two steps, nothing newly verified by either.
+    expect(state.progress.stalled).toBe(2);
+  });
+
+  it('counts a failed step against the retry budget', async () => {
+    // No content script at all: the step fails in `perceive`.
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    const state = await settled();
+
+    expect(state.status).toBe('failed');
+    expect(state.progress.retries).toBe(1);
+    expect(state.progress.entries).toHaveLength(0);
+  });
+
+  it('carries the ledger through a service-worker kill', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    plannedActions = [{ type: 'type', index: 1, text: 'Leo', submit: false }];
+
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    const ran = await settled();
+    expect(verifiedTargets(ran.progress).size).toBe(1);
+
+    // MV3 terminates the worker mid-step: `busy` is set and nothing touched the record
+    // since. The next wake finds it stale.
+    await saveState(store, { ...ran, busy: true, updatedAt: 0 });
+    const resumed = await wake(deps());
+
+    expect(resumed.busy).toBe(false);
+    expect(resumed.log[resumed.log.length - 1]?.outcome).toBe('interrupted');
+    // The point: the interruption cost the step, not the run's memory of it.
+    expect(verifiedTargets(resumed.progress).size).toBe(1);
+    expect(resumed.progress.entries[0]?.attempts).toBe(1);
+  });
+
+  it('keeps values out of the ledger it persists', async () => {
+    observed = TWO_FIELDS;
+    contentAnswers();
+    offscreenAnswers();
+    plannedActions = [{ type: 'type', index: 1, text: SECRET_VALUE, submit: false }];
+
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    const state = await settled();
+
+    // The record goes to chrome.storage.session, which the gate cannot reach.
+    expect(JSON.stringify(state.progress)).not.toContain(SECRET_VALUE);
+  });
+});
+
+/**
+ * The reactive loop: observe, act, verify against the page, then continue, replan or stop.
+ *
+ * The arithmetic of judging a leg is criteria.test.ts's. What is proved here is that the
+ * loop feeds it -- that the plan advances on the walk each step already takes, that a
+ * planner may replace the decomposition without undoing what the page confirmed, and that
+ * a run which stops making progress ends by saying so rather than by exhausting the step
+ * budget twenty steps later.
+ */
+describe('multi-step loop', () => {
+  /** A goal that decomposes: three clauses, none of which Tier 0 can resolve here. */
+  const GOAL = 'go to the portal, search for permits, submit the form';
+
+  it('derives a plan at the start of the task', async () => {
+    contentAnswers();
+    offscreenAnswers();
+
+    await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+    const state = await settled();
+
+    expect(state.progress.plan.map((s) => s.kind)).toEqual([
+      'navigate',
+      'search',
+      'submit',
+      'confirm',
+    ]);
+    // The first leg is picked up and charged on the first step.
+    expect(state.progress.plan[0]?.status).toBe('active');
+    expect(state.progress.plan[0]?.attempts).toBe(1);
+  });
+
+  it('finishes the first leg once the page navigates, and starts the second', async () => {
+    contentAnswers();
+    offscreenAnswers();
+
+    await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+    await settled();
+
+    // The next walk is of a different document, which is what `url-changed` reads.
+    document2 = true;
+    await send('PERCEIVE', { reason: 'navigation' });
+    const state = await settled();
+
+    expect(state.progress.plan[0]?.status).toBe('done');
+    expect(state.progress.plan[1]?.status).toBe('active');
+  });
+
+  it('keeps the leg current while its criteria do not hold', async () => {
+    contentAnswers();
+    offscreenAnswers();
+
+    await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+    await settled();
+    await send('PERCEIVE', { reason: 'settle' });
+    const state = await settled();
+
+    // Same document, so nothing navigated and the navigate leg is not done.
+    expect(state.progress.plan[0]?.status).toBe('active');
+    expect(state.progress.plan[0]?.attempts).toBe(2);
+  });
+
+  it('gives up on a leg whose budget runs out and moves to the next', async () => {
+    contentAnswers();
+    offscreenAnswers();
+
+    await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+    await settled();
+    for (let i = 0; i < 2; i++) {
+      await send('PERCEIVE', { reason: 'settle' });
+      await settled();
+    }
+    const state = await settled();
+
+    // A `navigate` leg gets two steps. Never arriving is the whole of what it can fail at.
+    expect(state.progress.plan[0]?.status).toBe('failed');
+    expect(state.progress.plan[0]?.failure).toBe('no-effect');
+    expect(state.progress.plan[1]?.status).toBe('active');
+  });
+
+  it('records which leg each step worked on, in the trace and the note', async () => {
+    contentAnswers();
+    offscreenAnswers();
+
+    await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+    const state = await settled();
+
+    const trace = JSON.parse(traceLines[0] ?? '{}') as Record<string, unknown>;
+    expect(trace.subgoal).toBe('navigate-1');
+    expect(state.log[0]?.note).toContain('plan 0/4');
+  });
+
+  describe('replanning', () => {
+    it('adopts a decomposition the planner returned, keeping what is already done', async () => {
+      contentAnswers();
+      offscreenAnswers();
+
+      await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+      await settled();
+
+      document2 = true;
+      // The planner has seen the page and says the search leg needs a filter first.
+      plannedPlan = [
+        { id: 'navigate-1', kind: 'navigate', intent: 'reach the portal', after: [], criteria: [], budget: 2 },
+        { id: 'filter-9', kind: 'filter', intent: 'pick the district first', after: ['navigate-1'], criteria: [], budget: 2 },
+        { id: 'search-1', kind: 'search', intent: 'search for permits', after: ['filter-9'], criteria: [], budget: 2 },
+      ];
+      await send('PERCEIVE', { reason: 'navigation' });
+      const state = await settled();
+
+      expect(state.progress.plan.map((s) => s.id)).toEqual([
+        'navigate-1',
+        'filter-9',
+        'search-1',
+        // Dropped by the replan, kept on the record rather than deleted.
+        'submit-1',
+        'confirm-1',
+      ]);
+      // The replan reused navigate-1's id, so the leg the page confirmed stays confirmed.
+      expect(state.progress.plan[0]?.status).toBe('done');
+      expect(state.progress.plan.find((s) => s.id === 'submit-1')?.status).toBe('skipped');
+    });
+
+    it('leaves the plan alone when the planner returns none', async () => {
+      contentAnswers();
+      offscreenAnswers();
+      plannedPlan = [];
+
+      await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+      const state = await settled();
+
+      expect(state.progress.plan.map((s) => s.id)).toEqual([
+        'navigate-1',
+        'search-1',
+        'submit-1',
+        'confirm-1',
+      ]);
+    });
+  });
+
+  describe('knowing when to stop', () => {
+    it('ends a run whose steps keep failing, rather than burning the step budget', async () => {
+      // No content script: every step fails in `perceive`.
+      await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+      let state = await settled();
+
+      for (let i = 0; i < 4 && state.status === 'failed'; i++) {
+        // A failed step leaves the session `failed`, so drive the loop directly.
+        await saveState(store, { ...state, status: 'running' });
+        await runStep(deps(), 'test');
+        state = await settled();
+      }
+
+      expect(state.progress.retries).toBeLessThanOrEqual(MAX_STEP_RETRIES);
+      expect(state.log[state.log.length - 1]?.note).toMatch(
+        new RegExp(`${MAX_STEP_RETRIES} steps in a row that failed`),
+      );
+      expect(state.status).toBe('failed');
+    });
+
+    it('ends a run that keeps succeeding without verifying anything new', async () => {
+      contentAnswers();
+      offscreenAnswers();
+      // A plan the page never satisfies: scroll for ever, verify nothing.
+      plannedActions = [{ type: 'scroll', dx: 0, dy: 600 }];
+
+      await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+      let state = await settled();
+
+      for (let i = 0; i < MAX_STALLED_STEPS + 2 && state.status === 'running'; i++) {
+        await send('PERCEIVE', { reason: 'settle' });
+        state = await settled();
+      }
+
+      expect(state.status).toBe('incomplete');
+      expect(state.log[state.log.length - 1]?.note).toMatch(
+        new RegExp(`${MAX_STALLED_STEPS} steps that verified nothing new`),
+      );
+      // Not `failed`: every one of those steps ran cleanly.
+      expect(state.stepIndex).toBeLessThan(MAX_STEPS);
+    });
+  });
+
+  it('carries the plan through a service-worker kill', async () => {
+    contentAnswers();
+    offscreenAnswers();
+
+    await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+    const ran = await settled();
+    expect(ran.progress.plan[0]?.status).toBe('active');
+
+    await saveState(store, { ...ran, busy: true, updatedAt: 0 });
+    const resumed = await wake(deps());
+
+    expect(resumed.busy).toBe(false);
+    expect(resumed.progress.plan[0]?.status).toBe('active');
+    expect(resumed.progress.plan[0]?.attempts).toBe(1);
+    expect(resumed.progress.baseline).not.toBeNull();
+  });
+
+  it('keeps page content out of the plan it persists and sends', async () => {
+    contentAnswers();
+    offscreenAnswers();
+
+    await send('RUN_TASK', { goal: GOAL, tabId: 7 });
+    const state = await settled();
+
+    expect(JSON.stringify(state.progress.plan)).not.toContain(SECRET_VALUE);
+    expect(JSON.stringify(posted)).not.toContain(SECRET_VALUE);
+  });
+
+  it('sends the plan with the step request so a replan is informed', async () => {
+    // Started from a fixture rather than from a sentence: GOAL parses into intents Tier 0
+    // can act on, so it never reaches the planner, and what is being checked here is what
+    // the planner is told.
+    contentAnswers();
+    offscreenAnswers();
+    await saveState(
+      store,
+      startTask(freshState(), {
+        sessionId: 's1',
+        goal: 'g',
+        tabId: 7,
+        now: 1,
+        plan: [
+          {
+            id: 'navigate-1',
+            kind: 'navigate',
+            intent: 'reach the portal',
+            after: [],
+            criteria: [{ check: 'url-changed', hint: '' }],
+            budget: 2,
+          },
+        ],
+      }),
+    );
+
+    await send('PERCEIVE', { reason: 'settle' });
+    await settled();
+
+    const request = posted[0]?.request as { plan?: Array<{ id: string; status: string }> };
+    expect(request?.plan?.[0]).toMatchObject({ id: 'navigate-1', status: 'active' });
+  });
+});
+
+/**
+ * Bounded recovery, at the loop level.
+ *
+ * The ladder's own arithmetic is recover.test.ts's. What matters here is that climbing it
+ * changes what the next step actually does -- specifically that a leg Tier 0 answered, and
+ * whose answer the page did not honour, stops being answered by Tier 0.
+ */
+describe('recovery', () => {
+  /** A leg the page will never satisfy: it waits for a navigation that never comes. */
+  const NEVER: import('../shared/contract').Subgoal = {
+    id: 'interact-1',
+    kind: 'interact',
+    intent: 'fill the field',
+    after: [],
+    criteria: [{ check: 'url-changed', hint: '' }],
+    budget: 3,
+  };
+
+  async function startWithPlan(goal: string): Promise<void> {
+    // Parsed the way RUN_TASK parses it, so Tier 0 has something to act on. Without the
+    // intents the goal is open-ended, every step goes straight to the planner, and the
+    // thing being tested -- that recovery moves a step *up* the tiers -- has nowhere to
+    // move from.
+    // The page never confirms the fill, so the intent stays outstanding and Tier 0 keeps
+    // being offered it. A verified intent is withheld from Tier 0 (see the note in
+    // `perceive`), which is the right behaviour and would make this a test of that rule
+    // instead of a test of the ladder.
+    verifyReason = 'empty';
+    const parsed = parseGoal(goal);
+    await saveState(
+      store,
+      startTask(freshState(), {
+        sessionId: 's1',
+        goal,
+        tabId: 7,
+        now: 1,
+        plan: [NEVER],
+        intents: parsed.intents,
+        openEnded: parsed.openEnded,
+      }),
+    );
+  }
+
+  it('lets the device answer while a retry is still justified', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    // "fill full name with Leo" is a grammar, and OBSERVED holds exactly that field, so
+    // Tier 0 answers it and nothing is sent.
+    await startWithPlan('fill full name with Leo');
+
+    await send('PERCEIVE', { reason: 'user' });
+    await settled();
+    expect(posted).toHaveLength(0);
+
+    // Attempt two: `no-effect` on a first attempt is a page that had not finished
+    // settling, so the ladder says retry, and retrying means Tier 0 again.
+    await send('PERCEIVE', { reason: 'settle' });
+    const state = await settled();
+    expect(posted).toHaveLength(0);
+    expect(state.progress.plan[0]?.attempts).toBe(2);
+    expect(state.log[state.log.length - 1]?.note).toContain('no-effect -> retry');
+  });
+
+  it('stops asking the device once its answer has not worked twice', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    await startWithPlan('fill full name with Leo');
+
+    for (let i = 0; i < 3; i++) {
+      await send('PERCEIVE', { reason: 'settle' });
+      await settled();
+    }
+    const state = await settled();
+
+    // The third step escalates: asking the same grammar the same question about the same
+    // page gets the same answer, so the cheapest rung that can differ is the next one up.
+    expect(posted.length).toBeGreaterThan(0);
+    expect(state.log.some((e) => e.note?.includes('re-resolve'))).toBe(true);
+  });
+
+  it('ends the leg rather than climbing for ever', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    await startWithPlan('fill full name with Leo');
+
+    for (let i = 0; i < 4; i++) {
+      await send('PERCEIVE', { reason: 'settle' });
+      await settled();
+    }
+    const state = await settled();
+
+    expect(state.progress.plan[0]?.status).toBe('failed');
+    expect(state.progress.plan[0]?.failure).toBe('no-effect');
+    // Bounded: the leg's budget was three, and it did not get a fourth.
+    expect(state.progress.plan[0]?.attempts).toBeLessThanOrEqual(NEVER.budget + 1);
+  });
+
+  it('does not keep issuing the same action blindly', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    await startWithPlan('fill full name with Leo');
+
+    for (let i = 0; i < 4; i++) {
+      await send('PERCEIVE', { reason: 'settle' });
+      await settled();
+    }
+
+    // Whatever the run did, it did not spend every step re-issuing the device's first
+    // answer: something else was asked before the budget ran out.
+    expect(posted.length).toBeGreaterThan(0);
+  });
+
+  it('keeps the recovery reason abstract in the log', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    await startWithPlan('fill full name with Leo');
+
+    for (let i = 0; i < 3; i++) {
+      await send('PERCEIVE', { reason: 'settle' });
+      await settled();
+    }
+    const state = await settled();
+
+    const notes = state.log.map((e) => e.note ?? '').join(' ');
+    expect(notes).toMatch(/no-effect -> (retry|re-resolve|replan)/);
+    expect(notes).not.toContain(SECRET_VALUE);
+  });
+});
+
+/**
+ * A `select` leg answered from the numbers on the page.
+ *
+ * The arithmetic is candidates.test.ts's. What is proved here is the consequence: when the
+ * page printed enough, the choice is made on the device -- no screenshot, no gate, no POST
+ * -- and when it did not, the step escalates instead of guessing.
+ */
+describe('choosing a candidate', () => {
+  const SELECT_LEG: import('../shared/contract').Subgoal = {
+    id: 'select-1',
+    kind: 'select',
+    intent: 'choose the candidate that fits',
+    after: [],
+    criteria: [],
+    budget: 3,
+  };
+
+  /** A grid of priced cards: a link with its price printed underneath. */
+  function priced(prices: number[]): ObservedElement[] {
+    const out: ObservedElement[] = [];
+    prices.forEach((price, i) => {
+      const y = i * 300;
+      out.push({
+        index: i + 1,
+        role: 'link',
+        box: { x: 0, y, w: 200, h: 24 },
+        state: { visible: true, enabled: true, focused: false, filled: false },
+        occluded: 0,
+        isNew: false,
+        tag: 'a',
+        textRuns: [],
+        // The real shape stableKey produces: `frame|tag|role|name|path`. Candidates are
+        // scoped to the card their path names, so a made-up key would not exercise it.
+        key: `|a|link|Result ${i + 1}|html/body/ul/li[${i + 1}]/a`,
+        name: `Result ${i + 1}`,
+      });
+      out.push({
+        role: 'text',
+        box: { x: 0, y: y + 40, w: 200, h: 20 },
+        state: { visible: true, enabled: true, focused: false, filled: false },
+        occluded: 0,
+        isNew: false,
+        tag: 'span',
+        textRuns: [
+          { text: `₹${price}`, box: { x: 0, y: y + 40, w: 200, h: 20 }, nodeIndex: 0 },
+        ],
+        key: `|span|text|price|html/body/ul/li[${i + 1}]/div`,
+        name: '',
+      });
+    });
+    return out;
+  }
+
+  async function selecting(goal: string): Promise<void> {
+    await saveState(
+      store,
+      startTask(freshState(), {
+        sessionId: 's1',
+        goal,
+        tabId: 7,
+        now: 1,
+        plan: [SELECT_LEG],
+        intents: [],
+        openEnded: true,
+      }),
+    );
+  }
+
+  it('clicks the cheapest eligible candidate without sending anything', async () => {
+    observed = priced([41500, 28999, 25000]);
+    contentAnswers();
+    offscreenAnswers();
+    await selecting('find the cheapest phone under ₹30,000 and open it');
+
+    await send('PERCEIVE', { reason: 'user' });
+    await settled();
+
+    // The numbers on a results page never left the machine.
+    expect(posted).toHaveLength(0);
+    expect(executed).toHaveLength(1);
+    expect(executed[0]?.actions).toEqual([{ type: 'click', index: 3 }]);
+  });
+
+  it('escalates rather than guessing when the page printed no prices', async () => {
+    observed = [
+      {
+        index: 1,
+        role: 'link',
+        box: { x: 0, y: 0, w: 200, h: 24 },
+        state: { visible: true, enabled: true, focused: false, filled: false },
+        occluded: 0,
+        isNew: false,
+        tag: 'a',
+        textRuns: [],
+        key: 'card-0',
+        name: 'Result 1',
+      },
+    ];
+    contentAnswers();
+    offscreenAnswers();
+    await selecting('find the cheapest phone under ₹30,000 and open it');
+
+    await send('PERCEIVE', { reason: 'user' });
+    const state = await settled();
+
+    expect(posted.length).toBeGreaterThan(0);
+    expect(state.log[state.log.length - 1]?.note).toContain('insufficient-evidence');
+  });
+
+  it('says nothing qualified rather than picking the closest miss', async () => {
+    observed = priced([41500, 55000]);
+    contentAnswers();
+    offscreenAnswers();
+    await selecting('find the cheapest phone under ₹30,000 and open it');
+
+    await send('PERCEIVE', { reason: 'user' });
+    const state = await settled();
+
+    expect(state.log.some((e) => e.note?.includes('none-eligible'))).toBe(true);
+    // The device did not pick. Whatever was clicked afterwards was the planner's choice,
+    // made with the picture in front of it -- which is the right escalation, and the
+    // opposite of the device settling for the closest miss.
+    expect(posted.length).toBeGreaterThan(0);
+    const trace = JSON.parse(traceLines[traceLines.length - 1] ?? '{}') as {
+      tier?: { tier: number };
+    };
+    expect(trace.tier?.tier).toBe(2);
+  });
+
+  it('keeps the candidates own text out of the step log', async () => {
+    observed = priced([25000]);
+    contentAnswers();
+    offscreenAnswers();
+    await selecting('find the cheapest phone under ₹30,000 and open it');
+
+    await send('PERCEIVE', { reason: 'user' });
+    const state = await settled();
+
+    const notes = state.log.map((e) => e.note ?? '').join(' ');
+    expect(notes).toContain('candidates:');
+    expect(notes).not.toContain('Result 1');
+  });
+});
+
+describe('work the page has already confirmed', () => {
+  it('is not offered to Tier 0 a second time', async () => {
+    // Tier 0 is a pure function of the sentence and the element list, so on a multi-step
+    // run it re-derives the same action every step. Before plans existed a Tier 0 answer
+    // ended the session and this never showed; now a run keeps going, and without the
+    // ledger it would spend every remaining step re-typing a field it filled on step one.
+    contentAnswers();
+    offscreenAnswers();
+    const goal = 'fill full name with Leo';
+    const parsed = parseGoal(goal);
+    await saveState(
+      store,
+      startTask(freshState(), {
+        sessionId: 's1',
+        goal,
+        tabId: 7,
+        now: 1,
+        intents: parsed.intents,
+        openEnded: parsed.openEnded,
+        plan: [
+          {
+            id: 'interact-1',
+            kind: 'interact',
+            intent: 'fill the field',
+            after: [],
+            criteria: [{ check: 'url-changed', hint: '' }],
+            budget: 4,
+          },
+        ],
+      }),
+    );
+
+    await send('PERCEIVE', { reason: 'user' });
+    await settled();
+    // The device filled it and the page confirmed it.
+    expect(posted).toHaveLength(0);
+    expect(executed).toHaveLength(1);
+
+    await send('PERCEIVE', { reason: 'settle' });
+    const state = await settled();
+
+    // Second step: the grammar has nothing left it is allowed to act on, so the step
+    // escalates rather than typing into the same field again.
+    expect(executed.filter((e) => e.actions.some((a) => a.type === 'type'))).toHaveLength(1);
+    expect(state.log.some((e) => e.note?.includes('1 already done'))).toBe(true);
+  });
+});
+
+/**
+ * A page that never stops mutating, and never moves.
+ *
+ * Found on live government portals rather than reasoned about: indianrail.gov.in reported
+ * `mutationSeq 8 -> 48` and incometax.gov.in `7 -> 35` between measuring the geometry and
+ * photographing it, every geometric field identical, on every attempt. A rotating banner
+ * bumps that counter thirty times a second. The strict guard discarded every frame, the
+ * step failed in `capture`, the retry ceiling ended the run -- and the agent could not see
+ * either site at all.
+ */
+describe('a page that mutates without moving', () => {
+  /** Bumps mutationSeq on every capture and changes nothing else. */
+  function handleTicker(): void {
+    tokenAfterCapture = null;
+    moveOnCapture = () => ({ ...currentToken, mutationSeq: currentToken.mutationSeq + 40 });
+  }
+
+  it('keeps the frame rather than discarding it for ever', async () => {
+    contentAnswers();
+    offscreenAnswers();
+    handleTicker();
+
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    const state = await settled();
+
+    expect(state.log[0]?.outcome).toBe('ok');
+    expect(posted).toHaveLength(1);
+    // Counted, and counted apart from a discard: a discard is the guard working, this is
+    // the guard being relaxed.
+    expect(state.framesContentDrifted).toBe(1);
+    // The first attempt was a real discard: the strict check refused it and the step
+    // re-measured. Only the last attempt is allowed the concession.
+    expect(state.framesDiscarded).toBe(1);
+  });
+
+  it('tries the strict check first, and only relaxes on the last attempt', async () => {
+    // The first attempt is refused and re-measured; the concession is not the fast path.
+    contentAnswers();
+    offscreenAnswers();
+    handleTicker();
+
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    await settled();
+
+    expect(captureCalls).toBe(MAX_GEOMETRY_ATTEMPTS);
+  });
+
+  it('still refuses a page that actually moved', async () => {
+    // Everything that positions a box is still a hard failure, however many attempts.
+    contentAnswers();
+    offscreenAnswers();
+    handleAlwaysMoving(() => ({
+      ...currentToken,
+      mutationSeq: currentToken.mutationSeq + 1,
+      scrollY: currentToken.scrollY + 120,
+    }));
+
+    await send('RUN_TASK', { goal: 'g', tabId: 7 });
+    const state = await settled();
+
+    expect(state.log[0]?.note).toMatch(/page would not hold still/);
+    expect(state.framesDiscarded).toBeGreaterThan(0);
+    expect(state.framesContentDrifted).toBe(0);
   });
 });

@@ -103,9 +103,79 @@ function demoPages(): string[] {
 }
 
 /**
- * Every string a detector could plausibly read: field values, selected options, and the
- * page's own text. Attribute names and ids are excluded -- a field called `aadhaar_no`
- * is a label, not an Aadhaar number.
+ * Text a tier-2 page paints rather than marks up.
+ *
+ * The DOM-shaped scan below strips `<script>` and never opens a data URI, which is
+ * exactly where the two tier-2 pages keep their identifiers: `tier-2-pixels.html` draws
+ * them with `ctx.fillText`, and `tier-2-image-id.html` ships them inside a base64 SVG.
+ * Those are the pages whose whole argument is that the checksum layers fire on pixels,
+ * so they are the last pages that can afford an unvalidated fixture -- and they were the
+ * two this file could not see. Sources of glyphs, in the order a page tends to use them.
+ */
+function paintedValues(html: string): string[] {
+  const values: string[] = [];
+
+  // Canvas text: the string argument of fillText/strokeText, and the literals in the
+  // key/value tables those calls are usually fed from.
+  const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1] ?? '');
+  for (const script of scripts) {
+    for (const m of script.matchAll(/(?:fill|stroke)Text\(\s*(['"`])([\s\S]*?)\1/g)) {
+      if (m[2]) values.push(m[2].trim());
+    }
+    for (const m of script.matchAll(/(['"])([^'"\n]{8,})\1/g)) {
+      if (m[2]) values.push(m[2].trim());
+    }
+  }
+
+  // base64 data URIs: decode, then recurse through the same text scan. An SVG carries its
+  // glyphs in <text> nodes, which the tag strip below turns back into words.
+  for (const m of html.matchAll(/;base64,([A-Za-z0-9+/=]{64,})/g)) {
+    if (!m[1]) continue;
+    let decoded = '';
+    try {
+      decoded = Buffer.from(m[1], 'base64').toString('utf8');
+    } catch {
+      continue;
+    }
+    values.push(...textTokens(decoded));
+  }
+
+  return values;
+}
+
+/**
+ * Words of 8+ characters in whatever is left once tags, script and style are gone, plus
+ * grouped digit runs rejoined.
+ *
+ * The word split alone cannot see a spaced identifier. `6933 7752 9506` in an SVG `<text>`
+ * node is three four-digit tokens, every one of them under the floor, so no candidate ever
+ * holds the whole number and its checksum is never checked -- which is how the second
+ * tier-2 page stayed unguarded even after the canvas one was covered. A page that prints
+ * an Aadhaar as content rather than into a `value=` has the same problem.
+ */
+function textTokens(source: string): string[] {
+  const text = source
+    .replace(/<script[\s\S]*?<\/script>/g, ' ')
+    .replace(/<style[\s\S]*?<\/style>/g, ' ')
+    .replace(/<[^>]+>/g, ' ');
+  const out: string[] = [];
+  for (const token of text.split(/[\s,;()<>[\]"']+/)) {
+    const trimmed = token.trim();
+    if (trimmed.length >= 8) out.push(trimmed);
+  }
+  // Digits printed in groups: Aadhaar as 4-4-4, a card as 4-4-4-4. Kept as written so the
+  // class shapes, which allow one separator, match what a reader would copy off the page.
+  for (const m of text.matchAll(/\b\d{4}(?:[\s-]\d{4}){2,3}\b/g)) {
+    out.push(m[0].trim());
+  }
+  return out;
+}
+
+/**
+ * Every string a detector could plausibly read: field values, selected options, the
+ * page's own text, and -- for the tier-2 pages -- the glyphs it paints into a canvas or
+ * ships inside a data URI. Attribute names and ids are excluded: a field called
+ * `aadhaar_no` is a label, not an Aadhaar number.
  */
 function candidateValues(html: string): string[] {
   const values: string[] = [];
@@ -115,14 +185,8 @@ function candidateValues(html: string): string[] {
   }
   // Text between tags, split into words and short runs -- enough to catch an identifier
   // printed as page content rather than typed into a field.
-  const text = html
-    .replace(/<script[\s\S]*?<\/script>/g, ' ')
-    .replace(/<style[\s\S]*?<\/style>/g, ' ')
-    .replace(/<[^>]+>/g, ' ');
-  for (const token of text.split(/[\s,;()<>[\]"']+/)) {
-    const trimmed = token.trim();
-    if (trimmed.length >= 8) values.push(trimmed);
-  }
+  values.push(...textTokens(html));
+  values.push(...paintedValues(html));
 
   return [...new Set(values)];
 }

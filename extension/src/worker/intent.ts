@@ -436,8 +436,16 @@ interface Span {
   end: number;
 }
 
+/**
+ * Where one clause ends and the next begins.
+ *
+ * The comma carries a caveat. `,(?!\d{3}(?!\d))` refuses to split inside a thousands
+ * group: without it "under 30,000" is two clauses -- "under 30" and "000" -- and the
+ * limit the user stated is read as thirty. That is not a decomposition problem, it is
+ * this splitter's, and "fill amount with 1,200" had the same shape all along.
+ */
 const SEPARATOR =
-  /[;,\n]+|\.(?=\s|$)|\b(?:and then|then)\b|(?<!\b(?:terms|save))\s+\band\b(?!\s+(?:conditions|continue|privacy\b))|(?<=\S)\s+(?=\b(?:tick|check|uncheck|untick|toggle)\s+(?:all\s+)?(?:the\s+)?(?:checkbox|checkboxes|box|boxes)\b)|(?<=\b(?:from|origin|source)\s+\S+)\s+(?=\b(?:to|destination)\s+)|(?<=\S)\s+(?=\b(?:dd[/-]mm[/-]yyyy|ddmmyyyy)\b)/gi;
+  /[;\n]+|,(?!\d{3}(?!\d))|\.(?=\s|$)|\b(?:and then|then)\b|(?<!\b(?:terms|save))\s+\band\b(?!\s+(?:conditions|continue|privacy\b))|(?<=\S)\s+(?=\b(?:tick|check|uncheck|untick|toggle)\s+(?:all\s+)?(?:the\s+)?(?:checkbox|checkboxes|box|boxes)\b)|(?<=\b(?:from|origin|source)\s+\S+)\s+(?=\b(?:to|destination)\s+)|(?<=\S)\s+(?=\b(?:dd[/-]mm[/-]yyyy|ddmmyyyy)\b)/gi;
 
 function clauses(goal: string): Span[] {
   const out: Span[] = [];

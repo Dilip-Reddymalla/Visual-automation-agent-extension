@@ -329,3 +329,38 @@ describe('a page that labels nothing', () => {
     ]);
   });
 });
+
+/**
+ * A field whose declared name is a whole sentence.
+ *
+ * Measured on irctc.co.in/nget/train-search, whose origin box is
+ * `aria-label="Enter From station. Input is Mandatory."`. Under substring scoring the word
+ * the user typed was worth the same as the "to" inside "station", the only station picker
+ * on the page sat below the floor, and a form the device holds every fact about escalated
+ * to a local model.
+ */
+describe('a word inside a sentence', () => {
+  const stations = [
+    el({
+      index: 1,
+      role: 'searchbox',
+      ariaLabel: 'Enter From station. Input is Mandatory.',
+    }),
+    el({
+      index: 2,
+      role: 'searchbox',
+      ariaLabel: 'Enter To station. Input is Mandatory.',
+    }),
+  ];
+
+  it('resolves the field the user named', () => {
+    const result = resolveFirst('fill from with new delhi', stations);
+    expect(result.kind === 'resolved' && result.index).toBe(1);
+  });
+
+  it('does not match a word buried inside another one', () => {
+    // "to" is in "station" twice over. Only the field that says To may win.
+    const result = resolveFirst('fill to with lucknow', stations);
+    expect(result.kind === 'resolved' && result.index).toBe(2);
+  });
+});
